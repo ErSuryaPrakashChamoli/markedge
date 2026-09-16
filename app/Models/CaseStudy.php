@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\MessageBag;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
@@ -64,6 +65,24 @@ class CaseStudy extends Model implements HasMedia
     protected function featured(Builder $query): Builder
     {
         return $query->where('is_featured', true);
+    }
+
+    /**
+     * Problems that block publishing (architecture §13).
+     */
+    public function publishChecklist(): MessageBag
+    {
+        $errors = new MessageBag;
+
+        if (blank(strip_tags((string) $this->challenge))) {
+            $errors->add('challenge', 'A case study needs a challenge before it can be published.');
+        }
+
+        if (blank(strip_tags((string) $this->solution))) {
+            $errors->add('solution', 'A case study needs a solution before it can be published.');
+        }
+
+        return $errors;
     }
 
     public function client(): BelongsTo

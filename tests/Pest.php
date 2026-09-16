@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -18,6 +21,11 @@ pest()->extend(TestCase::class)
     ->use(LazilyRefreshDatabase::class)
     ->in('Feature');
 
+pest()->beforeEach(function (): void {
+    $this->seed(RolesAndPermissionsSeeder::class);
+    Filament::setCurrentPanel('admin');
+})->in('Feature/Filament');
+
 /*
 |--------------------------------------------------------------------------
 | Expectations
@@ -32,3 +40,20 @@ pest()->extend(TestCase::class)
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Functions
+|--------------------------------------------------------------------------
+*/
+
+/**
+ * An active admin user holding the given seeded role.
+ */
+function adminUser(string $role = 'Super Admin'): User
+{
+    $user = User::factory()->create();
+    $user->assignRole($role);
+
+    return $user;
+}

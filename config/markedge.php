@@ -48,6 +48,10 @@ return [
     |--------------------------------------------------------------------------
     */
 
+    'preview' => [
+        'ttl_hours' => env('MARKEDGE_PREVIEW_TTL_HOURS', 24),
+    ],
+
     'privacy' => [
         'store_ip' => env('MARKEDGE_STORE_LEAD_IP', false),
         'lead_retention_days' => env('MARKEDGE_LEAD_RETENTION_DAYS', 730),

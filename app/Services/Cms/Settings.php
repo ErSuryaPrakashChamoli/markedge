@@ -4,6 +4,7 @@ namespace App\Services\Cms;
 
 use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Read-only access to global settings, loaded once per request and cached by content version.
@@ -39,11 +40,21 @@ class Settings
 
     public function logoUrl(): ?string
     {
-        return Cache::remember(
-            $this->version->key('settings:logo'),
-            now()->addDay(),
-            fn (): string => Setting::query()->where('key', 'company.logo')->first()?->getFirstMediaUrl('file') ?? '',
-        ) ?: null;
+        return $this->fileUrl('company.logo');
+    }
+
+    /**
+     * Public URL for an image setting stored as a path on the public disk.
+     */
+    public function fileUrl(string $key): ?string
+    {
+        $path = $this->get($key);
+
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        return str_starts_with($path, 'http') ? $path : Storage::disk('public')->url($path);
     }
 
     public function forget(): void

@@ -36,12 +36,17 @@ use App\Models\Technology;
 use App\Models\Testimonial;
 use App\Models\User;
 use App\Policies\ActivityPolicy;
+use App\Policies\MediaPolicy;
 use App\Policies\RolePolicy;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Activitylog\Models\Activity;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
@@ -63,6 +68,12 @@ class AppServiceProvider extends ServiceProvider
 
         $this->registerMorphMap();
         $this->registerAuthorization();
+        $this->registerRateLimiters();
+    }
+
+    protected function registerRateLimiters(): void
+    {
+        RateLimiter::for('preview', fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
     }
 
     /**
@@ -113,5 +124,6 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Activity::class, ActivityPolicy::class);
+        Gate::policy(Media::class, MediaPolicy::class);
     }
 }

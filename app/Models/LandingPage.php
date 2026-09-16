@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\MessageBag;
 use Spatie\MediaLibrary\HasMedia;
 
 #[Fillable([
@@ -51,6 +52,20 @@ class LandingPage extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('blocks');
+    }
+
+    /**
+     * A landing page must be able to convert: it needs a form or a CTA (architecture §35).
+     */
+    public function publishChecklist(): MessageBag
+    {
+        $errors = new MessageBag;
+
+        if ($this->form_id === null && $this->cta_id === null) {
+            $errors->add('form_id', 'A landing page needs a form or a call to action before it can be published.');
+        }
+
+        return $errors;
     }
 
     public function isExpired(): bool

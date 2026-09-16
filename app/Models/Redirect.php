@@ -55,4 +55,40 @@ class Redirect extends Model
     {
         return $query->where('is_active', true);
     }
+
+    /**
+     * Follows the chain of active redirects starting at $to and reports whether it
+     * returns to $from within the maximum depth (architecture §34).
+     */
+    public static function createsLoop(string $from, string $to, int|string|null $ignoreId = null, int $maxDepth = 5): bool
+    {
+        $from = static::normalisePath($from);
+        $current = $to;
+
+        for ($hop = 0; $hop < $maxDepth; $hop++) {
+            if (! str_starts_with($current, '/')) {
+                return false;
+            }
+
+            $current = static::normalisePath($current);
+
+            if ($current === $from) {
+                return true;
+            }
+
+            $next = static::query()
+                ->active()
+                ->where('from_path', $current)
+                ->when($ignoreId, fn (Builder $query) => $query->whereKeyNot($ignoreId))
+                ->value('to_url');
+
+            if ($next === null) {
+                return false;
+            }
+
+            $current = $next;
+        }
+
+        return false;
+    }
 }
