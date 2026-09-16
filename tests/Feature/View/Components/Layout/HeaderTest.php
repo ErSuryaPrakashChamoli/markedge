@@ -29,7 +29,9 @@ it('renders the header CTA configured in settings', function () {
     Cta::factory()->create(['key' => 'talk-to-us', 'primary_label' => 'Talk to Us', 'primary_value' => '/contact']);
     Setting::factory()->create(['key' => 'cta.header', 'value' => 'talk-to-us']);
 
-    $this->get('/')->assertSee('Talk to Us')->assertSee('href="/contact"', false);
+    // Since Phase 8 the header CTA goes through the tracked /go endpoint, which redirects to /contact.
+    $this->get('/')->assertSee('Talk to Us')->assertSee('href="http://localhost/go/talk-to-us?p=%2F"', false);
+    $this->get('/go/talk-to-us?p=/')->assertRedirect('/contact');
 });
 
 it('renders without any menus or settings', function () {

@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable([
     'name', 'key', 'type', 'heading', 'intro', 'submit_label', 'success_mode', 'success_message',
     'success_page_id', 'notify_emails', 'auto_reply_enabled', 'auto_reply_subject', 'auto_reply_body',
-    'core_fields', 'is_active', 'honeypot_enabled', 'requires_consent',
+    'core_fields', 'is_active', 'honeypot_enabled', 'requires_consent', 'consent_text',
 ])]
 class Form extends Model
 {
@@ -69,6 +69,13 @@ class Form extends Model
     public function leads(): HasMany
     {
         return $this->hasMany(Lead::class);
+    }
+
+    public const string DEFAULT_CONSENT_TEXT = 'I agree to be contacted about my enquiry and accept the privacy policy.';
+
+    public function consentStatement(): string
+    {
+        return filled($this->consent_text) ? $this->consent_text : self::DEFAULT_CONSENT_TEXT;
     }
 
     /**

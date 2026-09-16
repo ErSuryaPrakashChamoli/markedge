@@ -78,7 +78,7 @@
 
                 @if ($form->requires_consent)
                     <div class="md:col-span-2">
-                        <x-forms.checkbox id="lf-{{ $form->key }}-consent" label="I agree to be contacted about my enquiry and accept the privacy policy." wire:model="consent" />
+                        <x-forms.checkbox id="lf-{{ $form->key }}-consent" :label="$form->consentStatement()" wire:model="consent" />
                         @error('consent')<p class="mt-1.5 text-caption text-danger" role="alert">{{ $message }}</p>@enderror
                     </div>
                 @endif

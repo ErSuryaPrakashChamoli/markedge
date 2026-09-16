@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -23,7 +24,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'submitted_from_url', 'status', 'assigned_to', 'custom_fields',
     'first_source', 'first_medium', 'first_campaign', 'first_term', 'first_content', 'first_referrer', 'first_landing_page', 'first_visited_at',
     'last_source', 'last_medium', 'last_campaign', 'last_term', 'last_content', 'last_referrer', 'last_landing_page', 'last_visited_at',
-    'visitor_id', 'device_type', 'browser', 'os', 'ip', 'user_agent', 'locale', 'consent_given_at',
+    'visitor_id', 'device_type', 'browser', 'os', 'ip', 'user_agent', 'locale', 'consent_given_at', 'consent_text', 'submission_token',
     'duplicate_of_lead_id', 'spam_score', 'notes', 'contacted_at', 'closed_at',
 ])]
 class Lead extends Model
@@ -108,5 +109,10 @@ class Lead extends Model
     public function duplicateOf(): BelongsTo
     {
         return $this->belongsTo(Lead::class, 'duplicate_of_lead_id');
+    }
+
+    public function events(): HasMany
+    {
+        return $this->hasMany(ConversionEvent::class);
     }
 }

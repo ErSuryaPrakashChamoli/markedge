@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['cta_id', 'action', 'path', 'campaign_id', 'utm', 'created_at'])]
+#[Fillable(['cta_id', 'action', 'path', 'visitor_id', 'target', 'source', 'medium', 'campaign', 'campaign_id', 'utm', 'created_at'])]
 class CtaClick extends Model
 {
     /** @use HasFactory<CtaClickFactory> */

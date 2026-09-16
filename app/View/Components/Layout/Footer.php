@@ -37,7 +37,7 @@ class Footer extends Component
             'emailHref' => $this->ctas->emailHref(),
             'phoneHref' => $this->ctas->phoneHref(),
             'cta' => $cta,
-            'ctaHref' => $cta ? $this->ctas->primaryHref($cta) : null,
+            'ctaHref' => $cta ? ($this->ctas->trackedHref($cta) ?? $this->ctas->primaryHref($cta)) : null,
             'ctaSecondaryHref' => $cta ? $this->ctas->secondaryHref($cta) : null,
         ]);
     }

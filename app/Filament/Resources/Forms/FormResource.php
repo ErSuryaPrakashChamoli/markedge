@@ -68,7 +68,8 @@ class FormResource extends Resource
                     ])->columns(2),
                     Section::make('Protection')->schema([
                         Toggle::make('honeypot_enabled')->label('Honeypot spam trap')->default(true)->inline(false),
-                        Toggle::make('requires_consent')->label('Require privacy consent checkbox')->inline(false),
+                        Toggle::make('requires_consent')->label('Require privacy consent checkbox')->live()->inline(false),
+                        Textarea::make('consent_text')->label('Consent statement')->rows(2)->maxLength(500)->placeholder(Form::DEFAULT_CONSENT_TEXT)->helperText('Shown next to the checkbox and stored with every lead that accepts it.')->visible(fn (Get $get): bool => (bool) $get('requires_consent')),
                     ])->columns(2),
                 ]),
                 Tab::make('Core fields')->icon(Heroicon::OutlinedListBullet)->schema(static::coreFieldsSchema()),

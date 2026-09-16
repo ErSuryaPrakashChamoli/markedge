@@ -73,9 +73,36 @@ class CtaResolver
         $secondary = $this->secondaryHref($cta, $entityName);
 
         return [
-            'primary' => $primary ? ['label' => $cta->primary_label, 'href' => $primary, 'external' => $this->isExternal($primary) && ! str_starts_with($primary, url('/'))] : null,
-            'secondary' => $secondary && $cta->secondary_label ? ['label' => $cta->secondary_label, 'href' => $secondary, 'external' => $this->isExternal($secondary) && ! str_starts_with($secondary, url('/'))] : null,
+            'primary' => $primary ? ['label' => $cta->primary_label, 'href' => $this->trackedHref($cta, 'primary', $entityName) ?? $primary, 'external' => $this->isExternal($primary) && ! str_starts_with($primary, url('/'))] : null,
+            'secondary' => $secondary && $cta->secondary_label ? ['label' => $cta->secondary_label, 'href' => $this->trackedHref($cta, 'secondary', $entityName) ?? $secondary, 'external' => $this->isExternal($secondary) && ! str_starts_with($secondary, url('/'))] : null,
         ];
+    }
+
+    /**
+     * Tracked link through /go so the click is measured before the visitor reaches the destination.
+     * Returns null when the slot has no destination, so callers fall back to nothing rather than a dead link.
+     */
+    public function trackedHref(Cta $cta, string $slot = 'primary', ?string $entityName = null): ?string
+    {
+        $raw = $slot === 'secondary' ? $this->secondaryHref($cta, $entityName) : $this->primaryHref($cta, $entityName);
+
+        if ($raw === null) {
+            return null;
+        }
+
+        return route('cta.go', array_filter([
+            'key' => $cta->key,
+            'slot' => $slot === 'secondary' ? 'secondary' : null,
+            'p' => $this->currentPath(),
+            'e' => $entityName,
+        ]));
+    }
+
+    protected function currentPath(): ?string
+    {
+        $path = request()?->path();
+
+        return is_string($path) && ! str_starts_with($path, 'livewire') ? '/'.ltrim($path, '/') : null;
     }
 
     public function primaryHref(Cta $cta, ?string $entityName = null): ?string

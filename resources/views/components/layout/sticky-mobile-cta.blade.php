@@ -3,7 +3,7 @@
     $cta = $ctas->fromSetting('cta.header');
     $phone = $ctas->phoneHref();
     $whatsapp = $ctas->whatsappHref();
-    $enquire = $cta ? $ctas->primaryHref($cta) : null;
+    $enquire = $cta ? ($ctas->trackedHref($cta) ?? $ctas->primaryHref($cta)) : null;
 @endphp
 @if ($phone || $whatsapp || $enquire)
     <div class="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 backdrop-blur lg:hidden" data-theme="light" style="padding-bottom: env(safe-area-inset-bottom)">
@@ -19,7 +19,7 @@
                 </a>
             @endif
             @if ($enquire)
-                <a href="{{ $enquire }}" class="flex items-center justify-center gap-2 bg-brand py-3 text-button text-white">
+                <a href="{{ $enquire }}" rel="nofollow" class="flex items-center justify-center gap-2 bg-brand py-3 text-button text-white">
                     {{ $cta->primary_label }}
                 </a>
             @endif

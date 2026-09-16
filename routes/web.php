@@ -4,6 +4,7 @@ use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\Seo\RobotsController;
 use App\Http\Controllers\Seo\SitemapController;
 use App\Http\Controllers\Site\CaseStudyController;
+use App\Http\Controllers\Site\CtaClickController;
 use App\Http\Controllers\Site\HomeController;
 use App\Http\Controllers\Site\IndustryController;
 use App\Http\Controllers\Site\InsightsController;
@@ -29,6 +30,7 @@ $slug = '[a-z0-9]+(?:-[a-z0-9]+)*';
 
 Route::get('/', HomeController::class)->name('home');
 
+Route::get('/go/{key}/{slot?}', CtaClickController::class)->middleware('throttle:cta')->name('cta.go');
 Route::get('/search', SearchController::class)->middleware('throttle:search')->name('search');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');

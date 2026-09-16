@@ -26,7 +26,7 @@ class Header extends Component
             'companyName' => $this->settings->get('company.name', config('app.name')),
             'logoUrl' => $this->settings->logoUrl(),
             'cta' => $cta,
-            'ctaHref' => $cta ? $this->ctas->primaryHref($cta) : null,
+            'ctaHref' => $cta ? ($this->ctas->trackedHref($cta) ?? $this->ctas->primaryHref($cta)) : null,
             'phoneHref' => $this->ctas->phoneHref(),
             'whatsappHref' => $this->ctas->whatsappHref(),
         ]);

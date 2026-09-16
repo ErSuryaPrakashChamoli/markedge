@@ -98,6 +98,33 @@ return [
     |
     */
 
+    /*
+    | First-party attribution cookie (architecture §20). No personal data, no third parties.
+    */
+    'attribution' => [
+        'cookie' => 'mk_attr',
+        'cookie_days' => 90,
+        'max_length' => 120,
+        // A visit with no campaign or external referrer never overwrites the stored last touch.
+        'direct_overwrites_last_touch' => false,
+        // A CTA click is linked to a lead only when the form is submitted within this window.
+        'cta_window_minutes' => 60,
+    ],
+
+    'leads' => [
+        'duplicate_window_hours' => 24,
+        'submissions_per_minute' => 5,
+    ],
+
+    'cta' => [
+        // External hosts CTA destinations may redirect to, in addition to markedge.redirects.allowed_external_hosts.
+        'allowed_external_hosts' => ['wa.me', 'api.whatsapp.com'],
+    ],
+
+    'analytics' => [
+        'event_retention_days' => (int) env('MARKEDGE_EVENT_RETENTION_DAYS', 400),
+    ],
+
     'permissions' => [
         'subjects' => [
             'pages', 'menus', 'settings', 'announcements', 'service_categories',

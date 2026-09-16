@@ -9,6 +9,7 @@ use App\Models\Author;
 use App\Models\Campaign;
 use App\Models\CaseStudy;
 use App\Models\Client;
+use App\Models\ConversionEvent;
 use App\Models\Cta;
 use App\Models\CtaClick;
 use App\Models\Faq;
@@ -90,6 +91,8 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('preview', fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
         RateLimiter::for('search', fn (Request $request): Limit => Limit::perMinute(30)->by($request->ip()));
+        RateLimiter::for('cta', fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
+        RateLimiter::for('lead-form', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.leads.submissions_per_minute', 5))->by($request->ip()));
     }
 
     /**
@@ -107,6 +110,7 @@ class AppServiceProvider extends ServiceProvider
             'client' => Client::class,
             'cta' => Cta::class,
             'cta_click' => CtaClick::class,
+            'conversion_event' => ConversionEvent::class,
             'faq' => Faq::class,
             'form' => Form::class,
             'form_field' => FormField::class,

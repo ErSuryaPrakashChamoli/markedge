@@ -9,7 +9,7 @@
         </div>
         <div class="flex flex-wrap gap-3">
             @foreach (array_filter($data['links']) as $link)
-                <x-ui.button :href="$link['href']" :variant="$loop->first ? 'primary' : 'outline'" size="lg" :target="$link['external'] ? '_blank' : null" :rel="$link['external'] ? 'noopener' : null">{{ $link['label'] }}</x-ui.button>
+                <x-ui.button :href="$link['href']" :variant="$loop->first ? 'primary' : 'outline'" size="lg" :target="$link['external'] ? '_blank' : null" :rel="trim(($link['external'] ? 'noopener ' : '').'nofollow')">{{ $link['label'] }}</x-ui.button>
             @endforeach
         </div>
     </div>

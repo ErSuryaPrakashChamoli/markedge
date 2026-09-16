@@ -2,24 +2,31 @@
 
 namespace App\Livewire;
 
+use App\Attribution\AttributionCookie;
+use App\Attribution\Normaliser;
 use App\Enums\FormFieldType;
 use App\Enums\FormSuccessMode;
+use App\Leads\LeadCaptureService;
+use App\Leads\LeadSubmission;
 use App\Models\Form;
 use App\Models\FormField;
 use App\Models\Industry;
-use App\Models\Lead;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\Solution;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
- * Renders a configured Form and stores a Lead (architecture §19). Attribution, notifications,
- * spam scoring and CTA click tracking are layered on in the lead-engine phase.
+ * Renders a configured Form and hands validated input to the central LeadCaptureService
+ * (architecture §19, Phase 8). Context ids and the conversion path are locked server-side state,
+ * so nothing business-critical comes from editable hidden fields.
  */
 class LeadForm extends Component
 {
@@ -32,6 +39,14 @@ class LeadForm extends Component
 
     #[Locked]
     public bool $preview = false;
+
+    /** Internal path of the page that rendered the form (the conversion page). */
+    #[Locked]
+    public ?string $sourcePath = null;
+
+    /** Issued once per render; a retried submission with the same token never creates a second lead. */
+    #[Locked]
+    public string $submissionToken = '';
 
     public ?string $heading = null;
 
@@ -51,7 +66,7 @@ class LeadForm extends Component
     /**
      * @param  array<string, int|string>  $context
      */
-    public function mount(Form $form, array $context = [], ?string $heading = null, ?string $intro = null, string $layout = 'card', bool $preview = false): void
+    public function mount(Form $form, array $context = [], ?string $heading = null, ?string $intro = null, string $layout = 'card', bool $preview = false, ?string $sourcePath = null): void
     {
         $this->formId = $form->id;
         $this->context = $context;
@@ -59,6 +74,8 @@ class LeadForm extends Component
         $this->intro = $intro ?? $form->intro;
         $this->layout = $layout;
         $this->preview = $preview;
+        $this->sourcePath = $this->conversionPath($sourcePath ?? '/'.ltrim(request()->path(), '/'));
+        $this->submissionToken = Str::random(48);
 
         foreach (array_keys($form->enabledCoreFields()) as $field) {
             $this->data[$field] = '';
@@ -67,6 +84,16 @@ class LeadForm extends Component
         foreach ($form->fields as $field) {
             $this->data[$field->key] = $field->type === FormFieldType::Multiselect ? [] : '';
         }
+    }
+
+    /**
+     * The page that rendered the form. Livewire's own endpoints are never a page.
+     */
+    protected function conversionPath(?string $path): ?string
+    {
+        $path = Normaliser::path($path);
+
+        return $path === null || str_starts_with($path, '/livewire') ? null : $path;
     }
 
     public function submit(): void
@@ -90,6 +117,14 @@ class LeadForm extends Component
             [],
             $this->attributes($form),
         )->validate();
+
+        $limiterKey = 'lead-form:'.request()->ip();
+
+        if (RateLimiter::tooManyAttempts($limiterKey, (int) config('markedge.leads.submissions_per_minute', 5))) {
+            throw ValidationException::withMessages(['data.name' => 'Too many submissions in a short time. Please wait a minute and try again.']);
+        }
+
+        RateLimiter::hit($limiterKey, 60);
 
         $this->store($form, $validated['data']);
 
@@ -207,19 +242,29 @@ class LeadForm extends Component
             }
         }
 
-        Lead::query()->create(array_filter($core, fn ($value) => $value !== '') + $mapped + [
-            'form_id' => $form->id,
+        $relations = [
             'landing_page_id' => $this->context['landing_page_id'] ?? null,
             'service_id' => $mapped['service_id'] ?? $this->context['service_id'] ?? null,
             'product_id' => $mapped['product_id'] ?? $this->context['product_id'] ?? null,
             'industry_id' => $mapped['industry_id'] ?? $this->context['industry_id'] ?? null,
-            'custom_fields' => $custom ?: null,
-            'submitted_from_url' => request()->headers->get('referer'),
-            'consent_given_at' => $form->requires_consent ? now() : null,
-            'user_agent' => request()->userAgent(),
-            'ip' => config('markedge.privacy.store_ip') ? request()->ip() : null,
-            'locale' => app()->getLocale(),
-        ]);
+            'solution_id' => $mapped['solution_id'] ?? $this->context['solution_id'] ?? null,
+        ];
+
+        $coreMapped = array_diff_key($mapped, array_flip(['service_id', 'product_id', 'industry_id', 'solution_id']));
+
+        app(LeadCaptureService::class)->capture(new LeadSubmission(
+            form: $form,
+            core: array_filter($core, fn ($value) => $value !== '') + $coreMapped,
+            custom: array_filter($custom, fn ($value) => $value !== '' && $value !== null && $value !== []),
+            relations: array_map(fn ($id) => filled($id) ? (int) $id : null, $relations),
+            attribution: app(AttributionCookie::class)->read(request()),
+            conversionPath: $this->sourcePath,
+            consentGiven: $form->requires_consent && $this->consent,
+            submissionToken: $this->submissionToken,
+            userAgent: request()->userAgent() ? mb_substr(request()->userAgent(), 0, 500) : null,
+            ip: config('markedge.privacy.store_ip') ? request()->ip() : null,
+            locale: app()->getLocale(),
+        ));
     }
 
     /**

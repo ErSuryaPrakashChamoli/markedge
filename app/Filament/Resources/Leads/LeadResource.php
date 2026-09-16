@@ -101,43 +101,47 @@ class LeadResource extends Resource
                         TextEntry::make('solution.name')->label('Solution')->placeholder('—'),
                         TextEntry::make('form.name')->label('Form')->placeholder('—'),
                         TextEntry::make('landingPage.title')->label('Landing page')->placeholder('—'),
-                        TextEntry::make('cta.name')->label('CTA')->placeholder('—'),
-                        TextEntry::make('submitted_from_url')->label('Submitted from')->placeholder('—'),
+                        TextEntry::make('cta.name')->label('CTA clicked')->placeholder('—'),
+                        TextEntry::make('submitted_from_url')->label('Conversion page')->placeholder('—'),
+                        TextEntry::make('first_landing_page')->label('First landing page')->placeholder('—'),
+                        TextEntry::make('consent_given_at')->label('Consent')->state(fn (Lead $record): string => $record->consent_given_at ? 'Given '.$record->consent_given_at->format('d M Y H:i') : 'Not requested')->tooltip(fn (Lead $record): ?string => $record->consent_text),
+                        TextEntry::make('duplicateOf.name')->label('Duplicate of')->placeholder('—'),
                     ])->columns(4),
                     Section::make('Workflow')->schema([
                         TextEntry::make('status')->badge(),
                         TextEntry::make('assignee.name')->label('Owner')->placeholder('Unassigned'),
                         TextEntry::make('created_at')->label('Received')->dateTime('d M Y H:i'),
                         TextEntry::make('contacted_at')->dateTime('d M Y H:i')->placeholder('—'),
-                        TextEntry::make('duplicateOf.name')->label('Duplicate of')->placeholder('—'),
                         TextEntry::make('notes')->placeholder('—')->columnSpanFull(),
-                    ])->columns(5),
+                    ])->columns(4),
                 ]),
-                Tab::make('Attribution')->icon(Heroicon::OutlinedFlag)->schema([
-                    Section::make('First touch')->schema([
-                        TextEntry::make('first_source')->label('Source')->placeholder('—'),
-                        TextEntry::make('first_medium')->label('Medium')->placeholder('—'),
-                        TextEntry::make('first_campaign')->label('Campaign')->placeholder('—'),
-                        TextEntry::make('first_term')->label('Term')->placeholder('—'),
-                        TextEntry::make('first_content')->label('Content')->placeholder('—'),
-                        TextEntry::make('first_referrer')->label('Referrer')->placeholder('—'),
-                        TextEntry::make('first_landing_page')->label('Landing page')->placeholder('—'),
-                        TextEntry::make('first_visited_at')->label('First visit')->dateTime('d M Y H:i')->placeholder('—'),
-                    ])->columns(4),
-                    Section::make('Last touch')->schema([
-                        TextEntry::make('last_source')->label('Source')->placeholder('—'),
-                        TextEntry::make('last_medium')->label('Medium')->placeholder('—'),
-                        TextEntry::make('last_campaign')->label('Campaign')->placeholder('—'),
-                        TextEntry::make('last_term')->label('Term')->placeholder('—'),
-                        TextEntry::make('last_content')->label('Content')->placeholder('—'),
-                        TextEntry::make('last_referrer')->label('Referrer')->placeholder('—'),
-                        TextEntry::make('last_landing_page')->label('Landing page')->placeholder('—'),
-                        TextEntry::make('last_visited_at')->label('Last visit')->dateTime('d M Y H:i')->placeholder('—'),
-                    ])->columns(4),
-                    Section::make('Campaign match')->schema([
-                        TextEntry::make('campaign.name')->label('Matched campaign')->placeholder('No campaign matched'),
+                Tab::make('Attribution')->icon(Heroicon::OutlinedFlag)
+                    ->visible(fn (): bool => Gate::allows('export', Lead::class))
+                    ->schema([
+                        Section::make('First touch')->schema([
+                            TextEntry::make('first_source')->label('Source')->placeholder('—'),
+                            TextEntry::make('first_medium')->label('Medium')->placeholder('—'),
+                            TextEntry::make('first_campaign')->label('Campaign')->placeholder('—'),
+                            TextEntry::make('first_term')->label('Term')->placeholder('—'),
+                            TextEntry::make('first_content')->label('Content')->placeholder('—'),
+                            TextEntry::make('first_referrer')->label('Referrer')->placeholder('—'),
+                            TextEntry::make('first_landing_page')->label('Landing page')->placeholder('—'),
+                            TextEntry::make('first_visited_at')->label('First visit')->dateTime('d M Y H:i')->placeholder('—'),
+                        ])->columns(4),
+                        Section::make('Last touch')->schema([
+                            TextEntry::make('last_source')->label('Source')->placeholder('—'),
+                            TextEntry::make('last_medium')->label('Medium')->placeholder('—'),
+                            TextEntry::make('last_campaign')->label('Campaign')->placeholder('—'),
+                            TextEntry::make('last_term')->label('Term')->placeholder('—'),
+                            TextEntry::make('last_content')->label('Content')->placeholder('—'),
+                            TextEntry::make('last_referrer')->label('Referrer')->placeholder('—'),
+                            TextEntry::make('last_landing_page')->label('Landing page')->placeholder('—'),
+                            TextEntry::make('last_visited_at')->label('Last visit')->dateTime('d M Y H:i')->placeholder('—'),
+                        ])->columns(4),
+                        Section::make('Campaign match')->schema([
+                            TextEntry::make('campaign.name')->label('Matched campaign')->placeholder('No campaign matched'),
+                        ]),
                     ]),
-                ]),
                 Tab::make('Technical')->icon(Heroicon::OutlinedCpuChip)
                     ->visible(fn (): bool => auth()->user()?->isSuperAdmin() ?? false)
                     ->schema([
@@ -149,7 +153,8 @@ class LeadResource extends Resource
                             TextEntry::make('visitor_id')->placeholder('—'),
                             TextEntry::make('ip')->label('IP')->placeholder('Not stored'),
                             TextEntry::make('user_agent')->placeholder('—')->columnSpanFull(),
-                            TextEntry::make('consent_given_at')->dateTime('d M Y H:i')->placeholder('—'),
+                            TextEntry::make('consent_text')->placeholder('—')->columnSpanFull(),
+                            TextEntry::make('submission_token')->placeholder('—'),
                             TextEntry::make('spam_score'),
                         ])->columns(3),
                     ]),
@@ -166,8 +171,9 @@ class LeadResource extends Resource
                 TextColumn::make('name')->searchable()->sortable()->description(fn (Lead $record): ?string => $record->company),
                 TextColumn::make('email')->searchable()->copyable()->placeholder('—')->description(fn (Lead $record): ?string => $record->phone),
                 TextColumn::make('interest')->label('Interest')->state(fn (Lead $record): string => $record->product?->name ?? $record->service?->name ?? '—'),
-                TextColumn::make('last_source')->label('Source')->badge()->color('gray')->placeholder('—')->toggleable(),
-                TextColumn::make('campaign.name')->label('Campaign')->placeholder('—')->toggleable(),
+                TextColumn::make('last_source')->label('Source')->badge()->color('gray')->placeholder('Direct / Unknown')->toggleable()->visible(fn (): bool => Gate::allows('export', Lead::class)),
+                TextColumn::make('campaign.name')->label('Campaign')->placeholder('—')->toggleable()->visible(fn (): bool => Gate::allows('export', Lead::class)),
+                TextColumn::make('submitted_from_url')->label('Page')->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('form.name')->label('Form')->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')->badge()->sortable(),
                 TextColumn::make('assignee.name')->label('Owner')->placeholder('—')->toggleable(),
@@ -227,7 +233,7 @@ class LeadResource extends Resource
         activity('content')->causedBy(auth()->user())->withProperties(['count' => $records->count()])->event('exported')->log('Leads exported');
 
         $columns = ['id', 'created_at', 'name', 'company', 'email', 'phone', 'country', 'city', 'status', 'requirement',
-            'first_source', 'first_medium', 'first_campaign', 'last_source', 'last_medium', 'last_campaign'];
+            'first_source', 'first_medium', 'first_campaign', 'first_landing_page', 'last_source', 'last_medium', 'last_campaign', 'submitted_from_url', 'consent_given_at'];
 
         return response()->streamDownload(function () use ($records, $columns): void {
             $handle = fopen('php://output', 'wb');
