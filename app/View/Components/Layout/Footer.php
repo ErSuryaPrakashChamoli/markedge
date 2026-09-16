@@ -8,7 +8,6 @@ use App\Services\Cms\CtaResolver;
 use App\Services\Cms\MenuBuilder;
 use App\Services\Cms\Settings;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\Component;
 
 class Footer extends Component
@@ -28,11 +27,7 @@ class Footer extends Component
         return view('components.layout.footer', [
             'columns' => $this->minimal ? [] : $this->menus->build('footer'),
             'legal' => $this->menus->build('legal'),
-            'social' => Cache::remember(
-                $this->version->key('social_links'),
-                now()->addDay(),
-                fn () => SocialLink::query()->visible()->ordered()->get(),
-            ),
+            'social' => SocialLink::query()->visible()->ordered()->get(),
             'companyName' => $this->settings->get('company.name', config('app.name')),
             'tagline' => $this->settings->get('company.tagline'),
             'description' => $this->settings->get('company.description'),

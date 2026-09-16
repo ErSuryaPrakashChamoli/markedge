@@ -35,6 +35,32 @@ final readonly class MenuNode
         return (bool) ($this->settings['mega_menu'] ?? false);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        return [
+            'label' => $this->label, 'url' => $this->url, 'description' => $this->description, 'icon' => $this->icon,
+            'badge' => $this->badge, 'openInNewTab' => $this->openInNewTab, 'isHeading' => $this->isHeading,
+            'settings' => $this->settings, 'children' => array_map(fn (MenuNode $child): array => $child->toArray(), $this->children),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            label: $data['label'], url: $data['url'] ?? null,
+            children: array_map(fn (array $child): self => self::fromArray($child), $data['children'] ?? []),
+            description: $data['description'] ?? null, icon: $data['icon'] ?? null, badge: $data['badge'] ?? null,
+            openInNewTab: (bool) ($data['openInNewTab'] ?? false), isHeading: (bool) ($data['isHeading'] ?? false),
+            settings: $data['settings'] ?? [],
+        );
+    }
+
     public function withActive(bool $isActive, array $children): self
     {
         return new self(

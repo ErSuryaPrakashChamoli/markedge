@@ -19,8 +19,8 @@ trait HasBlocks
     public function enabledBlocks(): array
     {
         return array_values(array_filter(
-            $this->blocks ?? [],
-            fn (array $block): bool => ($block['data']['is_enabled'] ?? true) !== false,
+            is_array($this->blocks) ? $this->blocks : [],
+            fn (mixed $block): bool => is_array($block) && ($block['data']['is_enabled'] ?? true) !== false,
         ));
     }
 }

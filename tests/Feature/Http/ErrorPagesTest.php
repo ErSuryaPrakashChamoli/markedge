@@ -7,6 +7,8 @@ it('renders the designed 404 page within the site layout', function () {
         ->assertSee('Skip to content');
 });
 
-it('marks the placeholder home page as indexable only in production', function () {
+it('emits noindex on every page when the environment is not indexable', function () {
+    config(['markedge.seo.indexable' => false]);
+
     $this->get('/')->assertSee('<meta name="robots" content="noindex, nofollow">', false);
 });

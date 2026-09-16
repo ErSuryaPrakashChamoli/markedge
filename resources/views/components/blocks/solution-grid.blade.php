@@ -1,0 +1,2 @@
+@props(['data', 'host' => null, 'preview' => false])
+<x-sections.related-grid :items="$data['solutions']" :heading="filled($data['heading'] ?? null) ? $data['heading'] : 'Solutions'" :intro="$data['intro'] ?? null" card="solution" :cols="$data['solutions']->count() >= 4 ? 4 : 3" :theme="$data['theme'] ?? 'light'" :id="$data['anchor'] ?? null" more-label="All solutions" :more-href="url('/solutions')" />

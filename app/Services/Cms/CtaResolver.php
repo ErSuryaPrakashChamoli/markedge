@@ -3,8 +3,12 @@
 namespace App\Services\Cms;
 
 use App\Enums\CtaAction;
+use App\Models\Article;
 use App\Models\Cta;
-use Illuminate\Support\Facades\Cache;
+use App\Models\Product;
+use App\Models\Service;
+use App\Models\ServiceCategory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -13,6 +17,9 @@ use Illuminate\Support\Facades\Route;
  */
 class CtaResolver
 {
+    /** @var array<string, Cta|null> */
+    private array $resolved = [];
+
     public function __construct(
         private readonly Settings $settings,
         private readonly ContentVersion $version,
@@ -24,16 +31,51 @@ class CtaResolver
             return null;
         }
 
-        return Cache::remember(
-            $this->version->key("cta:{$key}"),
-            now()->addDay(),
-            fn (): ?Cta => Cta::query()->active()->where('key', $key)->first(),
-        );
+        return $this->resolved[$key] ??= Cta::query()->active()->where('key', $key)->first();
     }
 
     public function fromSetting(string $settingKey): ?Cta
     {
         return $this->byKey($this->settings->get($settingKey));
+    }
+
+    /**
+     * Entity CTA → parent CTA → per-type default from settings → global default (architecture §23).
+     */
+    public function forEntity(Model $entity): ?Cta
+    {
+        if (method_exists($entity, 'cta') && ($cta = $entity->cta) && $cta->is_active) {
+            return $cta;
+        }
+
+        if ($entity instanceof Service && ($cta = $entity->category?->cta) && $cta->is_active) {
+            return $cta;
+        }
+
+        $typeKey = match (true) {
+            $entity instanceof Service, $entity instanceof ServiceCategory => 'cta.default_service',
+            $entity instanceof Product => 'cta.default_product',
+            $entity instanceof Article => 'cta.default_article',
+            default => 'cta.default',
+        };
+
+        return $this->fromSetting($typeKey) ?? $this->fromSetting('cta.default');
+    }
+
+    /**
+     * Label + href pairs ready for a view.
+     *
+     * @return array{primary: ?array{label: string, href: string, external: bool}, secondary: ?array{label: string, href: string, external: bool}}
+     */
+    public function links(Cta $cta, ?string $entityName = null): array
+    {
+        $primary = $this->primaryHref($cta, $entityName);
+        $secondary = $this->secondaryHref($cta, $entityName);
+
+        return [
+            'primary' => $primary ? ['label' => $cta->primary_label, 'href' => $primary, 'external' => $this->isExternal($primary) && ! str_starts_with($primary, url('/'))] : null,
+            'secondary' => $secondary && $cta->secondary_label ? ['label' => $cta->secondary_label, 'href' => $secondary, 'external' => $this->isExternal($secondary) && ! str_starts_with($secondary, url('/'))] : null,
+        ];
     }
 
     public function primaryHref(Cta $cta, ?string $entityName = null): ?string

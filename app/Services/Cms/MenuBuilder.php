@@ -29,11 +29,13 @@ class MenuBuilder
      */
     public function build(string $menuKey): array
     {
-        return Cache::remember(
+        $cached = Cache::remember(
             $this->version->key("menu:{$menuKey}"),
             now()->addDay(),
-            fn (): array => $this->buildFresh($menuKey),
+            fn (): array => array_map(fn (MenuNode $node): array => $node->toArray(), $this->buildFresh($menuKey)),
         );
+
+        return array_map(fn (array $node): MenuNode => MenuNode::fromArray($node), $cached);
     }
 
     /**

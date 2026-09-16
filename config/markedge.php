@@ -48,6 +48,20 @@ return [
     |--------------------------------------------------------------------------
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | SEO
+    |--------------------------------------------------------------------------
+    |
+    | Only production should be indexable. Every other environment emits noindex
+    | regardless of per-entity settings.
+    |
+    */
+
+    'seo' => [
+        'indexable' => env('MARKEDGE_INDEXABLE', false),
+    ],
+
     'preview' => [
         'ttl_hours' => env('MARKEDGE_PREVIEW_TTL_HOURS', 24),
     ],
