@@ -34,7 +34,16 @@ class PublishingFields
                 ->label('Publish date')
                 ->native(false)
                 ->seconds(false)
+                ->requiredIf('status', PublishStatus::Scheduled->value)
+                ->validationMessages(['required_if' => 'Scheduled content needs a publish date.'])
                 ->helperText('Leave empty to publish immediately. A future date with status Scheduled publishes automatically.'),
+            DateTimePicker::make('unpublish_at')
+                ->label('Unpublish date')
+                ->native(false)
+                ->seconds(false)
+                ->after('published_at')
+                ->validationMessages(['after' => 'The unpublish date must be after the publish date.'])
+                ->helperText('Optional. The content returns to Draft automatically at this time (it is not archived).'),
         ];
 
         if ($featured) {

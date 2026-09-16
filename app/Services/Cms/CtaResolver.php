@@ -36,6 +36,10 @@ class CtaResolver
 
     public function fromSetting(string $settingKey): ?Cta
     {
+        if ($settingKey !== 'cta.header' && ($override = app(CampaignTargeting::class)->ctaOverride())) {
+            return $override;
+        }
+
         return $this->byKey($this->settings->get($settingKey));
     }
 
@@ -44,6 +48,10 @@ class CtaResolver
      */
     public function forEntity(Model $entity): ?Cta
     {
+        if ($override = app(CampaignTargeting::class)->ctaOverride()) {
+            return $override;
+        }
+
         if (method_exists($entity, 'cta') && ($cta = $entity->cta) && $cta->is_active) {
             return $cta;
         }

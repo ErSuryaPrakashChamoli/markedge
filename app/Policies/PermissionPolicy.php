@@ -68,6 +68,14 @@ abstract class PermissionPolicy
         return $this->allows($user, 'publish');
     }
 
+    /**
+     * Approve, request changes, and assign owners or reviewers.
+     */
+    public function review(User $user, ?Model $model = null): bool
+    {
+        return $this->allows($user, 'review');
+    }
+
     public function preview(User $user, ?Model $model = null): bool
     {
         return $this->allows($user, 'preview');

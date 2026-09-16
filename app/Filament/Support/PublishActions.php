@@ -3,12 +3,15 @@
 namespace App\Filament\Support;
 
 use App\Enums\PublishStatus;
+use App\Models\User;
 use App\Services\Cms\Publisher;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -50,11 +53,20 @@ class PublishActions
                 ->visible(fn (Model $record): bool => $record->status !== PublishStatus::Published && Gate::allows('publish', $record))
                 ->schema([
                     DateTimePicker::make('publish_at')->label('Publish at')->required()->native(false)->seconds(false)->minDate(now()),
+                    DateTimePicker::make('unpublish_at')->label('Unpublish at')->native(false)->seconds(false)->after('publish_at')->helperText('Optional: returns to Draft at this time.'),
                 ])
                 ->action(fn (Model $record, array $data, Publisher $publisher) => static::run(
-                    fn () => $publisher->schedule($record, Carbon::parse($data['publish_at'])),
+                    fn () => $publisher->schedule($record, Carbon::parse($data['publish_at']), filled($data['unpublish_at'] ?? null) ? Carbon::parse($data['unpublish_at']) : null),
                     'Scheduled.',
                 )),
+
+            Action::make('restoreFromArchive')
+                ->label('Restore to draft')
+                ->icon(Heroicon::OutlinedArrowUturnLeft)
+                ->color('gray')
+                ->requiresConfirmation()
+                ->visible(fn (Model $record): bool => $record->status === PublishStatus::Archived && Gate::allows('publish', $record))
+                ->action(fn (Model $record, Publisher $publisher) => static::run(fn () => $publisher->restore($record), 'Restored as a draft.')),
 
             Action::make('unpublish')
                 ->label('Unpublish')
@@ -81,6 +93,45 @@ class PublishActions
     public static function bulk(): array
     {
         return [
+            BulkAction::make('submitForReviewSelected')
+                ->label('Submit selected for review')
+                ->icon(Heroicon::OutlinedPaperAirplane)
+                ->color('gray')
+                ->requiresConfirmation()
+                ->deselectRecordsAfterCompletion()
+                ->action(fn (Collection $records, Publisher $publisher) => static::runBulk($records, fn (Model $record) => $publisher->submitForReview($record), 'submitted for review', 'update')),
+
+            BulkAction::make('scheduleSelected')
+                ->label('Schedule selected')
+                ->icon(Heroicon::OutlinedClock)
+                ->color('info')
+                ->schema([
+                    DateTimePicker::make('publish_at')->label('Publish at')->required()->native(false)->seconds(false)->minDate(now()),
+                    DateTimePicker::make('unpublish_at')->label('Unpublish at')->native(false)->seconds(false)->after('publish_at'),
+                ])
+                ->deselectRecordsAfterCompletion()
+                ->action(fn (Collection $records, array $data, Publisher $publisher) => static::runBulk(
+                    $records,
+                    fn (Model $record) => $publisher->schedule($record, Carbon::parse($data['publish_at']), filled($data['unpublish_at'] ?? null) ? Carbon::parse($data['unpublish_at']) : null),
+                    'scheduled',
+                )),
+
+            BulkAction::make('assignSelected')
+                ->label('Assign owner / reviewer')
+                ->icon(Heroicon::OutlinedUserPlus)
+                ->color('gray')
+                ->schema([
+                    Select::make('owner_id')->label('Owner')->options(fn () => User::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id'))->searchable()->native(false),
+                    Select::make('reviewer_id')->label('Reviewer')->options(fn () => User::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id'))->searchable()->native(false),
+                ])
+                ->deselectRecordsAfterCompletion()
+                ->action(fn (Collection $records, array $data, Publisher $publisher) => static::runBulk(
+                    $records,
+                    fn (Model $record) => $publisher->assign($record, $data['owner_id'] ? (int) $data['owner_id'] : null, $data['reviewer_id'] ? (int) $data['reviewer_id'] : null, keepUnset: true),
+                    'assigned',
+                    'review',
+                )),
+
             BulkAction::make('publishSelected')
                 ->label('Publish selected')
                 ->icon(Heroicon::OutlinedCheckCircle)
@@ -114,35 +165,41 @@ class PublishActions
             Notification::make()->title($success)->success()->send();
         } catch (ValidationException $exception) {
             Notification::make()
-                ->title('Cannot publish yet')
+                ->title('Cannot complete this action')
                 ->body(implode(' ', collect($exception->errors())->flatten()->all()))
                 ->danger()
                 ->persistent()
                 ->send();
+        } catch (AuthorizationException $exception) {
+            Notification::make()->title('Not allowed')->body($exception->getMessage())->danger()->send();
         }
     }
 
     /**
      * Applies the transition only to records the user may publish; reports skipped ones.
      */
-    protected static function runBulk(Collection $records, \Closure $callback, string $verb): void
+    protected static function runBulk(Collection $records, \Closure $callback, string $verb, string $ability = 'publish'): void
     {
         $done = 0;
         $skipped = 0;
         $failed = [];
 
-        foreach ($records as $record) {
-            if (! Gate::allows('publish', $record)) {
-                $skipped++;
+        foreach ($records->chunk(100) as $chunk) {
+            foreach ($chunk as $record) {
+                if (! Gate::allows($ability, $record)) {
+                    $skipped++;
 
-                continue;
-            }
+                    continue;
+                }
 
-            try {
-                $callback($record);
-                $done++;
-            } catch (ValidationException $exception) {
-                $failed[] = ($record->title ?? $record->name ?? $record->getKey()).': '.collect($exception->errors())->flatten()->first();
+                try {
+                    $callback($record);
+                    $done++;
+                } catch (ValidationException $exception) {
+                    $failed[] = ($record->title ?? $record->name ?? $record->getKey()).': '.collect($exception->errors())->flatten()->first();
+                } catch (AuthorizationException) {
+                    $skipped++;
+                }
             }
         }
 

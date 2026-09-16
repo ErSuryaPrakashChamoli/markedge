@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Products\Pages;
 
 use App\Filament\Resources\Products\ProductResource;
+use App\Filament\Support\ContentHealthAction;
+use App\Filament\Support\EditorialDeskAction;
 use App\Filament\Support\PreviewAction;
 use App\Filament\Support\SeoDiagnosticsAction;
 use Filament\Actions\ActionGroup;
@@ -17,6 +19,6 @@ class EditProduct extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [PreviewAction::make(), SeoDiagnosticsAction::make(), ActionGroup::make([DeleteAction::make(), ForceDeleteAction::make(), RestoreAction::make()])];
+        return [PreviewAction::make(), SeoDiagnosticsAction::make(), EditorialDeskAction::make(), ContentHealthAction::make(), ActionGroup::make([DeleteAction::make(), ForceDeleteAction::make(), RestoreAction::make()])];
     }
 }

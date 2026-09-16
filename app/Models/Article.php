@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BumpsContentVersion;
+use App\Models\Concerns\HasEditorialWorkflow;
 use App\Models\Concerns\HasFaqs;
 use App\Models\Concerns\HasSeo;
 use App\Models\Concerns\HasSlug;
@@ -29,7 +30,7 @@ use Spatie\MediaLibrary\HasMedia;
 class Article extends Model implements HasMedia
 {
     /** @use HasFactory<ArticleFactory> */
-    use BumpsContentVersion, HasFactory, HasFaqs, HasSeo, HasSlug, HasStandardImageConversions,
+    use BumpsContentVersion, HasEditorialWorkflow, HasFactory, HasFaqs, HasSeo, HasSlug, HasStandardImageConversions,
         Publishable, RecordsActivity, SoftDeletes, TracksAuthorship;
 
     public const int WORDS_PER_MINUTE = 200;

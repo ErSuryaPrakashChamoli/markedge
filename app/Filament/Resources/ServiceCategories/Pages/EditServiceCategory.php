@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\ServiceCategories\Pages;
 
 use App\Filament\Resources\ServiceCategories\ServiceCategoryResource;
+use App\Filament\Support\ContentHealthAction;
+use App\Filament\Support\EditorialDeskAction;
 use App\Filament\Support\PreviewAction;
 use App\Filament\Support\PublishActions;
 use App\Filament\Support\SeoDiagnosticsAction;
@@ -18,6 +20,6 @@ class EditServiceCategory extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [PreviewAction::make(), SeoDiagnosticsAction::make(), ...PublishActions::record(), ActionGroup::make([DeleteAction::make(), ForceDeleteAction::make(), RestoreAction::make()])];
+        return [PreviewAction::make(), SeoDiagnosticsAction::make(), EditorialDeskAction::make(), ContentHealthAction::make(), ...PublishActions::record(), ActionGroup::make([DeleteAction::make(), ForceDeleteAction::make(), RestoreAction::make()])];
     }
 }

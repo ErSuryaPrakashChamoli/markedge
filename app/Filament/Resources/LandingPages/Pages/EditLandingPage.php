@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\LandingPages\Pages;
 
 use App\Filament\Resources\LandingPages\LandingPageResource;
+use App\Filament\Support\ContentHealthAction;
+use App\Filament\Support\EditorialDeskAction;
 use App\Filament\Support\PreviewAction;
 use App\Filament\Support\PublishActions;
 use App\Filament\Support\SeoDiagnosticsAction;
@@ -18,6 +20,6 @@ class EditLandingPage extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [PreviewAction::make(), SeoDiagnosticsAction::make(), ...PublishActions::record(), ActionGroup::make([DeleteAction::make(), ForceDeleteAction::make(), RestoreAction::make()])];
+        return [PreviewAction::make(), SeoDiagnosticsAction::make(), EditorialDeskAction::make(), ContentHealthAction::make(), ...PublishActions::record(), ActionGroup::make([DeleteAction::make(), ForceDeleteAction::make(), RestoreAction::make()])];
     }
 }

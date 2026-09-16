@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Media;
 
+use App\Editorial\MediaUsage;
 use App\Filament\Resources\Media\Pages\EditMedia;
 use App\Filament\Resources\Media\Pages\ListMedia;
 use BackedEnum;
@@ -101,7 +102,7 @@ class MediaResource extends Resource
                 ImageColumn::make('preview')->label('')->state(fn (Media $record): ?string => str_starts_with($record->mime_type, 'image/') ? $record->getUrl(static::previewConversion($record)) : null)->square()->size(48),
                 TextColumn::make('name')->searchable()->sortable()->description(fn (Media $record): string => $record->file_name),
                 TextColumn::make('custom_properties.alt')->label('Alt text')->placeholder('Missing')->limit(40),
-                TextColumn::make('model_type')->label('Used by')->badge()->color('gray')->formatStateUsing(fn (string $state): string => ucfirst(str_replace('_', ' ', $state))),
+                TextColumn::make('model_type')->label('Used by')->state(fn (Media $record): string => MediaUsage::label($record))->badge()->color(fn (Media $record): string => $record->model === null ? 'danger' : 'gray')->wrap(),
                 TextColumn::make('collection_name')->label('Collection')->badge()->color('gray'),
                 TextColumn::make('mime_type')->label('Type')->toggleable(),
                 TextColumn::make('size')->formatStateUsing(fn (int $state): string => Number::fileSize($state))->sortable(),
@@ -111,6 +112,7 @@ class MediaResource extends Resource
                 SelectFilter::make('mime_type')->label('Type')->options(['image/jpeg' => 'JPEG', 'image/png' => 'PNG', 'image/webp' => 'WebP', 'application/pdf' => 'PDF']),
                 SelectFilter::make('model_type')->label('Used by')->options(fn (): array => Media::query()->distinct()->orderBy('model_type')->pluck('model_type', 'model_type')->map(fn (string $type): string => ucfirst(str_replace('_', ' ', $type)))->all()),
                 SelectFilter::make('collection_name')->label('Collection')->options(fn (): array => Media::query()->distinct()->orderBy('collection_name')->pluck('collection_name', 'collection_name')->all()),
+                SelectFilter::make('usage')->label('Usage')->options(['orphaned' => 'Unused (owner missing)'])->query(fn (Builder $query, array $data): Builder => $query->when($data['value'] === 'orphaned', fn (Builder $q) => MediaUsage::orphaned($q))),
                 SelectFilter::make('missing_alt')->label('Alt text')->options(['missing' => 'Missing alt text'])->query(fn (Builder $query, array $data): Builder => $query->when($data['value'] === 'missing', fn (Builder $q) => $q->where('mime_type', 'like', 'image/%')->where(fn (Builder $inner) => $inner->whereNull('custom_properties->alt')->orWhere('custom_properties->alt', '')))),
             ])
             ->recordActions([EditAction::make(), DeleteAction::make()])

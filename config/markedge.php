@@ -125,6 +125,16 @@ return [
         'event_retention_days' => (int) env('MARKEDGE_EVENT_RETENTION_DAYS', 400),
     ],
 
+    /*
+    | Editorial operations (Phase 9): reminders before scheduled unpublishing, revision retention
+    | and the window in which consecutive saves by the same user fold into one revision.
+    */
+    'editorial' => [
+        'expiry_reminder_days' => 3,
+        'revisions_per_record' => 100,
+        'revision_coalesce_seconds' => 20,
+    ],
+
     'permissions' => [
         'subjects' => [
             'pages', 'menus', 'settings', 'announcements', 'service_categories',
@@ -136,7 +146,7 @@ return [
         ],
         'actions' => [
             'view_any', 'view', 'create', 'update', 'delete', 'restore',
-            'force_delete', 'publish', 'preview', 'reorder', 'export',
+            'force_delete', 'publish', 'preview', 'reorder', 'export', 'review',
         ],
     ],
 
@@ -145,12 +155,12 @@ return [
         'Website Manager' => [
             'pages.*', 'menus.*', 'announcements.*', 'media.*', 'faqs.*',
             'settings.view_any', 'settings.update',
-            'service_categories.view_any', 'service_categories.view', 'service_categories.update', 'service_categories.reorder', 'service_categories.preview',
-            'services.view_any', 'services.view', 'services.update', 'services.reorder', 'services.preview',
+            'service_categories.view_any', 'service_categories.view', 'service_categories.update', 'service_categories.reorder', 'service_categories.preview', 'service_categories.review',
+            'services.view_any', 'services.view', 'services.update', 'services.reorder', 'services.preview', 'services.review',
             'seo.view_any', 'seo.update',
         ],
         'Content Manager' => [
-            'articles.view_any', 'articles.view', 'articles.create', 'articles.update', 'articles.delete', 'articles.restore', 'articles.preview',
+            'articles.view_any', 'articles.view', 'articles.create', 'articles.update', 'articles.delete', 'articles.restore', 'articles.preview', 'articles.review',
             'article_categories.*', 'tags.*', 'authors.*', 'faqs.*', 'media.*',
         ],
         'Editor' => [

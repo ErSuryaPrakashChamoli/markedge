@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\BumpsContentVersion;
 use App\Models\Concerns\HasBlocks;
+use App\Models\Concerns\HasEditorialWorkflow;
 use App\Models\Concerns\HasFaqs;
 use App\Models\Concerns\HasSeo;
 use App\Models\Concerns\HasSlug;
@@ -31,7 +32,7 @@ use Spatie\MediaLibrary\HasMedia;
 class ServiceCategory extends Model implements HasMedia
 {
     /** @use HasFactory<ServiceCategoryFactory> */
-    use BumpsContentVersion, HasBlocks, HasFactory, HasFaqs, HasSeo, HasSlug, HasSortOrder,
+    use BumpsContentVersion, HasBlocks, HasEditorialWorkflow, HasFactory, HasFaqs, HasSeo, HasSlug, HasSortOrder,
         HasStandardImageConversions, Publishable, RecordsActivity, SoftDeletes, TracksAuthorship;
 
     /** @var array<int, string> */

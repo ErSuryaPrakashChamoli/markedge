@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Widgets\ContentOverview;
 use App\Filament\Widgets\LeadsOverview;
+use App\Filament\Widgets\MyEditorialQueue;
 use App\Filament\Widgets\PublishingQueue;
 use App\Filament\Widgets\RecentActivity;
 use App\Filament\Widgets\RecentLeads;
@@ -40,7 +41,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->strictAuthorization()
             ->sidebarCollapsibleOnDesktop()
+            ->databaseNotifications()
             ->navigationGroups([
+                NavigationGroup::make('Editorial')->icon(Heroicon::OutlinedClipboardDocumentCheck),
                 NavigationGroup::make('Website')->icon(Heroicon::OutlinedGlobeAlt),
                 NavigationGroup::make('Services')->icon(Heroicon::OutlinedWrenchScrewdriver),
                 NavigationGroup::make('Solutions')->icon(Heroicon::OutlinedLightBulb),
@@ -61,6 +64,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->widgets([
                 ContentOverview::class,
+                MyEditorialQueue::class,
                 PublishingQueue::class,
                 LeadsOverview::class,
                 RecentLeads::class,

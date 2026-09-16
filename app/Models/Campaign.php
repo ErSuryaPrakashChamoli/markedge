@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
     'name', 'slug', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'channel',
-    'status', 'starts_at', 'ends_at', 'landing_page_id', 'form_id', 'cta_id', 'notes', 'tracking',
+    'status', 'starts_at', 'ends_at', 'landing_page_id', 'form_id', 'cta_id', 'personalize_cta', 'notes', 'tracking',
 ])]
 class Campaign extends Model
 {
@@ -36,6 +36,7 @@ class Campaign extends Model
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
             'tracking' => 'array',
+            'personalize_cta' => 'boolean',
         ];
     }
 

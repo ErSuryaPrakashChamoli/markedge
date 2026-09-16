@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Editorial\RevisionManager;
 use App\Models\Announcement;
 use App\Models\Article;
 use App\Models\ArticleCategory;
@@ -9,9 +10,11 @@ use App\Models\Author;
 use App\Models\Campaign;
 use App\Models\CaseStudy;
 use App\Models\Client;
+use App\Models\ContentRevision;
 use App\Models\ConversionEvent;
 use App\Models\Cta;
 use App\Models\CtaClick;
+use App\Models\EditorialComment;
 use App\Models\Faq;
 use App\Models\Form;
 use App\Models\FormField;
@@ -44,6 +47,7 @@ use App\Policies\RolePolicy;
 use App\Search\Contracts\SearchEngine;
 use App\Search\Engines\DatabaseSearchEngine;
 use App\Search\SearchTypes;
+use App\Services\Cms\CampaignTargeting;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -63,6 +67,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(SearchEngine::class, DatabaseSearchEngine::class);
+        $this->app->singleton(RevisionManager::class);
+        $this->app->singleton(CampaignTargeting::class);
     }
 
     /**
@@ -111,6 +117,8 @@ class AppServiceProvider extends ServiceProvider
             'cta' => Cta::class,
             'cta_click' => CtaClick::class,
             'conversion_event' => ConversionEvent::class,
+            'content_revision' => ContentRevision::class,
+            'editorial_comment' => EditorialComment::class,
             'faq' => Faq::class,
             'form' => Form::class,
             'form_field' => FormField::class,

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PageTemplate;
 use App\Models\Concerns\BumpsContentVersion;
 use App\Models\Concerns\HasBlocks;
+use App\Models\Concerns\HasEditorialWorkflow;
 use App\Models\Concerns\HasFaqs;
 use App\Models\Concerns\HasSeo;
 use App\Models\Concerns\HasSlug;
@@ -29,7 +30,7 @@ use Spatie\MediaLibrary\HasMedia;
 class Page extends Model implements HasMedia
 {
     /** @use HasFactory<PageFactory> */
-    use BumpsContentVersion, HasBlocks, HasFactory, HasFaqs, HasSeo, HasSlug, HasStandardImageConversions,
+    use BumpsContentVersion, HasBlocks, HasEditorialWorkflow, HasFactory, HasFaqs, HasSeo, HasSlug, HasStandardImageConversions,
         Publishable, RecordsActivity, SoftDeletes, TracksAuthorship;
 
     public const string HOME_SLUG = 'home';

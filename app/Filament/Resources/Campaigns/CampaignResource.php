@@ -9,6 +9,7 @@ use App\Filament\Resources\Campaigns\Pages\EditCampaign;
 use App\Filament\Resources\Campaigns\Pages\ListCampaigns;
 use App\Filament\Support\SlugField;
 use App\Models\Campaign;
+use App\Services\Cms\CampaignTargeting;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -21,6 +22,7 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -75,7 +77,10 @@ class CampaignResource extends Resource
             Section::make('Defaults')->schema([
                 Select::make('landing_page_id')->label('Default landing page')->relationship('defaultLandingPage', 'title')->searchable()->preload()->native(false)->live(),
                 Select::make('form_id')->label('Default form')->relationship('form', 'name')->searchable()->preload()->native(false),
-                Select::make('cta_id')->label('Default CTA')->relationship('cta', 'name')->searchable()->preload()->native(false),
+                Select::make('cta_id')->label('Default CTA')->relationship('cta', 'name')->searchable()->preload()->native(false)->live(),
+                Toggle::make('personalize_cta')->label('Show this CTA to campaign visitors')->inline(false)->live()
+                    ->helperText('Deterministic rule: while the campaign is running, visitors whose last touch is this utm_campaign see the campaign CTA instead of the page default. Search engines, previews and everyone else see the default.'),
+                Placeholder::make('targeting_rule')->label('Targeting rule')->content(fn (?Campaign $record): string => $record ? CampaignTargeting::explain($record) : 'Save the campaign to see the rule.')->columnSpanFull(),
                 KeyValue::make('tracking')->label('Conversion labels')->keyLabel('Platform')->valueLabel('Label / ID')->columnSpanFull(),
                 Textarea::make('notes')->rows(3)->columnSpanFull(),
             ])->columns(3),
