@@ -17,6 +17,8 @@ final readonly class Indexability
         public bool $schemaEligible = false,
         public bool $preview = false,
         public string $reason = '',
+        /** Published, not noindex, not canonicalized elsewhere: may appear in on-site search and related content. Independent of the search-engine environment flag so discovery works on staging. */
+        public bool $discoverable = false,
     ) {}
 
     public function robots(): string

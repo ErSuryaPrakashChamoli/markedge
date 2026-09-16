@@ -35,9 +35,14 @@ use App\Models\Tag;
 use App\Models\Technology;
 use App\Models\Testimonial;
 use App\Models\User;
+use App\Observers\SearchableObserver;
+use App\Observers\SeoMetaObserver;
 use App\Policies\ActivityPolicy;
 use App\Policies\MediaPolicy;
 use App\Policies\RolePolicy;
+use App\Search\Contracts\SearchEngine;
+use App\Search\Engines\DatabaseSearchEngine;
+use App\Search\SearchTypes;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -56,7 +61,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(SearchEngine::class, DatabaseSearchEngine::class);
     }
 
     /**
@@ -69,11 +74,22 @@ class AppServiceProvider extends ServiceProvider
         $this->registerMorphMap();
         $this->registerAuthorization();
         $this->registerRateLimiters();
+        $this->registerSearchObservers();
+    }
+
+    protected function registerSearchObservers(): void
+    {
+        foreach (SearchTypes::TYPES as $definition) {
+            $definition['model']::observe(SearchableObserver::class);
+        }
+
+        SeoMeta::observe(SeoMetaObserver::class);
     }
 
     protected function registerRateLimiters(): void
     {
         RateLimiter::for('preview', fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
+        RateLimiter::for('search', fn (Request $request): Limit => Limit::perMinute(30)->by($request->ip()));
     }
 
     /**

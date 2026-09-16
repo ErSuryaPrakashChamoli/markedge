@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 /**
  * Denormalised search index row. Maintained by the search engine implementation (architecture §33).
  */
-#[Fillable(['searchable_type', 'searchable_id', 'kind', 'title', 'summary', 'body_text', 'url', 'published_at'])]
+#[Fillable(['searchable_type', 'searchable_id', 'kind', 'category_slug', 'category_label', 'title', 'summary', 'body_text', 'keywords', 'weight', 'url', 'published_at'])]
 class SearchEntry extends Model
 {
     /** @use HasFactory<SearchEntryFactory> */
@@ -21,6 +21,7 @@ class SearchEntry extends Model
     {
         return [
             'published_at' => 'datetime',
+            'weight' => 'integer',
         ];
     }
 

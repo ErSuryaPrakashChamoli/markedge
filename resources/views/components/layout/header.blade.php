@@ -11,6 +11,9 @@
         @endunless
 
         <div class="flex items-center gap-3">
+            <a href="{{ route('search') }}" class="inline-flex size-10 items-center justify-center rounded-control text-fg-secondary hover:text-fg" aria-label="Search the site">
+                <x-ui.icon name="heroicon-o-magnifying-glass" class="size-5" />
+            </a>
             @if ($cta && $ctaHref)
                 <x-ui.button :href="$ctaHref" size="sm" class="hidden sm:inline-flex">{{ $cta->primary_label }}</x-ui.button>
             @endif

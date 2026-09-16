@@ -94,7 +94,7 @@ class PageRenderer
         return match (true) {
             $entity instanceof Service => [
                 'services' => $this->related->services($entity),
-                'products' => $entity->products()->publiclyVisible()->ordered()->with('media')->limit(3)->get(),
+                'products' => $this->related->products($entity),
                 'solutions' => $this->related->solutions($entity),
                 'industries' => $this->related->industries($entity),
                 'articles' => $this->related->articles($entity),

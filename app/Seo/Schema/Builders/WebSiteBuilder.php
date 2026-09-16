@@ -8,7 +8,7 @@ use App\Seo\Schema\SchemaContext;
 use App\Services\Cms\Settings;
 
 /**
- * WebSite without a SearchAction: public search does not exist yet, so none is claimed.
+ * WebSite with a SearchAction pointing at the real /search?q= endpoint.
  */
 class WebSiteBuilder implements SchemaBuilder
 {
@@ -30,6 +30,11 @@ class WebSiteBuilder implements SchemaBuilder
             'url' => $context->siteUrl,
             'publisher' => ['@id' => $context->organizationId()],
             'inLanguage' => str_replace('_', '-', app()->getLocale()),
+            'potentialAction' => [
+                '@type' => 'SearchAction',
+                'target' => ['@type' => 'EntryPoint', 'urlTemplate' => $context->siteUrl.'/search?q={search_term_string}'],
+                'query-input' => 'required name=search_term_string',
+            ],
         ])];
     }
 }

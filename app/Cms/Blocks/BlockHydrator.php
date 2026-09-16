@@ -232,14 +232,7 @@ class BlockHydrator
             return null;
         }
 
-        $limit = (int) ($data['limit'] ?? 6);
-        $items = new Collection;
-
-        foreach ([$this->related->articles($host, $limit), $this->related->caseStudies($host, $limit), $this->related->solutions($host, $limit)] as $collection) {
-            $items = $items->concat($collection);
-        }
-
-        $items = $items->reject(fn (Model $item): bool => $item->is($host))->take($limit)->values();
+        $items = $this->related->discover($host, (int) ($data['limit'] ?? 6));
 
         return $items->isEmpty() ? null : $data + ['items' => $items];
     }

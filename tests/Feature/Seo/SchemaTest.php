@@ -37,7 +37,7 @@ it('emits one coherent graph with organization, website, web page and breadcrumb
         ->and($graph['Organization']['email'])->toBe('hello@markedge.example')
         ->and($graph['Organization']['sameAs'])->toBe(['https://www.linkedin.com/company/markedge'])
         ->and($graph['Organization'])->not->toHaveKeys(['address', 'telephone', 'description'])
-        ->and($graph['WebSite'])->not->toHaveKey('potentialAction')
+        ->and($graph['WebSite']['potentialAction']['target']['urlTemplate'])->toBe('http://localhost/search?q={search_term_string}')
         ->and($graph['WebPage']['url'])->toBe('http://localhost/services/web-development')
         ->and($graph['WebPage']['breadcrumb']['@id'])->toBe('http://localhost/services/web-development#breadcrumb')
         ->and($graph['Service']['provider']['@id'])->toBe('http://localhost/#organization')

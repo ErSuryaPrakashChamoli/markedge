@@ -62,6 +62,7 @@ class IndexabilityResolver
                 $canonicalized => 'canonical points elsewhere',
                 default => 'indexable',
             },
+            discoverable: $index && ! $canonicalized,
         );
     }
 

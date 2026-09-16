@@ -10,6 +10,7 @@ use App\Http\Controllers\Site\InsightsController;
 use App\Http\Controllers\Site\LandingPageController;
 use App\Http\Controllers\Site\PageController;
 use App\Http\Controllers\Site\ProductController;
+use App\Http\Controllers\Site\SearchController;
 use App\Http\Controllers\Site\ServiceController;
 use App\Http\Controllers\Site\SolutionController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,7 @@ $slug = '[a-z0-9]+(?:-[a-z0-9]+)*';
 
 Route::get('/', HomeController::class)->name('home');
 
+Route::get('/search', SearchController::class)->middleware('throttle:search')->name('search');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
 

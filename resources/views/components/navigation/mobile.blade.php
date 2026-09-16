@@ -10,6 +10,13 @@
     aria-label="Site menu"
     x-data="accordion()"
 >
+    <form action="{{ route('search') }}" method="get" role="search" class="gutter-px border-b border-line py-4">
+        <label for="mobile-search" class="sr-only">Search the site</label>
+        <div class="flex gap-2">
+            <x-forms.input id="mobile-search" type="search" name="q" placeholder="Search services, products, insights…" autocomplete="off" />
+            <x-ui.button type="submit" variant="secondary" aria-label="Search"><x-ui.icon name="heroicon-o-magnifying-glass" class="size-5" /></x-ui.button>
+        </div>
+    </form>
     <nav class="gutter-px py-4" aria-label="Primary mobile">
         <ul class="divide-y divide-line">
             @foreach ($items as $index => $item)
