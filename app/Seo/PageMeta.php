@@ -8,7 +8,7 @@ namespace App\Seo;
 final readonly class PageMeta
 {
     /**
-     * @param  array<int, array<string, mixed>>  $schema  JSON-LD graph nodes (filled by the Phase 6 schema engine)
+     * @param  array<int, array<string, mixed>>  $schema  JSON-LD graph nodes
      */
     public function __construct(
         public string $title,
@@ -25,6 +25,7 @@ final readonly class PageMeta
         public ?string $publishedTime = null,
         public ?string $modifiedTime = null,
         public array $schema = [],
+        public ?Indexability $indexability = null,
     ) {}
 
     public function isIndexable(): bool
@@ -43,10 +44,11 @@ final readonly class PageMeta
     public function forPreview(): self
     {
         return $this->with([
-            'title' => 'Preview: '.$this->title,
+            'title' => str_starts_with($this->title, 'Preview: ') ? $this->title : 'Preview: '.$this->title,
             'canonical' => null,
             'robots' => 'noindex, nofollow, noarchive',
             'schema' => [],
+            'indexability' => Indexability::preview(),
         ]);
     }
 }

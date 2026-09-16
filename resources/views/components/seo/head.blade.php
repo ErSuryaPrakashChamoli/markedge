@@ -41,7 +41,7 @@
     <meta name="twitter:image" content="{{ $meta->twitterImage ?? $meta->ogImage }}">
 @endif
 @if ($meta->schema !== [])
-    <script type="application/ld+json">{!! str_replace('</', '<\/', json_encode(['@context' => 'https://schema.org', '@graph' => $meta->schema], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) !!}</script>
+    <script type="application/ld+json">{!! \App\Seo\Schema\SchemaGraphBuilder::encode($meta->schema) !!}</script>
 @endif
 <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
 <meta name="theme-color" content="#16191d">

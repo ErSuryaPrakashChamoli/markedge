@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Redirects;
 use App\Enums\RedirectStatus;
 use App\Filament\Resources\Redirects\Pages\ManageRedirects;
 use App\Models\Redirect;
+use App\Rules\SafeRedirectDestination;
 use BackedEnum;
 use Closure;
 use Filament\Actions\BulkActionGroup;
@@ -53,9 +54,10 @@ class RedirectResource extends Resource
                 ->label('Destination')
                 ->required()
                 ->maxLength(500)
-                ->placeholder('/new-page or https://example.com/page')
+                ->placeholder('/new-page')
+                ->helperText('A site path. External https URLs are accepted only for hosts on the configured allow-list.')
                 ->rules([
-                    'regex:#^(/[^\s]*|https?://[^\s]+)$#',
+                    new SafeRedirectDestination,
                     fn (Get $get, ?Model $record): Closure => function (string $attribute, mixed $value, Closure $fail) use ($get, $record): void {
                         $from = Redirect::normalisePath((string) $get('from_path'));
 

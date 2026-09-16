@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
-use App\Seo\MetaResolver;
+use App\Seo\SeoEngine;
 use App\Services\Cms\ContentResolver;
 use App\Services\Cms\CtaResolver;
 use App\Services\Cms\PageRenderer;
@@ -12,10 +12,10 @@ use Illuminate\Contracts\View\View;
 
 class InsightsController extends Controller
 {
-    public function index(ContentResolver $content, MetaResolver $meta, CtaResolver $ctas): View
+    public function index(ContentResolver $content, SeoEngine $meta, CtaResolver $ctas): View
     {
         return $this->archive($content, $ctas, [
-            'meta' => $meta->forListing('Insights', 'Articles on technology, infrastructure and digital growth from Markedge Technologies.', '/insights'),
+            'meta' => $meta->forListing('Insights', 'Articles on technology, infrastructure and digital growth from Markedge Technologies.', '/insights', breadcrumbs: [['label' => 'Insights', 'url' => null]]),
             'articles' => $content->articles(),
             'featured' => request()->integer('page', 1) === 1 ? $content->featuredArticles() : collect(),
             'heading' => 'Insights',
@@ -23,12 +23,12 @@ class InsightsController extends Controller
         ]);
     }
 
-    public function category(ContentResolver $content, MetaResolver $meta, CtaResolver $ctas, PublicUrl $urls, string $slug): View
+    public function category(ContentResolver $content, SeoEngine $meta, CtaResolver $ctas, PublicUrl $urls, string $slug): View
     {
         $category = $content->articleCategory($slug) ?? abort(404);
 
         return $this->archive($content, $ctas, [
-            'meta' => $meta->forEntity($category)->with(['title' => $meta->withSuffix($category->name.' articles')]),
+            'meta' => $meta->forEntity($category, [['label' => 'Insights', 'url' => '/insights'], ['label' => $category->name, 'url' => null]])->with(['title' => $meta->withSuffix($category->name.' articles')]),
             'articles' => $content->articles(category: $category),
             'heading' => $category->name,
             'intro' => $category->description,
@@ -37,7 +37,7 @@ class InsightsController extends Controller
         ]);
     }
 
-    public function tag(ContentResolver $content, MetaResolver $meta, CtaResolver $ctas, string $slug): View
+    public function tag(ContentResolver $content, SeoEngine $meta, CtaResolver $ctas, string $slug): View
     {
         $tag = $content->tag($slug) ?? abort(404);
 
@@ -50,12 +50,12 @@ class InsightsController extends Controller
         ]);
     }
 
-    public function author(ContentResolver $content, MetaResolver $meta, CtaResolver $ctas, string $slug): View
+    public function author(ContentResolver $content, SeoEngine $meta, CtaResolver $ctas, string $slug): View
     {
         $author = $content->author($slug) ?? abort(404);
 
         return $this->archive($content, $ctas, [
-            'meta' => $meta->forEntity($author)->with(['robots' => filled(strip_tags((string) $author->bio)) && config('markedge.seo.indexable') ? 'index, follow' : 'noindex, follow']),
+            'meta' => $meta->forEntity($author, [['label' => 'Insights', 'url' => '/insights'], ['label' => $author->name, 'url' => null]]),
             'articles' => $content->articles(author: $author),
             'heading' => $author->name,
             'intro' => $author->role_title,

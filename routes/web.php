@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\PreviewController;
+use App\Http\Controllers\Seo\RobotsController;
+use App\Http\Controllers\Seo\SitemapController;
 use App\Http\Controllers\Site\CaseStudyController;
 use App\Http\Controllers\Site\HomeController;
 use App\Http\Controllers\Site\IndustryController;
@@ -25,6 +27,9 @@ use Illuminate\Support\Facades\Route;
 $slug = '[a-z0-9]+(?:-[a-z0-9]+)*';
 
 Route::get('/', HomeController::class)->name('home');
+
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('/robots.txt', RobotsController::class)->name('robots');
 
 Route::get('/styleguide', function () {
     abort_unless(config('markedge.styleguide_enabled'), 404);

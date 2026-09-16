@@ -5,6 +5,7 @@ namespace App\Services\Cms;
 use App\Cms\Blocks\BlockRenderer;
 use App\Models\Article;
 use App\Models\CaseStudy;
+use App\Models\Faq;
 use App\Models\Industry;
 use App\Models\LandingPage;
 use App\Models\Page;
@@ -12,10 +13,11 @@ use App\Models\Product;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Solution;
-use App\Seo\MetaResolver;
+use App\Seo\SeoEngine;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection as SupportCollection;
 
 /**
  * Turns a resolved entity into its public view. Public controllers and the signed preview
@@ -24,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
 class PageRenderer
 {
     public function __construct(
-        private readonly MetaResolver $meta,
+        private readonly SeoEngine $seo,
         private readonly Breadcrumbs $breadcrumbs,
         private readonly CtaResolver $ctas,
         private readonly RelatedContentResolver $related,
@@ -46,17 +48,42 @@ class PageRenderer
             default => throw new \InvalidArgumentException('No public template for '.$entity::class),
         };
 
-        $meta = $this->meta->forEntity($entity);
+        $breadcrumbs = $this->breadcrumbs->for($entity);
+        $blocks = method_exists($entity, 'enabledBlocks') ? $this->blocks->prepare($entity->enabledBlocks(), $entity, $preview) : [];
 
         return view($view, [
             'entity' => $entity,
-            'meta' => $preview ? $meta->forPreview() : $meta,
-            'breadcrumbs' => $this->breadcrumbs->for($entity),
+            'meta' => $this->seo->forEntity($entity, $breadcrumbs, $this->faqsOnPage($entity, $blocks, $view), $preview),
+            'breadcrumbs' => $breadcrumbs,
             'cta' => $this->ctas->forEntity($entity),
-            'blocks' => method_exists($entity, 'enabledBlocks') ? $this->blocks->prepare($entity->enabledBlocks(), $entity, $preview) : [],
+            'blocks' => $blocks,
             'related' => $this->relatedFor($entity),
             'preview' => $preview,
         ]);
+    }
+
+    /**
+     * FAQs the template will actually render: the entity's own visible FAQs (every skeleton
+     * except the blocks-only home page) plus any faq blocks. Drives FAQPage schema.
+     *
+     * @param  array<int, array{key: string, data: array<string, mixed>}>  $blocks
+     * @return SupportCollection<int, Faq>
+     */
+    protected function faqsOnPage(Model $entity, array $blocks, string $view): SupportCollection
+    {
+        $faqs = new SupportCollection;
+
+        if ($view !== 'pages.home' && $entity->relationLoaded('faqs')) {
+            $faqs = $faqs->concat($entity->faqs);
+        }
+
+        foreach ($blocks as $block) {
+            if ($block['key'] === 'faq' && isset($block['data']['faqs'])) {
+                $faqs = $faqs->concat($block['data']['faqs']);
+            }
+        }
+
+        return $faqs->unique('id')->values();
     }
 
     /**

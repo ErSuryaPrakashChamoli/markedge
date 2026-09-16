@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
-use App\Seo\MetaResolver;
+use App\Seo\SeoEngine;
 use App\Services\Cms\ContentResolver;
 use App\Services\Cms\CtaResolver;
 use App\Services\Cms\PageRenderer;
@@ -11,11 +11,11 @@ use Illuminate\Contracts\View\View;
 
 class ServiceController extends Controller
 {
-    public function index(ContentResolver $content, MetaResolver $meta, CtaResolver $ctas): View
+    public function index(ContentResolver $content, SeoEngine $meta, CtaResolver $ctas): View
     {
         return view('pages.services.index', [
             'categories' => $content->serviceCategories(),
-            'meta' => $meta->forListing('Services', 'Software development, IT infrastructure and digital growth services from Markedge Technologies.', '/services'),
+            'meta' => $meta->forListing('Services', 'Software development, IT infrastructure and digital growth services from Markedge Technologies.', '/services', breadcrumbs: [['label' => 'Services', 'url' => null]]),
             'cta' => $ctas->fromSetting('cta.default_service') ?? $ctas->fromSetting('cta.default'),
         ]);
     }

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Pages\Pages;
 use App\Filament\Resources\Pages\PageResource;
 use App\Filament\Support\PreviewAction;
 use App\Filament\Support\PublishActions;
+use App\Filament\Support\SeoDiagnosticsAction;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -19,6 +20,7 @@ class EditPage extends EditRecord
     {
         return [
             PreviewAction::make(),
+            SeoDiagnosticsAction::make(),
             ...PublishActions::record(),
             ActionGroup::make([DeleteAction::make(), ForceDeleteAction::make(), RestoreAction::make()]),
         ];

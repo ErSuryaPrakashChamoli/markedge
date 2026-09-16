@@ -2,6 +2,7 @@
 
 namespace App\Models\Concerns;
 
+use App\Services\Cms\SlugRedirects;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -25,6 +26,12 @@ trait HasSlug
         static::updating(function (Model $model): void {
             if ($model->isDirty('slug') && filled($model->slug)) {
                 $model->slug = $model->generateUniqueSlug($model->slug);
+            }
+        });
+
+        static::updated(function (Model $model): void {
+            if ($model->wasChanged('slug')) {
+                app(SlugRedirects::class)->afterSlugChange($model);
             }
         });
     }

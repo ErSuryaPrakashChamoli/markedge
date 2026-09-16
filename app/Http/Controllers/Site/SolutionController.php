@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
-use App\Seo\MetaResolver;
+use App\Seo\SeoEngine;
 use App\Services\Cms\ContentResolver;
 use App\Services\Cms\CtaResolver;
 use App\Services\Cms\PageRenderer;
@@ -11,12 +11,12 @@ use Illuminate\Contracts\View\View;
 
 class SolutionController extends Controller
 {
-    public function index(ContentResolver $content, MetaResolver $meta, CtaResolver $ctas): View
+    public function index(ContentResolver $content, SeoEngine $meta, CtaResolver $ctas): View
     {
         return view('pages.solutions.index', [
             'solutions' => $content->solutions(),
             'industries' => $content->industries(),
-            'meta' => $meta->forListing('Solutions', 'Business problems Markedge Technologies helps solve with software, infrastructure and digital growth.', '/solutions'),
+            'meta' => $meta->forListing('Solutions', 'Business problems Markedge Technologies helps solve with software, infrastructure and digital growth.', '/solutions', breadcrumbs: [['label' => 'Solutions', 'url' => null]]),
             'cta' => $ctas->fromSetting('cta.default'),
         ]);
     }

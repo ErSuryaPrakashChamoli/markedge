@@ -3,27 +3,27 @@
 namespace App\Seo;
 
 use App\Models\Article;
-use App\Models\Concerns\HasSeo;
 use App\Models\SeoMeta;
-use App\Services\Cms\PublicUrl;
 use App\Services\Cms\Settings;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
  * Builds PageMeta through the fallback chain: entity SEO row → entity content → global settings.
+ * Robots and canonical come from the IndexabilityResolver, never from local rules.
  * No field is ever truncated here; search engines decide how to display snippets.
  */
 class MetaResolver
 {
     public function __construct(
         private readonly Settings $settings,
-        private readonly PublicUrl $urls,
+        private readonly IndexabilityResolver $indexability,
     ) {}
 
-    public function forEntity(Model $entity): PageMeta
+    public function forEntity(Model $entity, bool $preview = false): PageMeta
     {
-        $seo = in_array(HasSeo::class, class_uses_recursive($entity), true) ? $entity->seo : null;
+        $seo = $this->indexability->seoFor($entity);
+        $decision = $this->indexability->forEntity($entity, $preview);
         $naturalTitle = $entity->title ?? $entity->name ?? null;
 
         $title = filled($seo?->title) ? $seo->title : $this->withSuffix($naturalTitle);
@@ -35,14 +35,13 @@ class MetaResolver
             $this->settings->get('seo.default_description'),
         ]);
 
-        $canonical = filled($seo?->canonical_url) ? $seo->canonical_url : $this->canonicalFor($entity);
         $ogImage = $this->ogImageFor($entity, $seo);
 
         return new PageMeta(
-            title: $title,
+            title: $preview ? 'Preview: '.$title : $title,
             description: $description,
-            canonical: $canonical,
-            robots: $this->robotsFor($seo),
+            canonical: $decision->canonical,
+            robots: $decision->robots(),
             ogTitle: $this->firstFilled([$seo?->og_title, $title]),
             ogDescription: $this->firstFilled([$seo?->og_description, $description]),
             ogImage: $ogImage,
@@ -52,27 +51,31 @@ class MetaResolver
             twitterImage: $this->mediaUrl($seo, 'twitter_image') ?? $ogImage,
             publishedTime: isset($entity->published_at) ? $entity->published_at->toIso8601String() : null,
             modifiedTime: isset($entity->updated_at) ? $entity->updated_at->toIso8601String() : null,
+            indexability: $decision,
         );
     }
 
     /**
      * Metadata for listing pages that have no entity of their own.
      */
-    public function forListing(string $title, ?string $description, string $path, bool $indexable = true): PageMeta
+    public function forListing(?string $title, ?string $description, string $path, bool $indexable = true): PageMeta
     {
         $description ??= $this->settings->get('seo.default_description');
+        $decision = $this->indexability->forListing($path, $indexable);
+        $full = $this->withSuffix($title);
 
         return new PageMeta(
-            title: $this->withSuffix($title),
+            title: $full,
             description: $description,
-            canonical: $this->absolute($path),
-            robots: $this->applyGlobalIndexability($indexable ? 'index, follow' : 'noindex, follow'),
-            ogTitle: $this->withSuffix($title),
+            canonical: $decision->canonical,
+            robots: $decision->robots(),
+            ogTitle: $full,
             ogDescription: $description,
             ogImage: $this->settings->fileUrl('seo.default_og_image'),
-            twitterTitle: $this->withSuffix($title),
+            twitterTitle: $full,
             twitterDescription: $description,
             twitterImage: $this->settings->fileUrl('seo.default_og_image'),
+            indexability: $decision,
         );
     }
 
@@ -94,36 +97,15 @@ class MetaResolver
 
     public function canonicalFor(Model $entity): ?string
     {
-        $path = $this->urls->pathFor($entity);
-
-        return $path === null ? null : $this->absolute($path);
+        return $this->indexability->forEntity($entity)->canonical;
     }
 
     public function absolute(string $path): string
     {
-        $host = rtrim((string) $this->settings->get('seo.canonical_host'), '/');
-        $path = '/'.ltrim($path, '/');
-
-        return ($host !== '' ? $host : rtrim(config('app.url'), '/')).($path === '/' ? '' : rtrim($path, '/'));
+        return $this->indexability->absolute($path);
     }
 
-    protected function robotsFor(?SeoMeta $seo): string
-    {
-        $index = $seo?->robots_index ?? true;
-        $follow = $seo?->robots_follow ?? true;
-
-        return $this->applyGlobalIndexability(($index ? 'index' : 'noindex').', '.($follow ? 'follow' : 'nofollow'));
-    }
-
-    /**
-     * Staging and local environments never index, regardless of entity settings.
-     */
-    protected function applyGlobalIndexability(string $robots): string
-    {
-        return config('markedge.seo.indexable') ? $robots : 'noindex, nofollow';
-    }
-
-    protected function ogImageFor(Model $entity, ?SeoMeta $seo): ?string
+    public function ogImageFor(Model $entity, ?SeoMeta $seo): ?string
     {
         if ($url = $this->mediaUrl($seo, 'og_image')) {
             return $url;

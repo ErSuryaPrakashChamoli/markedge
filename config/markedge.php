@@ -62,6 +62,23 @@ return [
         'indexable' => env('MARKEDGE_INDEXABLE', false),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Sitemap & redirects
+    |--------------------------------------------------------------------------
+    */
+
+    'sitemap' => [
+        'cache_minutes' => env('MARKEDGE_SITEMAP_CACHE_MINUTES', 1440),
+        'chunk' => 500,
+    ],
+
+    'redirects' => [
+        // External hosts that redirects may point to. Empty means internal paths and the site's own host only.
+        'allowed_external_hosts' => array_values(array_filter(array_map('trim', explode(',', (string) env('MARKEDGE_REDIRECT_HOSTS', ''))))),
+        'max_depth' => 5,
+    ],
+
     'preview' => [
         'ttl_hours' => env('MARKEDGE_PREVIEW_TTL_HOURS', 24),
     ],

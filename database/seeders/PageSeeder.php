@@ -99,12 +99,14 @@ class PageSeeder extends Seeder
             ]),
             $this->block('service_grid', [
                 'heading' => 'Build what your business needs.',
+                'mode' => 'category',
                 'service_category_id' => $categories['technology'] ?? null,
                 'cta_label' => 'Explore Technology Services',
                 'limit' => 6,
             ]),
             $this->block('service_grid', [
                 'heading' => 'Keep technology working.',
+                'mode' => 'category',
                 'service_category_id' => $categories['it-infrastructure'] ?? null,
                 'cta_label' => 'Explore IT Infrastructure',
                 'limit' => 6,
@@ -112,6 +114,7 @@ class PageSeeder extends Seeder
             ]),
             $this->block('service_grid', [
                 'heading' => 'Turn digital presence into business growth.',
+                'mode' => 'category',
                 'service_category_id' => $categories['digital-growth'] ?? null,
                 'cta_label' => 'Explore Digital Growth',
                 'limit' => 6,

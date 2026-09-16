@@ -42,6 +42,56 @@ class Redirect extends Model
         );
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (Redirect $redirect): void {
+            $redirect->to_url = trim((string) $redirect->to_url);
+
+            if (! static::isSafeDestination($redirect->to_url)) {
+                throw new \InvalidArgumentException('Unsafe redirect destination: '.$redirect->to_url);
+            }
+
+            if (str_starts_with($redirect->to_url, '/') && static::normalisePath($redirect->to_url) === $redirect->from_path) {
+                throw new \InvalidArgumentException('A redirect cannot point to itself.');
+            }
+        });
+    }
+
+    /**
+     * Site paths are always allowed. Absolute URLs must use http(s) and a host that is either the
+     * application's own host or on the configured allow-list. Every other scheme is rejected.
+     */
+    public static function isSafeDestination(string $destination): bool
+    {
+        $destination = trim($destination);
+
+        if ($destination === '' || preg_match('/[\x00-\x1F\x7F\s]/', $destination)) {
+            return false;
+        }
+
+        if (str_starts_with($destination, '/')) {
+            return ! str_starts_with($destination, '//') && ! str_starts_with($destination, '/\\');
+        }
+
+        $parts = parse_url($destination);
+
+        if ($parts === false || ! isset($parts['scheme'], $parts['host'])) {
+            return false;
+        }
+
+        if (! in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
+            return false;
+        }
+
+        $host = strtolower($parts['host']);
+        $allowed = array_map('strtolower', array_filter([
+            parse_url((string) config('app.url'), PHP_URL_HOST),
+            ...(array) config('markedge.redirects.allowed_external_hosts', []),
+        ]));
+
+        return in_array($host, $allowed, true);
+    }
+
     public static function normalisePath(string $path): string
     {
         $path = Str::of($path)->trim()->lower()->before('?')->before('#')->toString();

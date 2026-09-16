@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Solutions\Pages;
 use App\Filament\Resources\Solutions\SolutionResource;
 use App\Filament\Support\PreviewAction;
 use App\Filament\Support\PublishActions;
+use App\Filament\Support\SeoDiagnosticsAction;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -17,6 +18,6 @@ class EditSolution extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [PreviewAction::make(), ...PublishActions::record(), ActionGroup::make([DeleteAction::make(), ForceDeleteAction::make(), RestoreAction::make()])];
+        return [PreviewAction::make(), SeoDiagnosticsAction::make(), ...PublishActions::record(), ActionGroup::make([DeleteAction::make(), ForceDeleteAction::make(), RestoreAction::make()])];
     }
 }

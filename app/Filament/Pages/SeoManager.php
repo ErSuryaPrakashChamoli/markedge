@@ -21,6 +21,9 @@ use App\Models\SeoMeta;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Solution;
+use App\Seo\Diagnostics\SeoAudit;
+use App\Seo\Indexability;
+use App\Seo\IndexabilityResolver;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Pages\Page;
@@ -105,8 +108,11 @@ class SeoManager extends Page implements HasTable
                 TextColumn::make('record')->label('Record')->state(fn (SeoMeta $record): string => $record->seoable?->title ?? $record->seoable?->name ?? '#'.$record->seoable_id)->searchable(false),
                 TextColumn::make('title')->label('SEO title')->limit(50)->placeholder('Fallback'),
                 TextColumn::make('description')->label('Description')->limit(50)->placeholder('Fallback')->toggleable(),
-                IconColumn::make('robots_index')->label('Index')->boolean(),
-                IconColumn::make('include_in_sitemap')->label('Sitemap')->boolean(),
+                TextColumn::make('indexability')->label('Indexability')->badge()
+                    ->state(fn (SeoMeta $record): string => static::decisionFor($record)?->reason ?? 'no public record')
+                    ->color(fn (SeoMeta $record): string => (static::decisionFor($record)?->indexable ?? false) ? 'success' : 'gray'),
+                IconColumn::make('sitemap')->label('Sitemap')->boolean()->state(fn (SeoMeta $record): bool => static::decisionFor($record)?->inSitemap ?? false),
+                IconColumn::make('schema')->label('Schema')->boolean()->state(fn (SeoMeta $record): bool => static::decisionFor($record)?->schemaEligible ?? false),
                 TextColumn::make('updated_at')->label('Updated')->since(),
             ])
             ->filters([
@@ -119,10 +125,32 @@ class SeoManager extends Page implements HasTable
                     }),
             ])
             ->recordActions([
+                Action::make('diagnostics')->label('SEO checks')->icon(Heroicon::OutlinedClipboardDocumentList)
+                    ->modalHeading('SEO checks')->modalSubmitAction(false)->modalCancelActionLabel('Close')
+                    ->modalContent(fn (SeoMeta $record) => view('filament.seo-diagnostics', ['checks' => app(SeoAudit::class)->forEntity(static::ownerOf($record))]))
+                    ->visible(fn (SeoMeta $record): bool => $record->seoable !== null),
                 Action::make('edit')->label('Edit record')->icon(Heroicon::OutlinedArrowTopRightOnSquare)
                     ->url(fn (SeoMeta $record): ?string => static::editUrlFor($record))
                     ->visible(fn (SeoMeta $record): bool => static::editUrlFor($record) !== null),
             ]);
+    }
+
+    /**
+     * The owning record with this SEO row attached, so resolvers never lazy-load it.
+     */
+    public static function ownerOf(SeoMeta $record): ?Model
+    {
+        $owner = $record->seoable;
+        $owner?->setRelation('seo', $record);
+
+        return $owner;
+    }
+
+    public static function decisionFor(SeoMeta $record): ?Indexability
+    {
+        $owner = static::ownerOf($record);
+
+        return $owner ? app(IndexabilityResolver::class)->forEntity($owner) : null;
     }
 
     public static function editUrlFor(SeoMeta $record): ?string
