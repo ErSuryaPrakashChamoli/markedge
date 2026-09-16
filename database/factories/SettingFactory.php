@@ -10,15 +10,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class SettingFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'group' => 'company',
+            'key' => 'company.'.fake()->unique()->slug(2),
+            'value' => fake()->sentence(),
+            'type' => 'text',
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Product;
 use App\Models\ProductModule;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -10,15 +11,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProductModuleFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'product_id' => Product::factory(),
+            'name' => ucfirst(fake()->words(2, true)),
+            'summary' => fake()->sentence(),
+            'description' => '<p>'.fake()->paragraph().'</p>',
+            'highlights' => [fake()->sentence(3), fake()->sentence(3)],
+            'sort_order' => 0,
         ];
     }
 }

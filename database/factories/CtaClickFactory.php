@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Cta;
 use App\Models\CtaClick;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -10,15 +11,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CtaClickFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'cta_id' => Cta::factory(),
+            'action' => 'whatsapp',
+            'path' => '/services/'.fake()->slug(2),
+            'campaign_id' => null,
+            'utm' => null,
+            'created_at' => now(),
         ];
     }
 }

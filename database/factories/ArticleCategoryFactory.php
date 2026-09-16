@@ -10,15 +10,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ArticleCategoryFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'name' => ucfirst(fake()->unique()->words(2, true)),
+            'description' => fake()->sentence(),
+            'is_visible' => true,
+            'sort_order' => 0,
         ];
     }
 }

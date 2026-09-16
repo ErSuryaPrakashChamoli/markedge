@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\TechnologyCategory;
 use App\Models\Technology;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -10,15 +11,20 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TechnologyFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'name' => ucfirst(fake()->unique()->word()),
+            'category' => fake()->randomElement(TechnologyCategory::cases()),
+            'description' => fake()->sentence(),
+            'website_url' => fake()->url(),
+            'is_visible' => true,
+            'sort_order' => 0,
         ];
+    }
+
+    public function hidden(): static
+    {
+        return $this->state(['is_visible' => false]);
     }
 }

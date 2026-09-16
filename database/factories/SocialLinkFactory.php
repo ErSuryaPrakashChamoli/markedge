@@ -10,15 +10,21 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class SocialLinkFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
+        $platform = fake()->randomElement(['linkedin', 'x', 'facebook', 'instagram', 'youtube']);
+
         return [
-            //
+            'platform' => $platform,
+            'label' => ucfirst($platform),
+            'url' => "https://{$platform}.com/markedge",
+            'is_visible' => true,
+            'sort_order' => 0,
         ];
+    }
+
+    public function hidden(): static
+    {
+        return $this->state(['is_visible' => false]);
     }
 }

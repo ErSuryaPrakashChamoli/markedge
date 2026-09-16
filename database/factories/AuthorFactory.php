@@ -10,15 +10,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class AuthorFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'user_id' => null,
+            'name' => fake()->unique()->name(),
+            'role_title' => fake()->jobTitle(),
+            'bio' => fake()->paragraph(),
+            'social_links' => [],
+            'is_visible' => true,
         ];
     }
 }

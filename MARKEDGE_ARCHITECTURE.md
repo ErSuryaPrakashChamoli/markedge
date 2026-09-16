@@ -87,7 +87,7 @@ Changes to the starting structure are marked ▲ (added), ● (changed) or ✕ (
 /                                   Home (Page, template: home)
 /about                              Page
 /careers                            Page (jobs entity is a future addition)
-/contact                            Fixed route + lead form
+/contact                            Page (template: contact, general-enquiry form)
 /request-consultation               Page (template: form, form: consultation)
 /request-demo                       Page (template: form, form: product_demo, product selector)
 /request-quote                    ▲ Page (template: form)

@@ -30,6 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'is_active' => true,
         ];
     }
 
@@ -41,5 +42,10 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(['is_active' => false]);
     }
 }
