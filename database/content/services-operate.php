@@ -1,0 +1,217 @@
+<?php
+
+/**
+ * Phase 12 content library — OPERATE pillar (IT Infrastructure). No SLA levels, response times,
+ * client counts or vendor names are stated; service terms are defined per agreement.
+ */
+return [
+    'it-amc' => [
+        'tagline' => 'One agreement that keeps your IT maintained, monitored and supported.',
+        'short_description' => 'An annual maintenance contract covering preventive maintenance, monitoring, support and vendor coordination for your IT environment.',
+        'overview' => '<p>An IT Annual Maintenance Contract (AMC) gives a business without a full in-house IT team a single accountable partner for keeping systems working: workstations, servers, network, backups and the applications people rely on.</p><p>Markedge structures AMCs around defined scope rather than vague "support": an inventory of what is covered, a preventive maintenance schedule, monitoring, a support path with agreed priorities, and regular reporting so you always know the state of your environment.</p><p>Response and resolution targets are agreed in the contract for your environment; we do not publish generic promises.</p>',
+        'benefits' => [
+            ['title' => 'Known cost, known scope', 'text' => 'A fixed annual arrangement with a documented inventory of covered systems.'],
+            ['title' => 'Problems found before users do', 'text' => 'Monitoring and preventive maintenance reduce the incidents that interrupt work.'],
+            ['title' => 'One point of contact', 'text' => 'Vendor, ISP and software support coordinated by us on your behalf.'],
+        ],
+        'features' => [
+            ['title' => 'Asset inventory and coverage', 'text' => 'Every covered device, server, service and licence documented and reviewed.'],
+            ['title' => 'Preventive maintenance', 'text' => 'Scheduled updates, patching, health checks and clean-ups.'],
+            ['title' => 'Monitoring and alerts', 'text' => 'Availability, capacity, backup and security monitoring with defined escalation.'],
+            ['title' => 'Support and reporting', 'text' => 'Ticketed support with agreed priorities and periodic status reports.'],
+        ],
+        'process' => [
+            ['title' => 'Assess', 'text' => 'Inventory the environment and identify risks and gaps.'],
+            ['title' => 'Scope', 'text' => 'Agree coverage, priorities, maintenance schedule and reporting.'],
+            ['title' => 'Onboard', 'text' => 'Deploy monitoring, document access and baseline the environment.'],
+            ['title' => 'Operate', 'text' => 'Maintain, monitor, support and report through the contract term.'],
+        ],
+        'deliverables' => ['IT asset inventory and risk assessment', 'Maintenance and patching schedule', 'Monitoring and alerting setup', 'Support process with agreed priorities', 'Periodic status and recommendation reports'],
+        'faqs' => [
+            ['question' => 'What does an IT AMC cover?', 'answer' => 'Coverage is defined per contract and typically includes workstations, servers, network equipment, backups and core business applications, with preventive maintenance, monitoring and support.'],
+            ['question' => 'What are the response times?', 'answer' => 'Priorities and response targets are agreed in the contract based on your environment and working hours; we do not publish generic figures.'],
+            ['question' => 'Does the AMC include hardware replacement?', 'answer' => 'Hardware procurement and replacement are handled as separate items unless included in scope; the AMC covers diagnosis, coordination and installation.'],
+        ],
+        'seo' => ['title' => 'IT AMC Services | Annual Maintenance Contract | Markedge Technologies', 'description' => 'Annual IT maintenance contracts covering preventive maintenance, monitoring, support and vendor coordination, with scope and priorities defined per agreement.'],
+        'related' => ['solutions' => ['it-infrastructure-modernisation'], 'industries' => ['smes', 'healthcare', 'education', 'manufacturing'], 'products' => []],
+    ],
+    'networking' => [
+        'tagline' => 'Reliable, secure networks for offices, branches and remote teams.',
+        'short_description' => 'Design, implementation and maintenance of wired, wireless and site-to-site networks with segmentation, access control and monitoring.',
+        'overview' => '<p>Everything in a modern office depends on the network: calls, cloud applications, printers, cameras, payment devices and visitors. When it is slow or unreliable, every team feels it.</p><p>Markedge designs networks around capacity, security and manageability: structured cabling, switching and wireless coverage planned for the building; segmentation that keeps guests, devices and servers apart; secure connectivity between sites and remote workers; and monitoring so problems are visible before they spread.</p>',
+        'benefits' => [
+            ['title' => 'Coverage where it is needed', 'text' => 'Wireless and wired design based on floor plans and usage, not guesswork.'],
+            ['title' => 'Segmented and secure', 'text' => 'Guests, IoT devices, staff and servers separated with access control.'],
+            ['title' => 'Documented and monitored', 'text' => 'Diagrams, configurations and monitoring so changes and faults are traceable.'],
+        ],
+        'features' => [
+            ['title' => 'Network design', 'text' => 'Capacity planning, topology, addressing and segmentation.'],
+            ['title' => 'Implementation', 'text' => 'Structured cabling coordination, switching, wireless and firewall deployment.'],
+            ['title' => 'Site connectivity', 'text' => 'Secure links between offices and remote access for staff.'],
+            ['title' => 'Monitoring and maintenance', 'text' => 'Availability and performance monitoring, firmware management and configuration backup.'],
+        ],
+        'process' => [
+            ['title' => 'Survey', 'text' => 'Site survey, requirements and existing infrastructure review.'],
+            ['title' => 'Design', 'text' => 'Topology, equipment specification and security policy.'],
+            ['title' => 'Deploy', 'text' => 'Staged implementation with testing and documentation.'],
+            ['title' => 'Maintain', 'text' => 'Monitoring, updates and support through an AMC or support arrangement.'],
+        ],
+        'deliverables' => ['Site survey and network design', 'Equipment specification', 'Implemented network with configuration backups', 'Network documentation and diagrams', 'Monitoring setup'],
+        'faqs' => [
+            ['question' => 'Can you improve an existing network without replacing it?', 'answer' => 'Often yes. A survey identifies whether the issue is coverage, capacity, configuration or equipment, and the remediation is scoped accordingly.'],
+            ['question' => 'How do you secure guest and device access?', 'answer' => 'Separate network segments with access control and firewall rules keep guests and IoT devices away from business systems.'],
+            ['question' => 'Do you supply the equipment?', 'answer' => 'Equipment can be specified and procured through us or purchased directly by you to our specification.'],
+        ],
+        'seo' => ['title' => 'Business Networking Services | Markedge Technologies', 'description' => 'Wired, wireless and multi-site network design, implementation and maintenance with segmentation, access control and monitoring.'],
+        'related' => ['solutions' => ['it-infrastructure-modernisation'], 'industries' => ['manufacturing', 'education', 'retail', 'healthcare'], 'products' => []],
+    ],
+    'server-infrastructure-management' => [
+        'tagline' => 'Servers and infrastructure kept patched, backed up and performing.',
+        'short_description' => 'Installation, hardening, monitoring and lifecycle management of physical, virtual and cloud servers and the services they run.',
+        'overview' => '<p>Servers fail quietly first: disks fill, patches lag, certificates expire, backups stop. Infrastructure management is the routine work that prevents those quiet failures from becoming outages.</p><p>Markedge manages servers and core services through their lifecycle: secure installation, configuration standards, patching windows, capacity and performance monitoring, backup verification and planned replacement. Everything is documented so knowledge does not sit with one person.</p>',
+        'benefits' => [
+            ['title' => 'Fewer surprises', 'text' => 'Patching, capacity and certificate expiry are managed on a schedule, not discovered in an outage.'],
+            ['title' => 'Hardened by standard', 'text' => 'Configuration baselines, least-privilege access and logging applied consistently.'],
+            ['title' => 'Documented', 'text' => 'Runbooks, inventories and change records so any engineer can act.'],
+        ],
+        'features' => [
+            ['title' => 'Provisioning and hardening', 'text' => 'Operating system installation, configuration standards, access control and logging.'],
+            ['title' => 'Patch and update management', 'text' => 'Scheduled updates with testing and rollback plans.'],
+            ['title' => 'Monitoring and capacity', 'text' => 'Availability, performance and capacity tracking with alerts.'],
+            ['title' => 'Lifecycle planning', 'text' => 'End-of-life tracking, migration and replacement planning.'],
+        ],
+        'process' => [
+            ['title' => 'Audit', 'text' => 'Inventory servers, services, versions, access and backups.'],
+            ['title' => 'Standardise', 'text' => 'Apply configuration and security baselines; document runbooks.'],
+            ['title' => 'Operate', 'text' => 'Patch, monitor, back up and report on a defined cadence.'],
+            ['title' => 'Plan', 'text' => 'Review capacity and lifecycle; plan upgrades ahead of need.'],
+        ],
+        'deliverables' => ['Server and service inventory', 'Configuration and security baseline', 'Patch schedule and change records', 'Monitoring dashboards and alerts', 'Runbooks and lifecycle plan'],
+        'faqs' => [
+            ['question' => 'Do you manage cloud servers as well as on-premises?', 'answer' => 'Yes. Physical, virtual and cloud-hosted servers are managed with the same standards, alongside the Cloud Infrastructure service for platform-level operations.'],
+            ['question' => 'How are updates applied without disrupting work?', 'answer' => 'Updates are scheduled in agreed windows, tested where possible, and applied with rollback plans.'],
+            ['question' => 'What if we already have an IT person?', 'answer' => 'Infrastructure management can complement an internal team by covering specialist tasks, out-of-hours work or documentation and standards.'],
+        ],
+        'seo' => ['title' => 'Server & Infrastructure Management | Markedge Technologies', 'description' => 'Provisioning, hardening, patching, monitoring and lifecycle management for physical, virtual and cloud servers, with documented runbooks.'],
+        'related' => ['solutions' => ['it-infrastructure-modernisation'], 'industries' => ['enterprises', 'manufacturing', 'bfsi'], 'products' => []],
+    ],
+    'cloud' => [
+        'tagline' => 'Cloud infrastructure operated for reliability, security and cost.',
+        'short_description' => 'Day-to-day operation of cloud environments: access, monitoring, backups, cost control, security posture and incident response.',
+        'overview' => '<p>Cloud platforms remove hardware, not operations. Someone still has to manage identities and access, watch costs, keep backups working, respond to alerts and keep the security configuration correct as the environment changes.</p><p>Markedge operates cloud environments as a managed service: a security and access baseline, monitoring and alerting, backup verification, cost reporting and a defined incident process. For designing and migrating applications to the cloud, see Cloud Solutions under Build.</p>',
+        'benefits' => [
+            ['title' => 'Controlled cost', 'text' => 'Budgets, alerts and periodic right-sizing keep spend aligned with use.'],
+            ['title' => 'Secure configuration', 'text' => 'Least-privilege identities, encryption, logging and regular posture reviews.'],
+            ['title' => 'Recoverable', 'text' => 'Backups tested, recovery objectives defined and rehearsed.'],
+        ],
+        'features' => [
+            ['title' => 'Identity and access', 'text' => 'Role-based access, MFA and periodic access reviews.'],
+            ['title' => 'Monitoring and incident response', 'text' => 'Alerts, on-call process and post-incident reviews.'],
+            ['title' => 'Backup and recovery', 'text' => 'Automated backups with restore testing and documented procedures.'],
+            ['title' => 'Cost management', 'text' => 'Tagging, budgets, reports and optimisation recommendations.'],
+        ],
+        'process' => [
+            ['title' => 'Baseline', 'text' => 'Review the environment against security, backup and cost standards.'],
+            ['title' => 'Remediate', 'text' => 'Close gaps and document the target configuration.'],
+            ['title' => 'Operate', 'text' => 'Monitor, respond, back up and report on a defined cadence.'],
+            ['title' => 'Review', 'text' => 'Periodic posture, cost and capacity reviews with recommendations.'],
+        ],
+        'deliverables' => ['Cloud security and operations baseline', 'Monitoring and alerting configuration', 'Backup and recovery procedures with test records', 'Monthly cost and health report', 'Incident process and runbooks'],
+        'faqs' => [
+            ['question' => 'Do we keep ownership of our cloud accounts?', 'answer' => 'Yes. Accounts remain in your name; Markedge operates with scoped, auditable access that can be revoked at any time.'],
+            ['question' => 'Can you reduce our cloud bill?', 'answer' => 'A cost review identifies unused resources, over-sized services and missing commitments; savings depend on the environment, so we report findings rather than promise a figure.'],
+            ['question' => 'What happens when something breaks at night?', 'answer' => 'Alerting and the incident process are defined in the service agreement, including coverage hours and escalation.'],
+        ],
+        'seo' => ['title' => 'Managed Cloud Infrastructure Services | Markedge Technologies', 'description' => 'Operation of cloud environments: identity and access, monitoring, incident response, tested backups and cost control under a defined service agreement.'],
+        'related' => ['solutions' => ['it-infrastructure-modernisation'], 'industries' => ['technology', 'startups', 'enterprises'], 'products' => []],
+    ],
+    'cybersecurity' => [
+        'tagline' => 'Practical security for businesses that cannot afford an incident.',
+        'short_description' => 'Security assessment, hardening, monitoring and incident readiness proportionate to your risk, from endpoints and identities to networks and cloud.',
+        'overview' => '<p>Most security incidents in small and mid-sized organisations come from ordinary gaps: shared passwords, unpatched systems, open remote access, untested backups and staff who have never been shown what a phishing attempt looks like.</p><p>Markedge approaches cybersecurity as risk management: assess what you have and what would hurt most, fix the fundamentals first, monitor for the events that matter, and prepare so that an incident is a procedure rather than a crisis.</p><p>We describe controls and evidence, not guarantees. No provider can promise you will never be attacked; we can make you materially harder to compromise and faster to recover.</p>',
+        'benefits' => [
+            ['title' => 'Proportionate to risk', 'text' => 'Controls prioritised by likelihood and impact for your business, not a generic checklist.'],
+            ['title' => 'Fundamentals first', 'text' => 'Identity, patching, backups, endpoint protection and access control before advanced tooling.'],
+            ['title' => 'Prepared', 'text' => 'Incident response plan, contacts and rehearsals so response is calm and documented.'],
+        ],
+        'features' => [
+            ['title' => 'Security assessment', 'text' => 'Review of identities, devices, network, cloud, backups and policies with a prioritised remediation plan.'],
+            ['title' => 'Hardening', 'text' => 'MFA, least privilege, patch management, endpoint protection, secure configuration and e-mail security.'],
+            ['title' => 'Monitoring', 'text' => 'Logging and alerting for authentication, endpoint and network events with escalation.'],
+            ['title' => 'Awareness and incident readiness', 'text' => 'Staff briefings, phishing awareness, incident plan and periodic review.'],
+        ],
+        'process' => [
+            ['title' => 'Assess', 'text' => 'Understand assets, threats and current controls.'],
+            ['title' => 'Prioritise', 'text' => 'Agree a remediation plan ordered by risk and effort.'],
+            ['title' => 'Implement', 'text' => 'Apply controls and document evidence.'],
+            ['title' => 'Monitor and review', 'text' => 'Ongoing monitoring, periodic reassessment and incident rehearsals.'],
+        ],
+        'deliverables' => ['Security assessment report with prioritised findings', 'Remediation plan and implemented controls', 'Monitoring and alerting configuration', 'Incident response plan', 'Staff awareness material and review schedule'],
+        'faqs' => [
+            ['question' => 'Do you provide compliance certification?', 'answer' => 'We help implement and evidence controls; formal certification is issued by accredited auditors, and we can prepare you for that process where relevant.'],
+            ['question' => 'Where should a small business start?', 'answer' => 'Multi-factor authentication, patching, tested backups, endpoint protection and access control remove the most common causes of incidents.'],
+            ['question' => 'What if we have an incident now?', 'answer' => 'Contact us; incident support is scoped case by case and starts with containment, evidence preservation and recovery.'],
+        ],
+        'seo' => ['title' => 'Cybersecurity Services for Business | Markedge Technologies', 'description' => 'Security assessment, hardening, monitoring and incident readiness proportionate to your risk, covering identities, endpoints, networks and cloud.'],
+        'related' => ['solutions' => ['it-infrastructure-modernisation'], 'industries' => ['bfsi', 'healthcare', 'professional-services', 'enterprises'], 'products' => []],
+    ],
+    'backup-disaster-recovery' => [
+        'tagline' => 'Backups that are tested, and a recovery plan you have rehearsed.',
+        'short_description' => 'Backup design, implementation, verification and disaster-recovery planning for servers, cloud services, databases and user data.',
+        'overview' => '<p>A backup that has never been restored is an assumption. Disaster recovery is the discipline of turning that assumption into a tested procedure with known recovery time and known data loss limits.</p><p>Markedge designs backup and recovery around your actual systems and tolerances: what must be protected, how far back you need to go, how quickly each system must return, and where copies are kept so a single failure, ransomware event or site loss does not take the backups with it. Restores are rehearsed and recorded.</p>',
+        'benefits' => [
+            ['title' => 'Known recovery objectives', 'text' => 'Recovery time and recovery point targets defined per system and designed for.'],
+            ['title' => 'Copies that survive', 'text' => 'Offsite and immutable copies protect against ransomware and site loss.'],
+            ['title' => 'Proven by rehearsal', 'text' => 'Scheduled restore tests with documented results.'],
+        ],
+        'features' => [
+            ['title' => 'Backup design', 'text' => 'Coverage, frequency, retention and storage locations per system.'],
+            ['title' => 'Implementation', 'text' => 'Server, database, cloud service and endpoint backups with encryption.'],
+            ['title' => 'Verification', 'text' => 'Automated success checks, alerts on failure and periodic restore tests.'],
+            ['title' => 'Disaster-recovery planning', 'text' => 'Runbooks, roles, communication and rehearsals.'],
+        ],
+        'process' => [
+            ['title' => 'Assess', 'text' => 'Inventory systems and agree recovery objectives.'],
+            ['title' => 'Design and implement', 'text' => 'Backup architecture, retention and offsite copies.'],
+            ['title' => 'Verify', 'text' => 'Monitor jobs and rehearse restores.'],
+            ['title' => 'Maintain', 'text' => 'Review coverage as systems change; repeat rehearsals.'],
+        ],
+        'deliverables' => ['Backup and recovery assessment', 'Backup implementation with encryption and offsite copies', 'Monitoring and failure alerts', 'Disaster-recovery runbook', 'Restore test records'],
+        'faqs' => [
+            ['question' => 'How often should we back up?', 'answer' => 'Frequency follows how much data you can afford to lose per system; critical databases may need continuous protection while file shares may be daily. The assessment sets this per system.'],
+            ['question' => 'Are cloud services like e-mail backed up automatically?', 'answer' => 'Providers protect their platform, not necessarily your data against deletion or ransomware; separate backups of cloud services are usually recommended.'],
+            ['question' => 'How do we know the backups work?', 'answer' => 'Jobs are monitored and restores are rehearsed on a schedule, with results recorded.'],
+        ],
+        'seo' => ['title' => 'Backup & Disaster Recovery Services | Markedge Technologies', 'description' => 'Backup design, implementation and verification with offsite copies, plus disaster-recovery plans rehearsed and documented.'],
+        'related' => ['solutions' => ['it-infrastructure-modernisation'], 'industries' => ['bfsi', 'healthcare', 'professional-services', 'smes'], 'products' => []],
+    ],
+    'it-support' => [
+        'tagline' => 'Help desk and on-site support for the systems your people use every day.',
+        'short_description' => 'Ticketed help desk, remote and on-site support, user onboarding and device management for teams without a full in-house IT function.',
+        'overview' => '<p>Day-to-day IT support is where technology meets people: a laptop that will not start, an account that needs setting up, a printer that has stopped, an application that behaves differently after an update.</p><p>Markedge provides support through a ticketed help desk with agreed priorities, remote resolution where possible and on-site visits where needed, plus the routine work of onboarding and offboarding staff, managing devices and keeping software licensed and updated.</p>',
+        'benefits' => [
+            ['title' => 'Faster resolution', 'text' => 'A single support channel with clear priorities instead of ad-hoc calls.'],
+            ['title' => 'Consistent devices', 'text' => 'Standard builds, security settings and software so every workstation is manageable.'],
+            ['title' => 'Visible', 'text' => 'Ticket history and reports show recurring issues worth fixing at the root.'],
+        ],
+        'features' => [
+            ['title' => 'Help desk', 'text' => 'Ticketing, remote support and escalation with agreed coverage hours.'],
+            ['title' => 'On-site support', 'text' => 'Scheduled and incident visits for hardware and site issues.'],
+            ['title' => 'User and device management', 'text' => 'Onboarding, offboarding, device setup, security settings and software licensing.'],
+            ['title' => 'Reporting', 'text' => 'Ticket volumes, resolution times and recommendations.'],
+        ],
+        'process' => [
+            ['title' => 'Onboard', 'text' => 'Document users, devices and applications; set up the support channel.'],
+            ['title' => 'Support', 'text' => 'Resolve tickets to agreed priorities, remotely or on site.'],
+            ['title' => 'Improve', 'text' => 'Use ticket data to remove recurring problems.'],
+        ],
+        'deliverables' => ['Support process with priorities and coverage hours', 'User and device inventory', 'Standard device build and security settings', 'Ticket reporting'],
+        'faqs' => [
+            ['question' => 'Is support remote or on site?', 'answer' => 'Most issues are resolved remotely; on-site visits are included or scheduled according to the agreement.'],
+            ['question' => 'Can support be combined with an AMC?', 'answer' => 'Yes. IT support is commonly delivered as part of an IT AMC that also covers maintenance and monitoring.'],
+            ['question' => 'How are new staff set up?', 'answer' => 'Onboarding covers accounts, devices, access and security settings from a standard checklist; offboarding reverses it and documents returned assets.'],
+        ],
+        'seo' => ['title' => 'IT Support Services for Business | Markedge Technologies', 'description' => 'Ticketed help desk, remote and on-site support, user onboarding and device management for businesses without a full in-house IT team.'],
+        'related' => ['solutions' => ['it-infrastructure-modernisation'], 'industries' => ['smes', 'professional-services', 'education', 'retail'], 'products' => []],
+    ],
+];

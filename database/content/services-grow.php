@@ -1,0 +1,246 @@
+<?php
+
+/**
+ * Phase 12 content library — GROW pillar (Digital Growth). No ranking positions, traffic or ROI
+ * claims; every service describes method, deliverables and measurement.
+ */
+return [
+    'digital-marketing' => [
+        'tagline' => 'A measured digital marketing programme, not a collection of channels.',
+        'short_description' => 'Strategy, channel execution and reporting across search, social, content and paid media, planned around business goals and measured with first-party data.',
+        'overview' => '<p>Digital marketing fails when channels are run in isolation: a paid campaign here, a few posts there, a website nobody updates. It works when strategy, content, channels and measurement are one programme aimed at the enquiries the business actually needs.</p><p>Markedge builds that programme: research into your customers and their search behaviour, a positioning and content plan, channel execution across search, social and paid media, and reporting that traces enquiries back to the pages and campaigns that produced them.</p>',
+        'benefits' => [
+            ['title' => 'Goal-led', 'text' => 'Every channel is chosen and budgeted against a defined enquiry or pipeline objective.'],
+            ['title' => 'Joined up', 'text' => 'Search, content, social and paid media reinforce one message and one set of landing pages.'],
+            ['title' => 'Attributable', 'text' => 'First-party tracking connects campaigns to enquiries so reporting reflects business results.'],
+        ],
+        'features' => [
+            ['title' => 'Research and strategy', 'text' => 'Audience, search demand, competitor positioning and channel plan.'],
+            ['title' => 'Content and landing pages', 'text' => 'Pages and assets built for the intent each channel brings.'],
+            ['title' => 'Channel execution', 'text' => 'Search, social and paid media managed to the plan.'],
+            ['title' => 'Measurement', 'text' => 'Enquiry attribution, campaign reporting and monthly review.'],
+        ],
+        'process' => [
+            ['title' => 'Research', 'text' => 'Customers, demand, competitors and current performance.'],
+            ['title' => 'Plan', 'text' => 'Objectives, channels, content and budget.'],
+            ['title' => 'Execute', 'text' => 'Launch campaigns and content with tracking in place.'],
+            ['title' => 'Review', 'text' => 'Monthly reporting and adjustment.'],
+        ],
+        'deliverables' => ['Marketing strategy and channel plan', 'Landing pages and content assets', 'Campaign setup and management', 'Attribution and reporting dashboard', 'Monthly review with recommendations'],
+        'faqs' => [
+            ['question' => 'Which channels should we use?', 'answer' => 'That depends on where your customers research and decide. The research phase identifies the channels with real demand before budget is committed.'],
+            ['question' => 'How do you report results?', 'answer' => 'Reporting is based on first-party data: impressions, clicks, enquiries and their attribution to campaigns and pages. We do not report vanity metrics as outcomes.'],
+            ['question' => 'How long before we see results?', 'answer' => 'Paid channels produce data quickly; organic search and content build over months. Timelines are set per plan rather than promised generically.'],
+        ],
+        'seo' => ['title' => 'Digital Marketing Services | Markedge Technologies', 'description' => 'Research-led digital marketing across search, content, social and paid media, planned around enquiry goals and measured with first-party attribution.'],
+        'related' => ['solutions' => ['digital-growth'], 'industries' => ['smes', 'real-estate', 'education', 'professional-services'], 'products' => ['lead-management-system']],
+    ],
+    'seo' => [
+        'tagline' => 'Search visibility built on useful content and a technically sound website.',
+        'short_description' => 'Technical SEO, keyword and intent research, on-page optimisation, content planning and measurement for businesses that want to be found for what they do.',
+        'overview' => '<p>SEO is the work of making a website the best answer to the questions your customers search for, and making sure search engines can find, understand and trust it. It is not a trick, and it is not a one-time task.</p><p>Markedge approaches SEO in three layers: a technical foundation (crawlability, canonical URLs, sitemaps, structured data, performance), content matched to real search intent for each commercial and informational topic, and measurement through search console data and first-party enquiry attribution.</p><p>We do not promise rankings. We commit to a method, to transparent reporting and to content that deserves to rank.</p>',
+        'benefits' => [
+            ['title' => 'Intent-matched pages', 'text' => 'Each page targets a real search intent rather than a list of keywords.'],
+            ['title' => 'Technically clean', 'text' => 'Indexation, canonicals, schema and performance handled so content is not held back.'],
+            ['title' => 'Honest measurement', 'text' => 'Impressions, clicks, indexed pages and enquiries reported from real data.'],
+        ],
+        'features' => [
+            ['title' => 'Technical SEO audit', 'text' => 'Crawl, index, canonical, redirect, schema, speed and mobile review with fixes.'],
+            ['title' => 'Keyword and intent research', 'text' => 'Topic mapping by intent, funnel stage and page.'],
+            ['title' => 'On-page and content', 'text' => 'Titles, structure, internal links and content briefs for new and existing pages.'],
+            ['title' => 'Reporting', 'text' => 'Search console and enquiry attribution reviewed monthly.'],
+        ],
+        'process' => [
+            ['title' => 'Audit', 'text' => 'Technical and content baseline.'],
+            ['title' => 'Map', 'text' => 'Keywords and intents assigned to pages and clusters.'],
+            ['title' => 'Implement', 'text' => 'Technical fixes, on-page changes and new content.'],
+            ['title' => 'Measure', 'text' => 'Monthly review of visibility, clicks and enquiries.'],
+        ],
+        'deliverables' => ['Technical SEO audit and fix list', 'Keyword and intent map', 'On-page recommendations and content briefs', 'Topic cluster plan', 'Monthly search performance report'],
+        'faqs' => [
+            ['question' => 'Can you guarantee first-page rankings?', 'answer' => 'No, and no honest provider can. Rankings depend on competition and search engine behaviour; we commit to method, quality and transparent reporting.'],
+            ['question' => 'How is SEO different from paid search?', 'answer' => 'Paid search buys placement for as long as you pay; SEO builds visibility that persists but takes longer to establish. Many businesses use both.'],
+            ['question' => 'Do you write the content?', 'answer' => 'We produce briefs and can write content through our content marketing service, always with your review for accuracy.'],
+        ],
+        'seo' => ['title' => 'SEO Services | Search Engine Optimisation | Markedge Technologies', 'description' => 'Technical SEO, keyword and intent research, on-page optimisation and content planning for businesses that want to be found for what they do. No ranking guarantees, transparent reporting.'],
+        'related' => ['solutions' => ['digital-growth'], 'industries' => ['smes', 'professional-services', 'real-estate', 'healthcare'], 'products' => []],
+    ],
+    'social-media-marketing' => [
+        'tagline' => 'Social media with a purpose beyond posting.',
+        'short_description' => 'Platform strategy, content planning, community management and reporting for B2B and B2C brands.',
+        'overview' => '<p>Social media works for businesses when it has a clear role: building awareness with a defined audience, supporting recruitment, demonstrating expertise or driving traffic to content that converts.</p><p>Markedge sets that role first, then plans platforms, formats and cadence the team can sustain, produces content that fits each platform, manages the community, and reports on reach, engagement and the traffic and enquiries it produces.</p>',
+        'benefits' => [
+            ['title' => 'Right platforms', 'text' => 'Presence where your audience actually is, not on every network.'],
+            ['title' => 'Sustainable cadence', 'text' => 'A content calendar sized to what can be produced consistently.'],
+            ['title' => 'Connected to outcomes', 'text' => 'Links, landing pages and tracking connect social activity to website engagement and enquiries.'],
+        ],
+        'features' => [
+            ['title' => 'Strategy', 'text' => 'Audience, platforms, objectives and content pillars.'],
+            ['title' => 'Content production', 'text' => 'Posts, visuals and short video adapted per platform.'],
+            ['title' => 'Community management', 'text' => 'Monitoring, responses and escalation.'],
+            ['title' => 'Reporting', 'text' => 'Reach, engagement, traffic and enquiries.'],
+        ],
+        'process' => [
+            ['title' => 'Define', 'text' => 'Objectives, audience and platforms.'],
+            ['title' => 'Plan', 'text' => 'Content pillars and calendar.'],
+            ['title' => 'Publish and engage', 'text' => 'Content production, scheduling and community management.'],
+            ['title' => 'Report', 'text' => 'Monthly review against objectives.'],
+        ],
+        'deliverables' => ['Social media strategy', 'Content calendar', 'Published content and community management', 'Monthly report'],
+        'faqs' => [
+            ['question' => 'Which platforms matter for a B2B business?', 'answer' => 'Typically professional networks and the platforms where your industry discusses its problems; the strategy phase confirms this from audience research rather than assumption.'],
+            ['question' => 'Do you run paid social campaigns?', 'answer' => 'Paid social is delivered through our performance marketing service and planned alongside organic content.'],
+            ['question' => 'Who approves content?', 'answer' => 'You do. Content is planned and reviewed in a calendar before publication.'],
+        ],
+        'seo' => ['title' => 'Social Media Marketing Services | Markedge Technologies', 'description' => 'Platform strategy, content planning, community management and reporting that connect social activity to website engagement and enquiries.'],
+        'related' => ['solutions' => ['digital-growth'], 'industries' => ['retail', 'education', 'real-estate', 'startups'], 'products' => []],
+    ],
+    'performance-marketing' => [
+        'tagline' => 'Paid search and social campaigns managed to cost per enquiry.',
+        'short_description' => 'Planning, setup and optimisation of paid search, paid social and display campaigns with landing pages and conversion tracking built in.',
+        'overview' => '<p>Paid media produces results only when the whole path is built: the right audience and query, an ad that sets expectations, a landing page that matches them, a form that works, and tracking that tells you what an enquiry cost.</p><p>Markedge plans and manages campaigns as that complete path, with budgets, targeting and creative tested and adjusted against the cost and quality of the enquiries they generate.</p>',
+        'benefits' => [
+            ['title' => 'Full path, not just ads', 'text' => 'Landing pages, forms and tracking built with the campaign.'],
+            ['title' => 'Managed to enquiries', 'text' => 'Optimisation decisions based on cost per qualified enquiry, not clicks.'],
+            ['title' => 'Transparent', 'text' => 'You own the ad accounts and see every cost.'],
+        ],
+        'features' => [
+            ['title' => 'Campaign planning', 'text' => 'Objectives, audiences, keywords, budgets and creative.'],
+            ['title' => 'Landing pages and tracking', 'text' => 'Conversion-focused pages with attribution and consent.'],
+            ['title' => 'Management and testing', 'text' => 'Bidding, targeting and creative tests on a regular cadence.'],
+            ['title' => 'Reporting', 'text' => 'Spend, enquiries, cost per enquiry and quality feedback.'],
+        ],
+        'process' => [
+            ['title' => 'Plan', 'text' => 'Objectives, budget, channels and measurement.'],
+            ['title' => 'Build', 'text' => 'Campaigns, landing pages and tracking.'],
+            ['title' => 'Optimise', 'text' => 'Weekly management and structured tests.'],
+            ['title' => 'Report', 'text' => 'Monthly performance and recommendations.'],
+        ],
+        'deliverables' => ['Campaign plan and budget', 'Campaign and landing-page setup', 'Conversion tracking with attribution', 'Ongoing optimisation', 'Monthly report'],
+        'faqs' => [
+            ['question' => 'What budget do we need?', 'answer' => 'Budget depends on your market and objectives; planning includes a test budget to establish real costs before scaling.'],
+            ['question' => 'Do we own the ad accounts?', 'answer' => 'Yes. Accounts and billing are in your name; we manage them with delegated access.'],
+            ['question' => 'How do you measure success?', 'answer' => 'By enquiries and their quality, attributed to campaigns through first-party tracking, with cost per enquiry reported monthly.'],
+        ],
+        'seo' => ['title' => 'Performance Marketing & Paid Media | Markedge Technologies', 'description' => 'Paid search, paid social and display campaigns planned, built and optimised to cost per enquiry, with landing pages and attribution included.'],
+        'related' => ['solutions' => ['digital-growth', 'sales-management'], 'industries' => ['real-estate', 'education', 'retail', 'smes'], 'products' => ['lead-management-system']],
+    ],
+    'content-marketing' => [
+        'tagline' => 'Content that answers real questions and earns the next step.',
+        'short_description' => 'Editorial strategy, topic clusters, writing and production of articles, guides and resources that support search visibility and sales conversations.',
+        'overview' => '<p>Buyers research before they enquire. Content marketing gives them accurate, useful answers on your website at every stage: understanding a problem, comparing approaches, evaluating a provider.</p><p>Markedge plans content as topic clusters tied to your services and products, produces it with subject-matter input from your team, structures it for search and readability, and links it into the paths that lead to enquiry. Quality is judged by usefulness, not word count.</p>',
+        'benefits' => [
+            ['title' => 'Built on real expertise', 'text' => 'Content is developed with your specialists so it is accurate and specific.'],
+            ['title' => 'Organised by intent', 'text' => 'Clusters cover informational, comparison and commercial questions in a connected structure.'],
+            ['title' => 'Reusable', 'text' => 'Articles and guides feed social, sales conversations and newsletters.'],
+        ],
+        'features' => [
+            ['title' => 'Editorial strategy', 'text' => 'Audience questions, topic clusters, funnel mapping and calendar.'],
+            ['title' => 'Production', 'text' => 'Articles, guides, comparisons and resources written and edited with your review.'],
+            ['title' => 'On-page structure', 'text' => 'Headings, internal links, metadata, schema and imagery.'],
+            ['title' => 'Distribution and measurement', 'text' => 'Publishing workflow, promotion and performance review.'],
+        ],
+        'process' => [
+            ['title' => 'Research', 'text' => 'Customer questions, search demand and existing content.'],
+            ['title' => 'Plan', 'text' => 'Clusters, priorities and calendar.'],
+            ['title' => 'Produce', 'text' => 'Draft, expert review, edit, publish.'],
+            ['title' => 'Measure', 'text' => 'Search performance and content-assisted enquiries.'],
+        ],
+        'deliverables' => ['Editorial strategy and topic clusters', 'Content calendar', 'Published articles and guides', 'Internal linking and metadata', 'Performance review'],
+        'faqs' => [
+            ['question' => 'How much content do we need?', 'answer' => 'As much as can be produced well and sustained. The calendar is sized to your team\'s review capacity, and quality is prioritised over volume.'],
+            ['question' => 'Who writes it?', 'answer' => 'Markedge writers with input and review from your subject-matter experts, published under real authors.'],
+            ['question' => 'Do you use AI to generate content?', 'answer' => 'Tools may assist research and drafting, but every published piece is written for a real question, reviewed by people and attributed to a real author.'],
+        ],
+        'seo' => ['title' => 'Content Marketing Services | Markedge Technologies', 'description' => 'Editorial strategy, topic clusters and production of articles and guides that answer real customer questions and connect to your services.'],
+        'related' => ['solutions' => ['digital-growth'], 'industries' => ['professional-services', 'technology', 'healthcare', 'education'], 'products' => []],
+    ],
+    'branding' => [
+        'tagline' => 'A clear identity for how your business looks, sounds and shows up.',
+        'short_description' => 'Positioning, messaging, visual identity and brand guidelines for businesses that need consistency across their website, sales material and channels.',
+        'overview' => '<p>A brand is the consistent impression a business leaves: what it stands for, how it speaks and how it looks. Inconsistency costs trust, especially for businesses that sell on credibility.</p><p>Markedge develops positioning and messaging grounded in what you actually do and who you serve, designs the visual identity to express it, and documents guidelines so every website page, proposal and post stays consistent.</p>',
+        'benefits' => [
+            ['title' => 'Grounded positioning', 'text' => 'Messaging based on your real capabilities and customers, not slogans.'],
+            ['title' => 'Consistent everywhere', 'text' => 'Guidelines and templates keep website, documents and social aligned.'],
+            ['title' => 'Built for digital', 'text' => 'Identity designed to work at every screen size and in every channel.'],
+        ],
+        'features' => [
+            ['title' => 'Positioning and messaging', 'text' => 'Value proposition, tone of voice and key messages.'],
+            ['title' => 'Visual identity', 'text' => 'Logo, colour, typography and imagery direction.'],
+            ['title' => 'Guidelines and templates', 'text' => 'Brand book, document and presentation templates.'],
+            ['title' => 'Rollout', 'text' => 'Application across website, social and sales material.'],
+        ],
+        'process' => [
+            ['title' => 'Discover', 'text' => 'Business, customers, competitors and current brand.'],
+            ['title' => 'Define', 'text' => 'Positioning and messaging.'],
+            ['title' => 'Design', 'text' => 'Identity system and guidelines.'],
+            ['title' => 'Apply', 'text' => 'Templates and rollout.'],
+        ],
+        'deliverables' => ['Positioning and messaging framework', 'Visual identity', 'Brand guidelines', 'Templates for documents and presentations'],
+        'faqs' => [
+            ['question' => 'Do we need a rebrand or a refresh?', 'answer' => 'Discovery answers that: if positioning is right but expression is inconsistent, a refresh and guidelines may be enough.'],
+            ['question' => 'Will the new identity work on our website?', 'answer' => 'Identity is designed with digital use first, and applied through the website design system.'],
+        ],
+        'seo' => ['title' => 'Branding Services | Positioning & Visual Identity | Markedge Technologies', 'description' => 'Positioning, messaging, visual identity and brand guidelines that keep your website, sales material and channels consistent.'],
+        'related' => ['solutions' => ['digital-growth', 'customer-experience'], 'industries' => ['startups', 'professional-services', 'retail'], 'products' => []],
+    ],
+    'lead-generation' => [
+        'tagline' => 'A repeatable system for generating and qualifying enquiries.',
+        'short_description' => 'Landing pages, campaigns, lead capture, qualification and hand-off to sales, built as a measured system rather than a one-off campaign.',
+        'overview' => '<p>Lead generation is a system: demand from search, content and paid media; landing pages that convert it; forms that capture it with consent and context; qualification that separates real opportunities from noise; and a hand-off that gets enquiries to the right person quickly.</p><p>Markedge designs and runs that system, and where you need software to manage it, our Lead Management System captures, tracks and reports on every enquiry with its source.</p>',
+        'benefits' => [
+            ['title' => 'Source known', 'text' => 'Every enquiry is attributed to the campaign and page that produced it.'],
+            ['title' => 'Qualified, not just collected', 'text' => 'Forms and follow-up designed to identify real opportunities.'],
+            ['title' => 'Fast hand-off', 'text' => 'Enquiries routed to sales with the context needed to respond.'],
+        ],
+        'features' => [
+            ['title' => 'Offer and landing pages', 'text' => 'Pages built for each audience and intent.'],
+            ['title' => 'Lead capture', 'text' => 'Forms with consent, spam protection and attribution.'],
+            ['title' => 'Qualification and routing', 'text' => 'Criteria, follow-up sequences and assignment.'],
+            ['title' => 'Reporting', 'text' => 'Enquiries by source, campaign and page; conversion to opportunities.'],
+        ],
+        'process' => [
+            ['title' => 'Design', 'text' => 'Audience, offers, pages and qualification criteria.'],
+            ['title' => 'Build', 'text' => 'Pages, forms, tracking and routing.'],
+            ['title' => 'Run', 'text' => 'Campaigns and follow-up.'],
+            ['title' => 'Improve', 'text' => 'Review sources and conversion; refine.'],
+        ],
+        'deliverables' => ['Lead generation plan', 'Landing pages and forms with attribution', 'Qualification and routing setup', 'Reporting by source and campaign'],
+        'faqs' => [
+            ['question' => 'How many leads will we get?', 'answer' => 'Volume depends on market demand and budget; we set expectations after a test period rather than promising a number.'],
+            ['question' => 'Do you sell lead lists?', 'answer' => 'No. We generate enquiries from people who chose to contact you.'],
+            ['question' => 'How does this connect to our sales process?', 'answer' => 'Qualified enquiries are routed to your team, and the Lead Management System can manage follow-up and reporting.'],
+        ],
+        'seo' => ['title' => 'B2B Lead Generation Services | Markedge Technologies', 'description' => 'Landing pages, campaigns, lead capture with attribution, qualification and sales hand-off designed as a measured lead generation system.'],
+        'related' => ['solutions' => ['sales-management', 'digital-growth'], 'industries' => ['smes', 'real-estate', 'education', 'professional-services'], 'products' => ['lead-management-system']],
+    ],
+    'conversion-optimisation' => [
+        'tagline' => 'More enquiries from the visitors you already have.',
+        'short_description' => 'Analysis of how visitors use your website, hypotheses grounded in data, and structured improvements to pages, forms and calls to action.',
+        'overview' => '<p>Before buying more traffic, make the traffic you have work harder. Conversion optimisation studies where visitors hesitate or leave, forms hypotheses about why, and changes pages, forms and calls to action in a controlled way so the effect can be measured.</p><p>Markedge uses first-party engagement and enquiry data, usability reviews and, where traffic allows, controlled tests. We are explicit about sample sizes: small sites get qualitative improvements and clear measurement, not statistically meaningless experiments.</p>',
+        'benefits' => [
+            ['title' => 'Evidence-based changes', 'text' => 'Improvements come from observed behaviour and data, not opinion.'],
+            ['title' => 'Better-qualified enquiries', 'text' => 'Forms and content set expectations so enquiries fit.'],
+            ['title' => 'Compounding', 'text' => 'Every improvement raises the return of all future traffic.'],
+        ],
+        'features' => [
+            ['title' => 'Analysis', 'text' => 'Engagement, CTA and enquiry data; usability and accessibility review.'],
+            ['title' => 'Hypotheses and prioritisation', 'text' => 'Ranked by expected impact and effort.'],
+            ['title' => 'Implementation', 'text' => 'Page, form and CTA changes through the CMS.'],
+            ['title' => 'Measurement', 'text' => 'Before/after comparison or controlled tests where traffic allows.'],
+        ],
+        'process' => [
+            ['title' => 'Analyse', 'text' => 'Where and why visitors drop off.'],
+            ['title' => 'Prioritise', 'text' => 'Hypotheses ranked by impact and effort.'],
+            ['title' => 'Change', 'text' => 'Implement and document.'],
+            ['title' => 'Measure', 'text' => 'Evaluate and iterate.'],
+        ],
+        'deliverables' => ['Conversion analysis report', 'Prioritised improvement backlog', 'Implemented changes', 'Measurement report'],
+        'faqs' => [
+            ['question' => 'Do we have enough traffic for A/B testing?', 'answer' => 'Often not, and we say so. Low-traffic sites benefit from usability fixes and qualitative research; controlled tests are used only when the sample supports a conclusion.'],
+            ['question' => 'What do you change?', 'answer' => 'Page structure, messaging, calls to action, forms, trust content and technical friction such as speed or errors.'],
+        ],
+        'seo' => ['title' => 'Conversion Rate Optimisation Services | Markedge Technologies', 'description' => 'Data-led analysis and structured improvements to pages, forms and calls to action, measured honestly against sample size.'],
+        'related' => ['solutions' => ['digital-growth', 'customer-experience'], 'industries' => ['smes', 'retail', 'real-estate'], 'products' => ['lead-management-system']],
+    ],
+];

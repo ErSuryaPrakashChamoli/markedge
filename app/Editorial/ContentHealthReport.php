@@ -96,7 +96,7 @@ class ContentHealthReport
             ->whereNotExists(fn ($q) => $q->selectRaw('1')->from('menu_items')
                 ->where(fn ($inner) => $inner
                     ->where(fn ($m) => $m->where('menu_items.linkable_type', 'page')->whereColumn('menu_items.linkable_id', 'inventory.id'))
-                    ->orWhereRaw("menu_items.url = '/' || inventory.slug")))
+                    ->orWhereRaw('menu_items.url = '.(DB::getDriverName() === 'mysql' ? "CONCAT('/', inventory.slug)" : "'/' || inventory.slug"))))
             ->orderBy('title');
     }
 

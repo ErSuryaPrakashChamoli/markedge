@@ -31,6 +31,10 @@ class ContentHealthAuditor
      */
     public function check(Model $record): array
     {
+        if (method_exists($record, 'seo')) {
+            $record->loadMissing('seo');
+        }
+
         $issues = [];
         $add = function (string $key, string $severity, string $message) use (&$issues): void {
             $issues[] = ['key' => $key, 'severity' => $severity, 'message' => $message];
