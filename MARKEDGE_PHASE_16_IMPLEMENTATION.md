@@ -4,7 +4,7 @@
 `bfbe0a7` (Phase 15) on branch `phase-16`.
 
 ## Final commit
-The Phase 16 commit on branch `phase-16` (see `git log -1 phase-16`).
+1b9d3f7 on branch `phase-16`.
 
 ## Scope
 Close the platform loop: a role-aware business intelligence page over the Phase 13 and 14 reports, a configurable and observable automation framework, notification channel adapters that degrade safely, AI-readiness interfaces with no model behind them, a versioned key-authenticated API that reuses the single lead pipeline, and an operations dashboard that reports facts only.
