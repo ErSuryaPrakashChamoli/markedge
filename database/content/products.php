@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Phase 12 content library — products. Copy is limited to purpose and enquiry path. Modules,
- * feature lists, integrations, security posture and deployment options are NOT stated here:
- * they require product-owner confirmation and are listed as open items in the Phase 12 report.
+ * Phase 12 content library — products: purpose, benefits, use cases, FAQs and SEO. Modules,
+ * features, capabilities, deployment, security statements and documentation live in
+ * product-platform.php (Phase 15 hierarchy).
  */
 return [
     'lead-management-system' => [

@@ -97,3 +97,25 @@ it('renders the conversion pages with their forms, consent and post-submission e
             ->toContain('name="robots" content="index, follow"', $slug);
     }
 });
+
+it('seeds the full product platform for both products idempotently', function () {
+    seedCatalogueStructure();
+
+    foreach (['lead-management-system', 'recruitment-management-system'] as $slug) {
+        $product = Product::query()->where('slug', $slug)->with(['modules.features.capabilities', 'documents'])->firstOrFail();
+
+        expect($product->modules->count())->toBeGreaterThanOrEqual(4, "{$slug} modules")
+            ->and($product->modules->flatMap->features->count())->toBeGreaterThanOrEqual(8, "{$slug} features")
+            ->and($product->modules->flatMap->features->flatMap->capabilities->count())->toBeGreaterThanOrEqual(12, "{$slug} capabilities")
+            ->and(count($product->deployment))->toBe(2)
+            ->and(count($product->security))->toBeGreaterThanOrEqual(3)
+            ->and($product->documents->count())->toBe(3)
+            ->and($product->documents->every(fn ($doc) => $doc->isPublished()))->toBeTrue()
+            ->and(strlen(strip_tags((string) $product->long_description)))->toBeGreaterThan(500);
+    }
+
+    // Re-running updates in place instead of duplicating.
+    test()->seed(Phase12ContentSeeder::class);
+    $lms = Product::query()->where('slug', 'lead-management-system')->firstOrFail();
+    expect($lms->modules()->count())->toBe(4)->and($lms->documents()->count())->toBe(3)->and($lms->features()->count())->toBe(11);
+});

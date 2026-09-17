@@ -140,6 +140,70 @@ class Phase12ContentSeeder extends Seeder
             $this->sync($product, 'solutions', Solution::class, $content['related']['solutions'] ?? []);
             $this->sync($product, 'industries', Industry::class, $content['related']['industries'] ?? []);
             $this->sync($product, 'services', Service::class, $content['related']['services'] ?? []);
+            $this->productPlatform($product);
+        }
+    }
+
+    /**
+     * Modules → features → capabilities, deployment and security statements and starter documentation
+     * from database/content/product-platform.php. Matched by name/slug so re-running updates in place;
+     * admin edits to other fields and extra records are left alone. Document status is never changed
+     * once a document exists.
+     */
+    protected function productPlatform(Product $product): void
+    {
+        $content = $this->library('product-platform')[$product->slug] ?? null;
+
+        if ($content === null) {
+            return;
+        }
+
+        $product->update([
+            'product_type' => $content['product_type'] ?? $product->product_type,
+            'long_description' => $content['long_description'] ?? $product->long_description,
+            'deployment' => $content['deployment'] ?? $product->deployment,
+            'security' => $content['security'] ?? $product->security,
+        ]);
+
+        foreach ($content['modules'] ?? [] as $moduleIndex => $moduleContent) {
+            $module = $product->modules()->updateOrCreate(['name' => $moduleContent['name']], [
+                'summary' => $moduleContent['summary'] ?? null,
+                'highlights' => $moduleContent['highlights'] ?? null,
+                'sort_order' => $moduleIndex,
+            ]);
+
+            foreach ($moduleContent['features'] ?? [] as $featureIndex => $featureContent) {
+                $feature = $product->features()->updateOrCreate(['title' => $featureContent['title']], [
+                    'product_module_id' => $module->id,
+                    'description' => $featureContent['description'] ?? null,
+                    'sort_order' => $featureIndex,
+                ]);
+
+                foreach ($featureContent['capabilities'] ?? [] as $capabilityIndex => $capability) {
+                    $feature->capabilities()->updateOrCreate(['name' => $capability['name']], [
+                        'description' => $capability['description'] ?? null,
+                        'sort_order' => $capabilityIndex,
+                    ]);
+                }
+            }
+        }
+
+        foreach ($content['documents'] ?? [] as $index => $document) {
+            $existing = $product->documents()->where('slug', $document['slug'])->first();
+
+            $attributes = [
+                'title' => $document['title'],
+                'section' => $document['section'] ?? null,
+                'excerpt' => $document['excerpt'] ?? null,
+                'body' => $document['body'] ?? null,
+                'sort_order' => $index,
+            ];
+
+            if ($existing) {
+                $existing->update($attributes);
+            } else {
+                $product->documents()->create($attributes + ['slug' => $document['slug'], 'status' => PublishStatus::Published, 'published_at' => now()]);
+            }
         }
     }
 
