@@ -209,7 +209,7 @@ Author assignment and article publication; product facts and screenshots; pillar
 
 ## 38. Test Results
 
-Recorded in the delivery message (full suite, Pint, Vite). New: `tests/Feature/Content/Phase12ContentTest.php` (completeness and honesty patterns, idempotency and status safety, schema and internal links on a published service, conversion pages with forms and consent).
+Full suite 446 tests, 2,327 assertions, all passing; Pint passes; Vite builds. New: `tests/Feature/Content/Phase12ContentTest.php` (completeness and honesty patterns, idempotency and status safety, schema and internal links on a published service, conversion pages with forms and consent).
 
 ## 39. Final Acceptance
 
