@@ -13,18 +13,26 @@ class ContentVersion
 {
     public const string KEY = 'content:version';
 
+    /** Per-request memo (the service is scoped); saves one cache read per key derivation. */
+    private ?int $current = null;
+
     public function current(): int
     {
-        return (int) Cache::rememberForever(self::KEY, fn (): int => 1);
+        return $this->current ??= (int) Cache::rememberForever(self::KEY, fn (): int => 1);
     }
 
     public function bump(): int
     {
-        $next = $this->current() + 1;
+        $next = (int) Cache::rememberForever(self::KEY, fn (): int => 1) + 1;
 
         Cache::forever(self::KEY, $next);
 
-        return $next;
+        return $this->current = $next;
+    }
+
+    public function forget(): void
+    {
+        $this->current = null;
     }
 
     public function key(string $name): string

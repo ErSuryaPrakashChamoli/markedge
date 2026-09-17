@@ -3,7 +3,7 @@
 <x-layouts.landing :meta="$meta" :hide-navigation="$entity->hide_navigation" :hide-footer-links="$entity->hide_footer_links" :preview="$preview">
     @if ($entity->tracking)
         @push('head')
-            <script nonce="">window.dataLayer = window.dataLayer || []; window.dataLayer.push({!! json_encode(['event' => 'landing_page_view', 'landing_page' => $entity->slug, 'campaign' => $entity->campaign?->utm_campaign] + array_map('strval', $entity->tracking), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!});</script>
+            <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">window.dataLayer = window.dataLayer || []; window.dataLayer.push({!! json_encode(['event' => 'landing_page_view', 'landing_page' => $entity->slug, 'campaign' => $entity->campaign?->utm_campaign] + array_map('strval', $entity->tracking), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!});</script>
         @endpush
     @endif
 

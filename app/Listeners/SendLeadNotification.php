@@ -21,6 +21,11 @@ class SendLeadNotification implements ShouldQueue
 
     public int $tries = 3;
 
+    /** @var array<int, int> */
+    public array $backoff = [30, 120, 600];
+
+    public int $timeout = 60;
+
     public function __construct(private readonly Settings $settings) {}
 
     public function handle(LeadCreated $event): void

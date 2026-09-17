@@ -44,9 +44,9 @@
                                 <td class="py-2 font-medium">{{ $row->title }}<span class="block text-xs font-normal text-gray-500">/{{ $row->slug }}</span></td>
                                 <td class="py-2">{{ $types[$row->type] ?? $row->type }}</td>
                                 <td class="py-2"><x-filament::badge :color="\App\Enums\PublishStatus::from($row->status)->getColor()" size="sm">{{ \App\Enums\PublishStatus::from($row->status)->getLabel() }}</x-filament::badge>@if ($row->approved_at) <span class="text-xs text-success-600">approved</span>@endif</td>
-                                <td class="py-2">{{ $names[$row->owner_id] ?? '—' }}</td>
-                                <td class="py-2">{{ $names[$row->reviewer_id] ?? '—' }}</td>
-                                <td class="py-2">{{ $names[$row->created_by] ?? '—' }}</td>
+                                <td class="py-2">{{ $row->owner_id ? ($names[$row->owner_id] ?? '—') : '—' }}</td>
+                                <td class="py-2">{{ $row->reviewer_id ? ($names[$row->reviewer_id] ?? '—') : '—' }}</td>
+                                <td class="py-2">{{ $row->created_by ? ($names[$row->created_by] ?? '—') : '—' }}</td>
                                 @if ($queue)
                                     <td class="py-2">{{ $row->submitted_at ? \Illuminate\Support\Carbon::parse($row->submitted_at)->format('d M Y H:i') : '—' }}</td>
                                     <td class="py-2">{{ $row->status === 'scheduled' && $row->published_at ? \Illuminate\Support\Carbon::parse($row->published_at)->format('d M Y H:i') : '—' }}</td>

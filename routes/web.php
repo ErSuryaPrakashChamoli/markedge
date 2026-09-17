@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\Seo\RobotsController;
 use App\Http\Controllers\Seo\SitemapController;
@@ -30,6 +31,8 @@ $slug = '[a-z0-9]+(?:-[a-z0-9]+)*';
 
 Route::get('/', HomeController::class)->name('home');
 
+Route::get('/health', [HealthController::class, 'live'])->middleware('throttle:health')->name('health.live');
+Route::get('/health/ready', [HealthController::class, 'ready'])->middleware('throttle:health')->name('health.ready');
 Route::get('/go/{key}/{slot?}', CtaClickController::class)->middleware('throttle:cta')->name('cta.go');
 Route::get('/search', SearchController::class)->middleware('throttle:search')->name('search');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');

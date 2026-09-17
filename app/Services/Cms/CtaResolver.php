@@ -20,6 +20,9 @@ class CtaResolver
     /** @var array<string, Cta|null> */
     private array $resolved = [];
 
+    /** Content version the memo belongs to; a CTA save in the same request bumps it and clears the memo. */
+    private ?int $resolvedVersion = null;
+
     public function __construct(
         private readonly Settings $settings,
         private readonly ContentVersion $version,
@@ -29,6 +32,11 @@ class CtaResolver
     {
         if (blank($key)) {
             return null;
+        }
+
+        if ($this->resolvedVersion !== $this->version->current()) {
+            $this->resolved = [];
+            $this->resolvedVersion = $this->version->current();
         }
 
         return $this->resolved[$key] ??= Cta::query()->active()->where('key', $key)->first();

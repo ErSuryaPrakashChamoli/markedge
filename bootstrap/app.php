@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Middleware\AssignRequestId;
 use App\Http\Middleware\CaptureAttribution;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\TrustProxies;
 use App\Seo\RedirectResolver;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,7 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->web(append: [CaptureAttribution::class]);
+        $middleware->replace(Illuminate\Http\Middleware\TrustProxies::class, TrustProxies::class);
+        $middleware->prepend(AssignRequestId::class);
+        $middleware->web(append: [SecurityHeaders::class, CaptureAttribution::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

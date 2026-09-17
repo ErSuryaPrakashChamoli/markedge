@@ -129,6 +129,31 @@ return [
     | Editorial operations (Phase 9): reminders before scheduled unpublishing, revision retention
     | and the window in which consecutive saves by the same user fold into one revision.
     */
+    /*
+    | Production hardening (Phase 10). Everything here is environment-driven so infrastructure
+    | values never live in code.
+    */
+    'security' => [
+        // Comma-separated proxy IPs/CIDRs, or "*" behind a CDN/load balancer that sets X-Forwarded-* headers.
+        'trusted_proxies' => env('TRUSTED_PROXIES'),
+        // Send Strict-Transport-Security on HTTPS responses. Enable only on HTTPS-only deployments.
+        'hsts' => (bool) env('MARKEDGE_HSTS', false),
+        'hsts_max_age' => (int) env('MARKEDGE_HSTS_MAX_AGE', 31536000),
+        // Content-Security-Policy for the public site (admin surfaces are excluded, see SecurityHeaders).
+        'csp' => (bool) env('MARKEDGE_CSP', true),
+        'csp_report_only' => (bool) env('MARKEDGE_CSP_REPORT_ONLY', false),
+        // Extra origins allowed to serve images/media (e.g. a CDN or S3 bucket host).
+        'media_origins' => array_values(array_filter(array_map('trim', explode(',', (string) env('MARKEDGE_MEDIA_ORIGINS', ''))))),
+        'frame_origins' => ['https://www.youtube.com', 'https://www.youtube-nocookie.com', 'https://player.vimeo.com'],
+    ],
+
+    'rate_limits' => [
+        'search' => (int) env('MARKEDGE_RATE_SEARCH', 30),
+        'cta' => (int) env('MARKEDGE_RATE_CTA', 60),
+        'preview' => (int) env('MARKEDGE_RATE_PREVIEW', 60),
+        'health' => (int) env('MARKEDGE_RATE_HEALTH', 60),
+    ],
+
     'editorial' => [
         'expiry_reminder_days' => 3,
         'revisions_per_record' => 100,

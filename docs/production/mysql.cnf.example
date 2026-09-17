@@ -1,0 +1,21 @@
+# Markedge — MySQL 8.4 production notes (Phase 10 §23)
+[mysqld]
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci     # matches config/database.php
+default-time-zone = '+00:00'              # store UTC; the app converts using APP_TIMEZONE
+sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+max_connections = 200                     # >= FPM max_children + queue workers + scheduler + headroom
+innodb_buffer_pool_size = 1G              # ~50-70% of RAM on a dedicated DB host
+innodb_flush_log_at_trx_commit = 1        # durability for leads and publishing transactions
+innodb_ft_min_token_size = 3              # search: tokens shorter than this use title LIKE (documented)
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/markedge-slow.log
+long_query_time = 0.5
+log_queries_not_using_indexes = 0         # noisy on small tables; enable temporarily when auditing
+
+# Backups: nightly `mysqldump --single-transaction --routines --triggers markedge | gzip | age/gpg`
+# plus binary logs for point-in-time recovery; see docs/production/backup-and-recovery.md.
+# Index monitoring: sys.schema_unused_indexes and performance_schema.table_io_waits_summary_by_index_usage.
+# Migrations: all Phase 10 migrations are additive; run `php artisan migrate --force` during deploy.
+# Large-table locking: ALTER on leads/conversion_events/cta_clicks is online in MySQL 8 (instant/inplace)
+# for column additions and index creation; test on a copy for tables > 5M rows.

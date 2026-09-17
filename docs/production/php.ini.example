@@ -1,0 +1,32 @@
+; Markedge — PHP 8.5 production settings (Phase 10 §22). Apply to the FPM pool php.ini.
+; These are recommendations, not application code; tune to the host.
+
+[PHP]
+expose_php = Off
+display_errors = Off
+display_startup_errors = Off
+log_errors = On
+error_log = /var/log/php/markedge-error.log
+error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
+memory_limit = 256M            ; image conversions (Imagick, AVIF) and queue workers
+upload_max_filesize = 20M      ; MediaFields allows 20 MB PDFs
+post_max_size = 25M
+max_execution_time = 60        ; web requests; queue workers use --timeout
+max_input_vars = 5000          ; Filament forms with block builders
+date.timezone = Asia/Kolkata   ; must equal APP_TIMEZONE
+realpath_cache_size = 4096K
+realpath_cache_ttl = 600
+
+[opcache]
+opcache.enable = 1
+opcache.enable_cli = 0
+opcache.memory_consumption = 192
+opcache.interned_strings_buffer = 16
+opcache.max_accelerated_files = 20000
+opcache.validate_timestamps = 0   ; deploys run `php artisan optimize` + FPM reload
+opcache.save_comments = 1         ; required by Filament/Livewire attributes
+opcache.jit = tracing
+opcache.jit_buffer_size = 64M
+
+; Required extensions: pdo_mysql, mbstring, intl, gd or imagick (imagick for AVIF), exif, bcmath,
+; ctype, fileinfo, json, openssl, tokenizer, xml, zip, redis (phpredis) when Redis is used.

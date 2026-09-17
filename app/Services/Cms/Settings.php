@@ -14,6 +14,9 @@ class Settings
     /** @var array<string, mixed>|null */
     private ?array $loaded = null;
 
+    /** Content version the memo was loaded for; a bump in the same request reloads. */
+    private ?int $loadedVersion = null;
+
     public function __construct(private readonly ContentVersion $version) {}
 
     public function get(string $key, mixed $default = null): mixed
@@ -31,11 +34,18 @@ class Settings
      */
     public function all(): array
     {
-        return $this->loaded ??= Cache::remember(
-            $this->version->key('settings:all'),
-            now()->addDay(),
-            fn (): array => Setting::query()->pluck('value', 'key')->all(),
-        );
+        $version = $this->version->current();
+
+        if ($this->loaded === null || $this->loadedVersion !== $version) {
+            $this->loadedVersion = $version;
+            $this->loaded = Cache::remember(
+                $this->version->key('settings:all'),
+                now()->addDay(),
+                fn (): array => Setting::query()->pluck('value', 'key')->all(),
+            );
+        }
+
+        return $this->loaded;
     }
 
     public function logoUrl(): ?string
@@ -60,5 +70,6 @@ class Settings
     public function forget(): void
     {
         $this->loaded = null;
+        $this->loadedVersion = null;
     }
 }

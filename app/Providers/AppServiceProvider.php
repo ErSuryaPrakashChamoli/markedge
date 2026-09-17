@@ -48,6 +48,10 @@ use App\Search\Contracts\SearchEngine;
 use App\Search\Engines\DatabaseSearchEngine;
 use App\Search\SearchTypes;
 use App\Services\Cms\CampaignTargeting;
+use App\Services\Cms\ContentVersion;
+use App\Services\Cms\CtaResolver;
+use App\Services\Cms\MenuBuilder;
+use App\Services\Cms\Settings;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -69,6 +73,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SearchEngine::class, DatabaseSearchEngine::class);
         $this->app->singleton(RevisionManager::class);
         $this->app->singleton(CampaignTargeting::class);
+
+        // Request-scoped memoisation: one instance per request means the content version, settings
+        // and CTA lookups are read once instead of once per injection (Phase 10 §11, §18).
+        $this->app->scoped(ContentVersion::class);
+        $this->app->scoped(Settings::class);
+        $this->app->scoped(CtaResolver::class);
+        $this->app->scoped(MenuBuilder::class);
     }
 
     /**
@@ -95,9 +106,10 @@ class AppServiceProvider extends ServiceProvider
 
     protected function registerRateLimiters(): void
     {
-        RateLimiter::for('preview', fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
-        RateLimiter::for('search', fn (Request $request): Limit => Limit::perMinute(30)->by($request->ip()));
-        RateLimiter::for('cta', fn (Request $request): Limit => Limit::perMinute(60)->by($request->ip()));
+        RateLimiter::for('preview', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.rate_limits.preview', 60))->by($request->ip()));
+        RateLimiter::for('search', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.rate_limits.search', 30))->by($request->ip()));
+        RateLimiter::for('cta', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.rate_limits.cta', 60))->by($request->ip()));
+        RateLimiter::for('health', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.rate_limits.health', 60))->by($request->ip()));
         RateLimiter::for('lead-form', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.leads.submissions_per_minute', 5))->by($request->ip()));
     }
 

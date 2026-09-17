@@ -26,8 +26,15 @@
     {{ $head ?? '' }}
     @stack('head')
     @fonts
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @livewireStyles
+    @php
+        // Livewire (and its bundled Alpine) is only shipped when the page actually rendered a
+        // Livewire component; every other page loads the lean Alpine entry (Phase 10 §5).
+        $needsLivewire = str_contains((string) $slot, 'wire:snapshot');
+    @endphp
+    @vite(['resources/css/app.css', $needsLivewire ? 'resources/js/app.js' : 'resources/js/lean.js'])
+    @if ($needsLivewire)
+        @livewireStyles
+    @endif
 </head>
 <body {{ $attributes->merge(['class' => 'flex min-h-full flex-col bg-canvas text-fg '.$bodyClass]) }} @if ($preview) data-preview @endif>
     <x-layout.skip-link />
@@ -47,6 +54,8 @@
         <x-layout.sticky-mobile-cta />
     @endif
 
-    @livewireScriptConfig
+    @if ($needsLivewire)
+        @livewireScriptConfig
+    @endif
 </body>
 </html>

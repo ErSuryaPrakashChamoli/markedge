@@ -1,0 +1,73 @@
+# Markedge — nginx server block (production reference, Phase 10 §10/§22)
+# Replace paths, hostnames and the PHP-FPM socket. Certificates are terminated here or at the CDN.
+
+map $sent_http_content_type $markedge_compressible {
+    default 0;
+    ~*text/ 1;
+    ~*application/(javascript|json|xml|ld\+json|manifest\+json) 1;
+    ~*image/svg\+xml 1;
+    ~*font/ 1;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name markedge.example;
+    root /var/www/markedge/current/public;
+    index index.php;
+
+    # TLS (example; use your certificate management)
+    ssl_certificate     /etc/letsencrypt/live/markedge.example/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/markedge.example/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    # Compression: Brotli when the module is available, gzip fallback (text assets only).
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml application/json application/javascript application/xml application/ld+json image/svg+xml font/woff2;
+    # brotli on; brotli_comp_level 5; brotli_types <same list>;   # requires ngx_brotli
+
+    client_max_body_size 25m;          # PDFs up to 20 MB (MediaFields), images up to 5 MB
+    server_tokens off;
+
+    # Versioned Vite assets: immutable for a year. File names change on every build.
+    location ^~ /build/ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        access_log off;
+        try_files $uri =404;
+    }
+
+    # Uploaded media and conversions (public disk). Conversions are content-addressed by Media Library.
+    location ^~ /storage/ {
+        add_header Cache-Control "public, max-age=2592000";
+        access_log off;
+        try_files $uri =404;
+    }
+
+    location ~* \.(ico|png|jpg|jpeg|webp|avif|gif|woff2?|ttf)$ {
+        add_header Cache-Control "public, max-age=604800";
+        try_files $uri /index.php?$query_string;
+    }
+
+    # Everything else is Laravel. Cache-Control for HTML is set by the application (see SecurityHeaders).
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php8.5-fpm-markedge.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;   # zero-downtime symlink switches
+        fastcgi_hide_header X-Powered-By;
+        fastcgi_read_timeout 60s;
+    }
+
+    location ~ /\.(?!well-known) { deny all; }
+}
+
+server {
+    listen 80;
+    server_name markedge.example;
+    return 301 https://$host$request_uri;
+}

@@ -16,6 +16,13 @@ class NotifyEditorialParticipants implements ShouldQueue
 {
     use InteractsWithQueue;
 
+    public int $tries = 3;
+
+    /** @var array<int, int> */
+    public array $backoff = [30, 120, 600];
+
+    public int $timeout = 60;
+
     public function __construct(private readonly EditorialNotifier $notifier) {}
 
     public function handle(EditorialEvent $event): void

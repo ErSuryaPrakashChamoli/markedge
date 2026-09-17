@@ -1,0 +1,24 @@
+; Markedge — PHP-FPM pool (Phase 10 §22). Size pm.max_children from RAM: (available RAM for PHP) / ~60 MB.
+[markedge]
+user = www-data
+group = www-data
+listen = /run/php/php8.5-fpm-markedge.sock
+listen.owner = www-data
+listen.group = www-data
+
+pm = dynamic
+pm.max_children = 24
+pm.start_servers = 6
+pm.min_spare_servers = 4
+pm.max_spare_servers = 10
+pm.max_requests = 1000          ; recycle workers to bound memory growth
+pm.process_idle_timeout = 20s
+request_terminate_timeout = 90s
+slowlog = /var/log/php/markedge-slow.log
+request_slowlog_timeout = 5s
+
+php_admin_value[error_log] = /var/log/php/markedge-fpm-error.log
+php_admin_flag[log_errors] = on
+; Queue workers and the scheduler run under systemd/Supervisor, not FPM:
+;   php artisan queue:work redis --queue=default --tries=3 --max-time=3600 --timeout=90
+;   * * * * * php /var/www/markedge/current/artisan schedule:run >> /dev/null 2>&1

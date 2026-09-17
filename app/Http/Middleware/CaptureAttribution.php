@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class CaptureAttribution
 {
     /** @var array<int, string> */
-    protected const array SKIP_PREFIXES = ['admin', 'livewire', 'preview', 'go', 'up', 'sitemap.xml', 'sitemap', 'robots.txt', 'build', 'storage', 'filament'];
+    protected const array SKIP_PREFIXES = ['admin', 'livewire', 'preview', 'go', 'up', 'health', 'sitemap.xml', 'sitemap', 'robots.txt', 'build', 'storage', 'filament'];
 
     public function __construct(
         private readonly AttributionCookie $cookie,

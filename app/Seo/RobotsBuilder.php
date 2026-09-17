@@ -8,7 +8,7 @@ namespace App\Seo;
 class RobotsBuilder
 {
     /** @var array<int, string> */
-    public const array PRIVATE_PATHS = ['/admin', '/preview', '/livewire', '/styleguide', '/go', '/up'];
+    public const array PRIVATE_PATHS = ['/admin', '/preview', '/livewire', '/styleguide', '/go', '/up', '/health'];
 
     public function __construct(private readonly IndexabilityResolver $urls) {}
 
