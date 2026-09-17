@@ -6,6 +6,7 @@ use App\Enums\LeadStatus;
 use App\Models\Campaign;
 use App\Models\CtaClick;
 use App\Models\Lead;
+use App\Models\LeadFollowUp;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Gate;
@@ -29,6 +30,7 @@ class LeadsOverview extends StatsOverviewWidget
             Stat::make('New enquiries', (clone $base)->where('status', LeadStatus::New)->count())->description('waiting for first contact'),
             Stat::make('Today', (clone $base)->where('created_at', '>=', now()->startOfDay())->count()),
             Stat::make('This month', (clone $base)->where('created_at', '>=', now()->startOfMonth())->count()),
+            Stat::make('Overdue follow-ups', LeadFollowUp::query()->overdue()->count())->description('open follow-ups past due'),
             Stat::make('CTA clicks (30 days)', CtaClick::query()->where('created_at', '>=', now()->subDays(30))->count()),
         ];
 

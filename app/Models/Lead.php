@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LeadPriority;
 use App\Enums\LeadStatus;
 use App\Models\Concerns\RecordsActivity;
 use Database\Factories\LeadFactory;
@@ -21,7 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable([
     'name', 'company', 'email', 'phone', 'country', 'city', 'requirement', 'message',
     'form_id', 'landing_page_id', 'campaign_id', 'service_id', 'product_id', 'industry_id', 'solution_id', 'cta_id',
-    'submitted_from_url', 'status', 'assigned_to', 'custom_fields',
+    'submitted_from_url', 'status', 'assigned_to', 'priority', 'team', 'lost_reason', 'deal_value', 'qualification',
+    'stage_entered_at', 'next_follow_up_at', 'last_activity_at', 'custom_fields',
     'first_source', 'first_medium', 'first_campaign', 'first_term', 'first_content', 'first_referrer', 'first_landing_page', 'first_visited_at',
     'last_source', 'last_medium', 'last_campaign', 'last_term', 'last_content', 'last_referrer', 'last_landing_page', 'last_visited_at',
     'visitor_id', 'device_type', 'browser', 'os', 'ip', 'user_agent', 'locale', 'consent_given_at', 'consent_text', 'submission_token',
@@ -33,12 +35,18 @@ class Lead extends Model
     use HasFactory, RecordsActivity, SoftDeletes;
 
     /** Only workflow fields are audited; personal data never enters the activity log. */
-    protected array $activityLogAttributes = ['status', 'assigned_to', 'duplicate_of_lead_id', 'spam_score'];
+    protected array $activityLogAttributes = ['status', 'assigned_to', 'priority', 'team', 'lost_reason', 'duplicate_of_lead_id', 'spam_score'];
 
     protected function casts(): array
     {
         return [
             'status' => LeadStatus::class,
+            'priority' => LeadPriority::class,
+            'deal_value' => 'decimal:2',
+            'qualification' => 'array',
+            'stage_entered_at' => 'datetime',
+            'next_follow_up_at' => 'datetime',
+            'last_activity_at' => 'datetime',
             'custom_fields' => 'array',
             'first_visited_at' => 'datetime',
             'last_visited_at' => 'datetime',
@@ -52,7 +60,44 @@ class Lead extends Model
     #[Scope]
     protected function open(Builder $query): Builder
     {
-        return $query->whereIn('status', [LeadStatus::New, LeadStatus::Contacted, LeadStatus::Qualified]);
+        return $query->whereIn('status', LeadStatus::pipeline());
+    }
+
+    #[Scope]
+    protected function closed(Builder $query): Builder
+    {
+        return $query->whereIn('status', LeadStatus::closed());
+    }
+
+    #[Scope]
+    protected function ownedBy(Builder $query, int $userId): Builder
+    {
+        return $query->where('assigned_to', $userId);
+    }
+
+    #[Scope]
+    protected function followUpOverdue(Builder $query): Builder
+    {
+        return $query->whereNotNull('next_follow_up_at')->where('next_follow_up_at', '<', now());
+    }
+
+    /**
+     * Hours since the enquiry arrived without a first contact, or null once contacted.
+     */
+    public function hoursAwaitingContact(): ?float
+    {
+        if ($this->contacted_at !== null || ! $this->status?->isOpen()) {
+            return null;
+        }
+
+        return round($this->created_at->diffInMinutes(now()) / 60, 1);
+    }
+
+    public function breachesFirstContactSla(): bool
+    {
+        $hours = config('markedge.sales.sla.first_contact_hours');
+
+        return $hours !== null && ($this->hoursAwaitingContact() ?? 0) > (int) $hours;
     }
 
     #[Scope]
@@ -114,5 +159,15 @@ class Lead extends Model
     public function events(): HasMany
     {
         return $this->hasMany(ConversionEvent::class);
+    }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(LeadActivity::class)->latest('id');
+    }
+
+    public function followUps(): HasMany
+    {
+        return $this->hasMany(LeadFollowUp::class)->orderBy('due_at');
     }
 }

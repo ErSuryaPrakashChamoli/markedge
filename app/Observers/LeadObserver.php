@@ -6,7 +6,6 @@ use App\Analytics\Analytics;
 use App\Attribution\Attribution;
 use App\Attribution\Touch;
 use App\Enums\ConversionEventType;
-use App\Enums\LeadStatus;
 use App\Models\Lead;
 use Illuminate\Support\Str;
 
@@ -25,8 +24,8 @@ class LeadObserver
         }
 
         $type = match (true) {
-            $lead->status === LeadStatus::Qualified => ConversionEventType::LeadQualified,
             $lead->status?->isWon() => ConversionEventType::LeadConverted,
+            $lead->status?->isQualifiedOrBeyond() => ConversionEventType::LeadQualified,
             default => null,
         };
 

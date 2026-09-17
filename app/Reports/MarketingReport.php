@@ -43,7 +43,7 @@ class MarketingReport extends ConversionReport
         $engaged = $this->views()->whereNotNull('session_id')->select('session_id')->groupBy('session_id')->havingRaw('COUNT(*) >= 2')->get()->count();
         $ctaSessions = $this->events()->where('type', ConversionEventType::CtaClicked->value)->whereNotNull('session_id')->distinct('session_id')->count('session_id');
         $leads = $this->leads()->count();
-        $qualified = $this->leads()->whereIn('status', [LeadStatus::Qualified->value, LeadStatus::Converted->value])->count();
+        $qualified = $this->leads()->whereIn('status', LeadStatus::values(LeadStatus::qualifiedOrBeyond()))->count();
         $converted = $this->leads()->where('status', LeadStatus::Converted->value)->count();
         $rate = fn (int $n, int $d): ?float => $d > 0 ? round(100 * $n / $d, 1) : null;
 

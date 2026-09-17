@@ -116,6 +116,54 @@ return [
         'submissions_per_minute' => 5,
     ],
 
+    /*
+    | Sales pipeline (Phase 14). Stage moves, teams, SLA targets and qualification questions are
+    | configuration, not code. Anything left null renders as NOT CONFIGURED in the sales pages.
+    */
+    'sales' => [
+        // Allowed moves between stages. Spam is reachable from every stage and is not listed.
+        'transitions' => [
+            'new' => ['assigned', 'contacted', 'qualified', 'unqualified'],
+            'assigned' => ['contacted', 'qualified', 'unqualified', 'lost'],
+            'contacted' => ['qualified', 'requirement_understood', 'unqualified', 'lost'],
+            'qualified' => ['requirement_understood', 'proposal', 'lost'],
+            'requirement_understood' => ['proposal', 'negotiation', 'lost'],
+            'proposal' => ['negotiation', 'converted', 'lost'],
+            'negotiation' => ['proposal', 'converted', 'lost'],
+            'converted' => [],
+            'lost' => ['contacted'],
+            'unqualified' => ['contacted'],
+            'spam' => ['new'],
+        ],
+        // Comma-separated team names, e.g. "Enterprise,SMB". Empty means teams are not used.
+        'teams' => array_values(array_filter(array_map('trim', explode(',', (string) env('MARKEDGE_SALES_TEAMS', ''))))),
+        // ISO 4217 code shown next to deal values entered by sales. Null: values are shown without a currency.
+        'currency' => env('MARKEDGE_SALES_CURRENCY'),
+        'sla' => [
+            // Hours from enquiry to first contact. Null disables SLA reporting (NOT CONFIGURED).
+            'first_contact_hours' => env('MARKEDGE_SALES_FIRST_CONTACT_HOURS') !== null ? (int) env('MARKEDGE_SALES_FIRST_CONTACT_HOURS') : null,
+        ],
+        // Follow-ups due within this many hours are included in the daily reminder run.
+        'follow_up_reminder_hours' => (int) env('MARKEDGE_SALES_FOLLOW_UP_REMINDER_HOURS', 24),
+        'pipeline_column_limit' => 50,
+        'lost_reasons' => [
+            'budget' => 'Budget',
+            'timing' => 'Timing',
+            'competitor' => 'Chose another provider',
+            'no_response' => 'No response',
+            'not_a_fit' => 'Not a fit',
+            'other' => 'Other',
+        ],
+        // Qualification questions stored on the lead. Types: select, text, textarea, boolean, number.
+        'qualification_fields' => [
+            ['key' => 'budget', 'label' => 'Budget', 'type' => 'select', 'options' => ['not_discussed' => 'Not discussed', 'in_discussion' => 'In discussion', 'confirmed' => 'Confirmed']],
+            ['key' => 'authority', 'label' => 'Decision authority', 'type' => 'select', 'options' => ['unknown' => 'Unknown', 'influencer' => 'Influencer', 'decision_maker' => 'Decision maker']],
+            ['key' => 'timeline', 'label' => 'Purchase timeline', 'type' => 'select', 'options' => ['unknown' => 'Unknown', 'within_1_month' => 'Within 1 month', '1_3_months' => '1–3 months', 'beyond_3_months' => 'Beyond 3 months']],
+            ['key' => 'need_summary', 'label' => 'Need summary', 'type' => 'textarea'],
+            ['key' => 'existing_solution', 'label' => 'Existing solution or vendor', 'type' => 'text'],
+        ],
+    ],
+
     'cta' => [
         // External hosts CTA destinations may redirect to, in addition to markedge.redirects.allowed_external_hosts.
         'allowed_external_hosts' => ['wa.me', 'api.whatsapp.com'],
@@ -215,6 +263,12 @@ return [
         'Product Manager' => [
             'products.*', 'technologies.*', 'faqs.*', 'media.*',
             'testimonials.view_any', 'testimonials.view',
+        ],
+        'Sales Manager' => [
+            'leads.*',
+            'ctas.view_any', 'ctas.view',
+            'campaigns.view_any', 'campaigns.view',
+            'forms.view_any', 'forms.view',
         ],
         'Sales' => [
             'leads.view_any', 'leads.view', 'leads.update',

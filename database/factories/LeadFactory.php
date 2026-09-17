@@ -50,4 +50,14 @@ class LeadFactory extends Factory
     {
         return $this->state(['status' => LeadStatus::Converted, 'closed_at' => now()]);
     }
+
+    public function lost(string $reason = 'timing'): static
+    {
+        return $this->state(['status' => LeadStatus::Lost, 'lost_reason' => $reason, 'closed_at' => now()]);
+    }
+
+    public function stage(LeadStatus $status): static
+    {
+        return $this->state(['status' => $status, 'stage_entered_at' => now()]);
+    }
 }

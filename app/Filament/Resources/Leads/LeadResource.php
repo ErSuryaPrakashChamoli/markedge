@@ -2,12 +2,16 @@
 
 namespace App\Filament\Resources\Leads;
 
+use App\Enums\LeadPriority;
 use App\Enums\LeadStatus;
 use App\Filament\Resources\Leads\Pages\EditLead;
 use App\Filament\Resources\Leads\Pages\ListLeads;
 use App\Filament\Resources\Leads\Pages\ViewLead;
 use App\Models\Lead;
 use App\Models\User;
+use App\Sales\LeadTimeline;
+use App\Sales\LeadWorkflow;
+use App\Sales\QualificationFields;
 use BackedEnum;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -18,8 +22,10 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -65,14 +71,29 @@ class LeadResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
+        $teams = config('markedge.sales.teams', []);
+        $currency = config('markedge.sales.currency');
+
         return $schema->components([
             Section::make('Workflow')->schema([
-                Select::make('status')->options(LeadStatus::class)->required()->native(false),
+                Select::make('status')->label('Stage')
+                    ->options(fn (?Lead $record): array => $record ? app(LeadWorkflow::class)->optionsFor($record) : [LeadStatus::New->value => 'New'])
+                    ->required()->native(false)->live(),
+                Select::make('lost_reason')->label('Reason')
+                    ->options(config('markedge.sales.lost_reasons', []))->native(false)
+                    ->visible(fn (callable $get): bool => in_array($get('status'), [LeadStatus::Lost->value, LeadStatus::Unqualified->value], true))
+                    ->requiredIf('status', [LeadStatus::Lost->value, LeadStatus::Unqualified->value]),
                 Select::make('assigned_to')->label('Owner')->options(fn () => User::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id'))->searchable()->native(false),
+                Select::make('priority')->options(LeadPriority::class)->default(LeadPriority::Normal->value)->required()->native(false),
+                Select::make('team')->options(array_combine($teams, $teams))->native(false)->visible($teams !== []),
+                TextInput::make('deal_value')->label('Deal value')->numeric()->minValue(0)->maxValue(999999999999)
+                    ->suffix($currency)->helperText($currency ? 'Entered by sales; never estimated.' : 'Entered by sales; currency NOT CONFIGURED (MARKEDGE_SALES_CURRENCY).'),
                 DateTimePicker::make('contacted_at')->native(false)->seconds(false),
-                DateTimePicker::make('closed_at')->native(false)->seconds(false),
-                Textarea::make('notes')->rows(5)->columnSpanFull(),
+                Textarea::make('notes')->label('Summary notes')->rows(4)->columnSpanFull(),
             ])->columns(2),
+            Section::make('Qualification')->description('Questions come from configuration (markedge.sales.qualification_fields).')
+                ->schema(QualificationFields::components())->columns(2)
+                ->visible(QualificationFields::definitions() !== []),
         ]);
     }
 
@@ -108,12 +129,26 @@ class LeadResource extends Resource
                         TextEntry::make('duplicateOf.name')->label('Duplicate of')->placeholder('—'),
                     ])->columns(4),
                     Section::make('Workflow')->schema([
-                        TextEntry::make('status')->badge(),
+                        TextEntry::make('status')->label('Stage')->badge(),
+                        TextEntry::make('priority')->badge(),
                         TextEntry::make('assignee.name')->label('Owner')->placeholder('Unassigned'),
+                        TextEntry::make('team')->placeholder(config('markedge.sales.teams', []) === [] ? 'Teams not configured' : '—'),
                         TextEntry::make('created_at')->label('Received')->dateTime('d M Y H:i'),
                         TextEntry::make('contacted_at')->dateTime('d M Y H:i')->placeholder('—'),
-                        TextEntry::make('notes')->placeholder('—')->columnSpanFull(),
+                        TextEntry::make('next_follow_up_at')->label('Next follow-up')->dateTime('d M Y H:i')->placeholder('None')->color(fn (Lead $record): ?string => $record->next_follow_up_at?->isPast() ? 'danger' : null),
+                        TextEntry::make('closed_at')->dateTime('d M Y H:i')->placeholder('—'),
+                        TextEntry::make('lost_reason')->label('Reason')->formatStateUsing(fn (?string $state): ?string => $state ? (config('markedge.sales.lost_reasons')[$state] ?? $state) : null)->placeholder('—'),
+                        TextEntry::make('deal_value')->label('Deal value')->state(fn (Lead $record): string => $record->deal_value === null ? 'Not entered' : trim(number_format((float) $record->deal_value, 2).' '.(config('markedge.sales.currency') ?? ''))),
+                        TextEntry::make('sla')->label('First-contact SLA')->state(fn (Lead $record): string => config('markedge.sales.sla.first_contact_hours') === null ? 'Not configured' : ($record->contacted_at ? 'Contacted' : ($record->breachesFirstContactSla() ? 'Breached' : 'Within target')))->color(fn (Lead $record): ?string => $record->breachesFirstContactSla() ? 'danger' : null),
+                        TextEntry::make('notes')->label('Summary notes')->placeholder('—')->columnSpanFull(),
                     ])->columns(4),
+                    Section::make('Qualification')->schema([
+                        KeyValueEntry::make('qualification')->hiddenLabel()->state(fn (Lead $record): array => QualificationFields::display($record->qualification))->keyLabel('Question')->valueLabel('Answer')->placeholder('Not captured'),
+                    ])->visible(QualificationFields::definitions() !== []),
+                ]),
+                Tab::make('Timeline')->icon(Heroicon::OutlinedClock)->schema([
+                    ViewEntry::make('timeline')->hiddenLabel()->view('filament.leads.timeline')
+                        ->viewData(fn (Lead $record): array => ['entries' => LeadTimeline::for($record), 'followUps' => $record->followUps()->with('owner')->get()]),
                 ]),
                 Tab::make('Attribution')->icon(Heroicon::OutlinedFlag)
                     ->visible(fn (): bool => Gate::allows('export', Lead::class))
@@ -175,8 +210,10 @@ class LeadResource extends Resource
                 TextColumn::make('campaign.name')->label('Campaign')->placeholder('—')->toggleable()->visible(fn (): bool => Gate::allows('export', Lead::class)),
                 TextColumn::make('submitted_from_url')->label('Page')->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('form.name')->label('Form')->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('status')->badge()->sortable(),
+                TextColumn::make('status')->label('Stage')->badge()->sortable(),
+                TextColumn::make('priority')->badge()->sortable()->toggleable(),
                 TextColumn::make('assignee.name')->label('Owner')->placeholder('—')->toggleable(),
+                TextColumn::make('next_follow_up_at')->label('Next follow-up')->dateTime('d M H:i')->placeholder('—')->sortable()->color(fn (Lead $record): ?string => $record->next_follow_up_at?->isPast() ? 'danger' : null)->toggleable(),
                 TextColumn::make('created_at')->label('Received')->dateTime('d M Y H:i')->sortable(),
             ])
             ->filters([
@@ -187,6 +224,11 @@ class LeadResource extends Resource
                 SelectFilter::make('product_id')->label('Product')->relationship('product', 'name')->preload(),
                 SelectFilter::make('industry_id')->label('Industry')->relationship('industry', 'name')->preload(),
                 SelectFilter::make('assigned_to')->label('Owner')->relationship('assignee', 'name')->preload(),
+                Filter::make('mine')->label('My leads')->toggle()->query(fn (Builder $query): Builder => $query->where('assigned_to', auth()->id())),
+                Filter::make('open')->label('Open stages only')->toggle()->query(fn (Builder $query): Builder => $query->open()),
+                Filter::make('follow_up_overdue')->label('Follow-up overdue')->toggle()->query(fn (Builder $query): Builder => $query->followUpOverdue()),
+                SelectFilter::make('priority')->options(LeadPriority::class)->multiple(),
+                SelectFilter::make('team')->options(fn (): array => array_combine(config('markedge.sales.teams', []), config('markedge.sales.teams', [])))->visible(config('markedge.sales.teams', []) !== []),
                 SelectFilter::make('last_source')->label('Source')->options(fn (): array => Lead::query()->whereNotNull('last_source')->distinct()->orderBy('last_source')->pluck('last_source', 'last_source')->all()),
                 Filter::make('created_at')->schema([
                     DatePicker::make('from')->native(false),
@@ -204,7 +246,8 @@ class LeadResource extends Resource
                         ->icon(Heroicon::OutlinedUser)
                         ->schema([Select::make('assigned_to')->label('Owner')->options(fn () => User::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id'))->required()->native(false)])
                         ->action(function (Collection $records, array $data): void {
-                            $records->each(fn (Lead $lead) => Gate::allows('update', $lead) && $lead->update(['assigned_to' => $data['assigned_to']]));
+                            $owner = User::query()->find($data['assigned_to']);
+                            $records->each(fn (Lead $lead) => Gate::allows('update', $lead) && app(LeadWorkflow::class)->assign($lead, $owner, auth()->user()));
                             Notification::make()->title('Owner assigned.')->success()->send();
                         })
                         ->deselectRecordsAfterCompletion(),
@@ -214,7 +257,7 @@ class LeadResource extends Resource
                         ->color('danger')
                         ->requiresConfirmation()
                         ->action(function (Collection $records): void {
-                            $records->each(fn (Lead $lead) => Gate::allows('update', $lead) && $lead->update(['status' => LeadStatus::Spam]));
+                            $records->each(fn (Lead $lead) => Gate::allows('update', $lead) && app(LeadWorkflow::class)->transition($lead, LeadStatus::Spam, auth()->user()));
                             Notification::make()->title('Marked as spam.')->success()->send();
                         })
                         ->deselectRecordsAfterCompletion(),
@@ -232,15 +275,20 @@ class LeadResource extends Resource
     {
         activity('content')->causedBy(auth()->user())->withProperties(['count' => $records->count()])->event('exported')->log('Leads exported');
 
-        $columns = ['id', 'created_at', 'name', 'company', 'email', 'phone', 'country', 'city', 'status', 'requirement',
+        $columns = ['id', 'created_at', 'name', 'company', 'email', 'phone', 'country', 'city', 'status', 'priority', 'owner', 'team', 'lost_reason', 'deal_value', 'contacted_at', 'closed_at', 'next_follow_up_at', 'requirement',
             'first_source', 'first_medium', 'first_campaign', 'first_landing_page', 'last_source', 'last_medium', 'last_campaign', 'submitted_from_url', 'consent_given_at'];
+        $records->loadMissing('assignee');
 
         return response()->streamDownload(function () use ($records, $columns): void {
             $handle = fopen('php://output', 'wb');
             fputcsv($handle, $columns);
 
             foreach ($records as $lead) {
-                fputcsv($handle, array_map(fn (string $column) => (string) ($lead->{$column} instanceof BackedEnum ? $lead->{$column}->value : $lead->{$column}), $columns));
+                fputcsv($handle, array_map(function (string $column) use ($lead): string {
+                    $value = $column === 'owner' ? $lead->assignee?->name : $lead->{$column};
+
+                    return (string) ($value instanceof BackedEnum ? $value->value : $value);
+                }, $columns));
             }
 
             fclose($handle);
