@@ -17,7 +17,7 @@
                         @click="togglePanel('{{ $key }}')"
                         :aria-expanded="isOpen('{{ $key }}')"
                         @class([
-                            'inline-flex items-center gap-1 rounded-control px-3 py-2 text-nav transition-colors',
+                            'nav-underline inline-flex items-center gap-1 rounded-control px-3 py-2 text-nav transition-colors',
                             'text-fg' => $item->isActive,
                             'text-fg-secondary hover:text-fg' => ! $item->isActive,
                         ])
@@ -118,7 +118,7 @@
                         href="{{ $item->url }}"
                         @if ($item->isActive) aria-current="page" @endif
                         @class([
-                            'inline-block rounded-control px-3 py-2 text-nav transition-colors',
+                            'nav-underline inline-block rounded-control px-3 py-2 text-nav transition-colors',
                             'text-fg' => $item->isActive,
                             'text-fg-secondary hover:text-fg' => ! $item->isActive,
                         ])

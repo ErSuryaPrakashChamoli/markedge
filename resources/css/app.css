@@ -17,8 +17,8 @@
 |   brand-primary-hover → bg-brand-hover   brand-secondary   → bg-brand-secondary
 |   success / warning / danger / info → bg-success … text-info
 |
-| Typeface: "Instrument Sans" is a placeholder self-hosted through vite.config.js.
-| Replace the family there and in --font-sans / --font-display below when the brand font is approved.
+| Typeface: "Plus Jakarta Sans" self-hosted through vite.config.js.
+| Replace the family there and in --font-sans / --font-display below if the brand font changes.
 */
 
 @import 'tailwindcss';
@@ -30,18 +30,22 @@
 
 /* ---------- Palette ---------- */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-display: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
 
-    --color-charcoal-950: #0f1113;
-    --color-charcoal-900: #16191d;
-    --color-charcoal-800: #1f2329;
-    --color-charcoal-700: #2b3038;
-    --color-charcoal-600: #3a414b;
-    --color-charcoal-500: #4f5866;
-    --color-charcoal-400: #6c7684;
+    /* "Charcoal" is now a deep ink navy: richer than black, and it lets the orange glow. */
+    --color-charcoal-950: #070d18;
+    --color-charcoal-900: #0b1424;
+    --color-charcoal-800: #111d31;
+    --color-charcoal-700: #1a2a44;
+    --color-charcoal-600: #34465f;
+    --color-charcoal-500: #4d5f79;
+    --color-charcoal-400: #6f8198;
+
+    --color-sky-100: #e6eefc;
+    --color-sky-500: #3b7bff;
 
     --color-orange-700: #b8431a;
     --color-orange-600: #d9531e;
@@ -65,11 +69,15 @@
     --color-red-600: #c8312f;
     --color-blue-600: #2563a8;
 
-    --radius-control: 0.25rem;
-    --radius-card: 0.375rem;
+    --radius-control: 0.625rem;
+    --radius-card: 1.125rem;
     --radius-pill: 9999px;
 
-    --shadow-overlay: 0 12px 40px -12px rgb(15 17 19 / 0.25);
+    --shadow-overlay: 0 24px 64px -20px rgb(11 20 36 / 0.35), 0 2px 8px -2px rgb(11 20 36 / 0.12);
+    --shadow-card: 0 1px 2px rgb(11 20 36 / 0.05), 0 14px 36px -18px rgb(11 20 36 / 0.16);
+    --shadow-lift: 0 30px 60px -24px rgb(11 20 36 / 0.35), 0 2px 6px -2px rgb(11 20 36 / 0.08);
+    --shadow-glow: 0 12px 32px -10px rgb(242 101 34 / 0.55);
+    --shadow-glow-lg: 0 20px 48px -12px rgb(242 101 34 / 0.65);
 
     --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -80,7 +88,7 @@
 
 /* ---------- Semantic roles (light default) ---------- */
 :root {
-    --mk-canvas: var(--color-neutral-50);
+    --mk-canvas: #fbfbfa;
     --mk-canvas-muted: var(--color-neutral-100);
     --mk-canvas-dark: var(--color-charcoal-900);
     --mk-surface: #ffffff;
@@ -99,7 +107,9 @@
     --mk-warning: var(--color-amber-600);
     --mk-danger: var(--color-red-600);
     --mk-info: var(--color-blue-600);
-    --mk-pattern: rgb(15 17 19 / 0.06);
+    --mk-pattern: rgb(11 20 36 / 0.06);
+    --mk-glow: rgb(242 101 34 / 0.22);
+    --mk-glow-2: rgb(59 123 255 / 0.14);
 
     color-scheme: light;
 }
@@ -118,7 +128,9 @@
     --mk-line-strong: var(--color-charcoal-500);
     --mk-brand-soft: rgb(242 101 34 / 0.16);
     --mk-brand-secondary: #ffffff;
-    --mk-pattern: rgb(255 255 255 / 0.06);
+    --mk-pattern: rgb(255 255 255 / 0.05);
+    --mk-glow: rgb(242 101 34 / 0.38);
+    --mk-glow-2: rgb(59 123 255 / 0.22);
 
     color-scheme: dark;
 }
@@ -193,44 +205,45 @@
 /* ---------- Typography scale (fluid, one place to tune) ---------- */
 @utility text-display {
     font-family: var(--font-display);
-    font-size: clamp(2.75rem, 2rem + 3vw, 4.5rem);
-    line-height: 1.05;
-    letter-spacing: -0.025em;
-    font-weight: 600;
+    font-size: clamp(3rem, 2.1rem + 3.8vw, 5.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    font-weight: 800;
 }
 
 @utility text-h1 {
     font-family: var(--font-display);
-    font-size: clamp(2.25rem, 1.75rem + 2vw, 3.5rem);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    font-weight: 600;
+    font-size: clamp(2.5rem, 1.9rem + 2.4vw, 4rem);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    font-weight: 800;
 }
 
 @utility text-h2 {
     font-family: var(--font-display);
-    font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    font-weight: 600;
+    font-size: clamp(1.9rem, 1.45rem + 1.7vw, 2.9rem);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    font-weight: 700;
 }
 
 @utility text-h3 {
     font-family: var(--font-display);
-    font-size: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-    font-weight: 600;
+    font-size: clamp(1.3rem, 1.15rem + 0.6vw, 1.625rem);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    font-weight: 700;
 }
 
 @utility text-h4 {
     font-size: 1.125rem;
     line-height: 1.4;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -0.01em;
 }
 
 @utility text-body-lg {
-    font-size: clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem);
+    font-size: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);
     line-height: 1.6;
 }
 
@@ -299,7 +312,7 @@
 }
 
 @utility card-p {
-    padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+    padding: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
 }
 
 @utility stack-text {
@@ -327,6 +340,190 @@
 
 @utility bg-brand-gradient {
     background-image: linear-gradient(135deg, var(--color-charcoal-900) 0%, var(--color-charcoal-800) 60%, rgb(242 101 34 / 0.18) 100%);
+}
+
+/* Layered radial glows: the signature background for heroes, CTA bands and dark sections. */
+@utility bg-mesh {
+    background-image:
+        radial-gradient(60rem 30rem at 85% -10%, var(--mk-glow) 0%, transparent 60%),
+        radial-gradient(40rem 24rem at -10% 110%, var(--mk-glow-2) 0%, transparent 60%),
+        linear-gradient(var(--mk-pattern) 1px, transparent 1px),
+        linear-gradient(90deg, var(--mk-pattern) 1px, transparent 1px);
+    background-size: auto, auto, 56px 56px, 56px 56px;
+}
+
+@utility bg-mesh-soft {
+    background-image:
+        radial-gradient(50rem 26rem at 90% 0%, var(--mk-glow) 0%, transparent 65%),
+        radial-gradient(36rem 20rem at 0% 100%, var(--mk-glow-2) 0%, transparent 65%);
+}
+
+@utility bg-brand-gradient-btn {
+    background-image: linear-gradient(135deg, #ff7a3d 0%, var(--color-orange-500) 55%, var(--color-orange-600) 100%);
+}
+
+@utility text-gradient-brand {
+    background-image: linear-gradient(100deg, #ff8a4c 0%, var(--color-orange-500) 45%, #ff6a2a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+@utility glass {
+    background-color: color-mix(in srgb, var(--mk-surface) 72%, transparent);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+
+@utility shadow-card {
+    box-shadow: var(--shadow-card);
+}
+
+@utility shadow-lift {
+    box-shadow: var(--shadow-lift);
+}
+
+@utility shadow-glow {
+    box-shadow: var(--shadow-glow);
+}
+
+@utility shadow-glow-lg {
+    box-shadow: var(--shadow-glow-lg);
+}
+
+/* Cards lift on hover and reveal a brand accent along the top edge. */
+@utility card-hover {
+    transition:
+        transform 0.35s var(--ease-out-soft),
+        box-shadow 0.35s var(--ease-out-soft),
+        border-color 0.35s var(--ease-out-soft);
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 3px;
+        border-radius: inherit;
+        background-image: linear-gradient(90deg, var(--color-orange-500), #ffb27a);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.45s var(--ease-out-soft);
+    }
+
+    &:hover,
+    &:focus-visible {
+        transform: translateY(-6px);
+        box-shadow: var(--shadow-lift);
+        border-color: rgb(242 101 34 / 0.45);
+    }
+
+    &:hover::before,
+    &:focus-visible::before {
+        transform: scaleX(1);
+    }
+}
+
+/* Slow-drifting glow orbs for hero backgrounds (decorative, aria-hidden). */
+@utility orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(70px);
+    pointer-events: none;
+    animation: orb-float 18s ease-in-out infinite alternate;
+}
+
+@keyframes orb-float {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(6%, -8%, 0) scale(1.12); }
+}
+
+/* Pointer effects (see resources/js/modules/interactive.js): tilt + spotlight on cards, orb parallax. */
+.js-pointer .card-hover {
+    transform-style: preserve-3d;
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+}
+
+.js-pointer .card-hover:hover,
+.js-pointer .card-hover:focus-visible {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-6px);
+}
+
+.js-pointer .card-hover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(22rem circle at var(--mx, 50%) var(--my, 50%), rgb(242 101 34 / 0.16), transparent 45%);
+    transition: opacity 0.35s var(--ease-out-soft);
+}
+
+.js-pointer .card-hover:hover::after {
+    opacity: 1;
+}
+
+.card-hover img {
+    transition: transform 0.7s var(--ease-out-soft);
+}
+
+.card-hover:hover img {
+    transform: scale(1.05);
+}
+
+.js-pointer .orb {
+    translate: var(--px, 0px) var(--py, 0px);
+    transition: translate 0.6s var(--ease-out-soft);
+}
+
+/* Navigation links draw an underline; the primary button gets a shine sweep on hover. */
+.nav-underline {
+    position: relative;
+}
+
+.nav-underline::after {
+    content: "";
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.35rem;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--mk-brand);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease-out-soft);
+}
+
+.nav-underline:hover::after,
+.nav-underline[aria-expanded="true"]::after {
+    transform: scaleX(1);
+}
+
+.btn-shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.45) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.7s var(--ease-out-soft);
+    pointer-events: none;
+}
+
+.btn-shine:hover::after {
+    transform: translateX(120%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-pointer .card-hover,
+    .js-pointer .card-hover:hover { transform: none; }
+    .card-hover:hover img { transform: none; }
+    .btn-shine::after { display: none; }
 }
 
 @utility hairline {

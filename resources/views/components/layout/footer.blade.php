@@ -1,4 +1,4 @@
-<footer data-theme="dark" class="bg-canvas-dark text-fg">
+<footer data-theme="dark" class="relative overflow-hidden bg-canvas-dark bg-mesh-soft text-fg">
     @if ($cta && $ctaHref)
         <div class="border-b border-line">
             <x-ui.container class="flex flex-col gap-6 py-12 md:flex-row md:items-center md:justify-between">

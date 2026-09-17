@@ -1,7 +1,8 @@
 <header
     x-data="siteNav"
+    data-theme="dark"
     @keydown.escape.window="closeAll()"
-    class="sticky top-0 z-50 border-b border-line bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85"
+    class="sticky top-0 z-50 border-b border-line bg-charcoal-800"
 >
     <x-ui.container class="relative flex h-16 items-center justify-between gap-6 lg:h-[4.5rem]">
         <x-layout.logo :company-name="$companyName" :logo-url="$logoUrl" />

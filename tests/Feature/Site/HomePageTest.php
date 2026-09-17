@@ -8,7 +8,7 @@ use App\Models\ServiceCategory;
 use App\Models\Setting;
 
 it('renders a structural fallback when no home page is published', function () {
-    $this->get('/')->assertOk()->assertSee('Technology that moves business forward.')->assertSee('Skip to content');
+    $this->get('/')->assertOk()->assertSeeText('Technology that moves business forward.')->assertSee('Skip to content');
 });
 
 it('renders the published CMS home page from typed blocks', function () {
@@ -31,7 +31,7 @@ it('renders the published CMS home page from typed blocks', function () {
 
     $this->get('/')
         ->assertOk()
-        ->assertSee('Technology that moves business forward.')
+        ->assertSeeText('Technology that moves business forward.')
         ->assertSee('Start a Conversation')
         ->assertSee('One technology partner. Multiple capabilities.')
         ->assertSee('Software Development')

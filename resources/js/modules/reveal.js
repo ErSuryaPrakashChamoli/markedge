@@ -22,22 +22,28 @@ function collectRoots() {
 
 /** Wraps each word of a plain-text heading in a masked span so it can slide up into view. */
 function splitWords(heading) {
-    if (heading.dataset.split || heading.children.length > 0) return;
+    if (heading.dataset.split) return;
+    if (Array.from(heading.children).some((child) => child.tagName !== 'SPAN')) return;
     const text = heading.textContent.trim();
-    if (!text) return;
-    const words = text.split(/\s+/);
-    if (words.length > MAX_WORDS) return;
+    if (!text || text.split(/\s+/).length > MAX_WORDS) return;
+
+    // Words become [text, className] pairs; inline spans (gradient highlights) keep their class.
+    const words = [];
+    heading.childNodes.forEach((node) => {
+        const className = node.nodeType === 1 ? node.className : '';
+        node.textContent.split(/\s+/).filter(Boolean).forEach((word) => words.push([word, className]));
+    });
 
     heading.dataset.split = '1';
     heading.setAttribute('aria-label', text);
     heading.textContent = '';
 
-    words.forEach((word, index) => {
+    words.forEach(([word, className], index) => {
         const mask = document.createElement('span');
         mask.className = 'word';
         mask.setAttribute('aria-hidden', 'true');
         const inner = document.createElement('span');
-        inner.className = 'word-inner';
+        inner.className = 'word-inner' + (className ? ' ' + className : '');
         inner.style.setProperty('--w', String(index));
         inner.textContent = word;
         mask.appendChild(inner);

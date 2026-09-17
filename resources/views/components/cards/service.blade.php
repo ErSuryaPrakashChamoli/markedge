@@ -4,7 +4,8 @@
     @if ($showCategory && $service->relationLoaded('category') && $service->category)
         <x-ui.badge class="self-start">{{ $service->category->name }}</x-ui.badge>
     @endif
-    <h3 class="text-h4 mt-3 first:mt-0">{{ $service->name }}</h3>
+    <span class="mt-3 inline-flex size-11 items-center justify-center rounded-control bg-brand-soft text-brand transition-colors group-hover:bg-brand group-hover:text-white first:mt-0"><x-ui.icon name="heroicon-o-squares-2x2" class="size-5" /></span>
+    <h3 class="mt-4 text-h4">{{ $service->name }}</h3>
     @if ($service->short_description ?? $service->tagline)
         <p class="mt-2 text-body-sm text-fg-secondary">{{ \Illuminate\Support\Str::limit($service->short_description ?: $service->tagline, 140) }}</p>
     @endif
