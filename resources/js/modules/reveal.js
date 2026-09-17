@@ -1,12 +1,15 @@
 /**
- * Scroll reveal. Sections inside <main> (and the footer) fade in as they enter the viewport;
- * lists and grids inside them stagger their children. The visual character of the motion comes
- * from body[data-motion], set per page type in the layout, so every section of the site has its
- * own signature while sharing one restrained timing model. Content is never hidden without JS:
- * the initial state only applies once <html class="js-motion"> is present.
+ * Scroll reveal. Sections inside <main> (and the footer) reveal as they enter the viewport:
+ * headings unmask word by word, grids and lists stagger their children, images settle from a
+ * zoom. The visual signature comes from body[data-motion], set per page type in the layout.
+ * Content is never hidden without JS: the initial state only applies once <html class="js-motion">
+ * is present, and reduced-motion users get everything instantly.
  */
 const STAGGER_SELECTOR = ':scope .grid, :scope ol, :scope ul:not([role="list"]):not(.divide-y), :scope ul.divide-y, :scope dl, :scope [data-stagger]';
+const HEADING_SELECTOR = ':scope h1.text-h1, :scope h2.text-h2, :scope h2.text-h1, :scope .text-display';
+const MEDIA_SELECTOR = ':scope picture, :scope img:not(picture img), :scope video';
 const MAX_STAGGER_INDEX = 11;
+const MAX_WORDS = 24;
 
 function collectRoots() {
     const explicit = Array.from(document.querySelectorAll('[data-reveal]'));
@@ -17,9 +20,42 @@ function collectRoots() {
     return [...new Set([...explicit, ...sections, ...(footer ? [footer] : [])])].filter((el) => !el.classList.contains('is-visible') && !el.closest('[data-no-reveal]'));
 }
 
-function prepareStagger(root) {
-    if (root.dataset.staggered) return;
-    root.dataset.staggered = '1';
+/** Wraps each word of a plain-text heading in a masked span so it can slide up into view. */
+function splitWords(heading) {
+    if (heading.dataset.split || heading.children.length > 0) return;
+    const text = heading.textContent.trim();
+    if (!text) return;
+    const words = text.split(/\s+/);
+    if (words.length > MAX_WORDS) return;
+
+    heading.dataset.split = '1';
+    heading.setAttribute('aria-label', text);
+    heading.textContent = '';
+
+    words.forEach((word, index) => {
+        const mask = document.createElement('span');
+        mask.className = 'word';
+        mask.setAttribute('aria-hidden', 'true');
+        const inner = document.createElement('span');
+        inner.className = 'word-inner';
+        inner.style.setProperty('--w', String(index));
+        inner.textContent = word;
+        mask.appendChild(inner);
+        heading.appendChild(mask);
+        if (index < words.length - 1) heading.appendChild(document.createTextNode(' '));
+    });
+}
+
+function prepare(root) {
+    if (root.dataset.prepared) return;
+    root.dataset.prepared = '1';
+
+    root.querySelectorAll(HEADING_SELECTOR).forEach(splitWords);
+
+    root.querySelectorAll(MEDIA_SELECTOR).forEach((media) => {
+        if (media.closest('nav, header, a.logo')) return;
+        media.classList.add('reveal-media');
+    });
 
     root.querySelectorAll(STAGGER_SELECTOR).forEach((group) => {
         if (group.closest('nav, header') || group.dataset.staggerDone) return;
@@ -54,12 +90,12 @@ export function initReveal() {
                 observer.unobserve(entry.target);
             });
         },
-        { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        { rootMargin: '0px 0px -12% 0px', threshold: 0.12 },
     );
 
     roots.forEach((el) => {
         el.classList.add('reveal');
-        prepareStagger(el);
+        prepare(el);
         observer.observe(el);
     });
 

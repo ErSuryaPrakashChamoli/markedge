@@ -53,6 +53,7 @@
 </head>
 <body {{ $attributes->merge(['class' => 'flex min-h-full flex-col bg-canvas text-fg '.$bodyClass]) }} data-motion="{{ $motion }}" @if ($preview) data-preview @endif>
     <x-layout.skip-link />
+    <div class="scroll-progress" aria-hidden="true"></div>
     @if ($preview)
         <x-layout.preview-banner />
     @else
