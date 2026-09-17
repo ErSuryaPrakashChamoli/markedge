@@ -540,6 +540,11 @@
     .hero-carousel .hero-slide-img { animation: none; }
 }
 
+/* The section right after the hero starts above the fold: shorter top padding on the home page. */
+#main > :first-child + * {
+    padding-top: clamp(2rem, 1.5rem + 1.5vw, 3rem);
+}
+
 @utility hairline {
     border-color: var(--mk-line);
 }

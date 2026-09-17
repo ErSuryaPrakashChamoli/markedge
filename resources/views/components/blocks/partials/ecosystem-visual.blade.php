@@ -1,6 +1,6 @@
 {{-- Decorative BUILD / OPERATE / GROW diagram drawn with the design tokens; no images, no claims. --}}
 <div {{ $attributes->merge(['class' => 'relative']) }} aria-hidden="true">
-    <svg viewBox="0 0 480 360" class="w-full max-w-lg" role="presentation" fill="none">
+    <svg viewBox="0 0 480 360" class="mx-auto w-full max-w-sm xl:max-w-md" role="presentation" fill="none">
         <defs>
             <linearGradient id="mk-eco-line" x1="0" x2="1" y1="0" y2="1">
                 <stop offset="0" stop-color="var(--mk-line-strong)" />

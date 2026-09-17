@@ -18,7 +18,7 @@
     role="region" aria-roledescription="carousel" aria-label="Highlights" tabindex="0"
 >
     <div class="absolute -inset-5 rounded-[2.25rem] bg-brand/25 blur-3xl" aria-hidden="true"></div>
-    <div class="relative overflow-hidden rounded-card shadow-lift {{ $ratioClass }}">
+    <div class="relative overflow-hidden rounded-card shadow-lift {{ $ratioClass }} lg:aspect-auto lg:h-[24rem] xl:h-[26rem]">
         @foreach ($slides as $index => $slide)
             @php
                 $size = $sizes[$slide['text_size'] ?? 'md'] ?? $sizes['md'];
