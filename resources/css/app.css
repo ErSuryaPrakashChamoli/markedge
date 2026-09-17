@@ -182,6 +182,11 @@
         color: #fff;
     }
 
+    /* Alpine-controlled panels (menus, drawer, extra slides) stay hidden until the script boots. */
+    [x-cloak] {
+        display: none !important;
+    }
+
     :focus-visible {
         outline: 2px solid var(--mk-brand);
         outline-offset: 2px;
