@@ -2,10 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Analytics\Analytics;
 use App\Attribution\AttributionCookie;
 use App\Attribution\Normaliser;
 use App\Attribution\TouchDetector;
 use Closure;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,6 +22,7 @@ class CaptureAttribution
     public function __construct(
         private readonly AttributionCookie $cookie,
         private readonly TouchDetector $detector,
+        private readonly Analytics $analytics,
     ) {}
 
     public function handle(Request $request, Closure $next): Response
@@ -34,10 +37,18 @@ class CaptureAttribution
         $before = $attribution->toArray();
 
         $attribution->recordVisit($touch, $landing);
+        $newSession = $attribution->touchSession();
 
         $response = $next($request);
 
         $html = str_contains((string) $response->headers->get('Content-Type'), 'text/html');
+
+        // One bounded insert per public HTML page (never a queue round-trip for a page view); Analytics
+        // swallows storage failures so measurement can never break the page.
+        if ($html && $response->getStatusCode() === 200) {
+            $entity = $request->attributes->get('markedge.entity');
+            $this->analytics->pageView($request, $attribution, $newSession, $entity instanceof Model ? $entity : null);
+        }
 
         if ($html && $this->cookie->allowedFor($request) && ($before !== $attribution->toArray() || ! $request->cookies->has($this->cookie->name()))) {
             $response->headers->setCookie($this->cookie->make($attribution));

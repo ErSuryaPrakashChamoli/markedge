@@ -39,6 +39,7 @@ use App\Models\Tag;
 use App\Models\Technology;
 use App\Models\Testimonial;
 use App\Models\User;
+use App\Observers\LeadObserver;
 use App\Observers\SearchableObserver;
 use App\Observers\SeoMetaObserver;
 use App\Policies\ActivityPolicy;
@@ -102,6 +103,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         SeoMeta::observe(SeoMetaObserver::class);
+        Lead::observe(LeadObserver::class);
     }
 
     protected function registerRateLimiters(): void

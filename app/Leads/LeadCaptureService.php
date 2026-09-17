@@ -2,11 +2,11 @@
 
 namespace App\Leads;
 
+use App\Analytics\Analytics;
 use App\Enums\ConversionEventType;
 use App\Enums\LeadStatus;
 use App\Events\LeadCreated;
 use App\Models\Campaign;
-use App\Models\ConversionEvent;
 use App\Models\Lead;
 use Illuminate\Support\Facades\DB;
 
@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\DB;
  */
 class LeadCaptureService
 {
+    public function __construct(private readonly Analytics $analytics) {}
+
     public function capture(LeadSubmission $submission): LeadCaptureResult
     {
         $existing = Lead::query()->where('submission_token', $submission->submissionToken)->first();
@@ -77,8 +79,7 @@ class LeadCaptureService
             ]);
 
             foreach ([ConversionEventType::FormSubmitted, ConversionEventType::LeadCreated] as $type) {
-                ConversionEvent::query()->create([
-                    'type' => $type,
+                $this->analytics->record($type, [
                     'lead_id' => $lead->id,
                     'form_id' => $submission->form->id,
                     'cta_id' => $lead->cta_id,
@@ -86,11 +87,7 @@ class LeadCaptureService
                     'path' => $submission->conversionPath,
                     'entity_type' => $this->entityType($submission),
                     'entity_id' => $this->entityId($submission),
-                    'visitor_id' => $attribution->visitorId,
-                    'source' => $last?->source,
-                    'medium' => $last?->medium,
-                    'campaign' => $last?->campaign,
-                ]);
+                ], null, $attribution);
             }
 
             return new LeadCaptureResult($lead, created: true, duplicate: $duplicateOf !== null);

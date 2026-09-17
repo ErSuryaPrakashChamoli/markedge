@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\ConversionEventType;
 use App\Models\ConversionEvent;
 use App\Models\CtaClick;
 use Illuminate\Console\Command;
@@ -26,10 +27,12 @@ class PruneConversionEvents extends Command
         }
 
         $cutoff = now()->subDays($days);
+        $pageViewDays = max(7, (int) config('markedge.analytics.pageview_retention_days', 90));
+        $views = ConversionEvent::query()->where('type', ConversionEventType::PageViewed->value)->where('created_at', '<', now()->subDays($pageViewDays))->delete();
         $events = ConversionEvent::query()->where('created_at', '<', $cutoff)->delete();
         $clicks = CtaClick::query()->where('created_at', '<', $cutoff)->delete();
 
-        $this->info("Deleted {$events} conversion events and {$clicks} CTA clicks older than {$days} days.");
+        $this->info("Deleted {$views} page views older than {$pageViewDays} days, {$events} other events and {$clicks} CTA clicks older than {$days} days.");
 
         return self::SUCCESS;
     }

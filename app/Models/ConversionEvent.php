@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * Minimal first-party measurement record. Never holds form answers, request bodies, headers or
  * personal data; the lead itself is the only place personal data lives.
  */
-#[Fillable(['type', 'lead_id', 'form_id', 'cta_id', 'campaign_id', 'path', 'entity_type', 'entity_id', 'visitor_id', 'source', 'medium', 'campaign', 'meta', 'created_at'])]
+#[Fillable(['type', 'lead_id', 'form_id', 'cta_id', 'campaign_id', 'path', 'entity_type', 'entity_id', 'visitor_id', 'session_id', 'source', 'medium', 'campaign', 'meta', 'created_at'])]
 class ConversionEvent extends Model
 {
     /** @use HasFactory<ConversionEventFactory> */

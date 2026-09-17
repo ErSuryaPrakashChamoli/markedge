@@ -25,7 +25,8 @@ function queriesFor(string $uri): array
     $log = DB::getQueryLog();
     DB::disableQueryLog();
 
-    return array_map(fn (array $q) => $q['query'], $log);
+    // The page-view event (Phase 13) is one insert written after the response and is not part of the page budget.
+    return array_values(array_filter(array_map(fn (array $q) => $q['query'], $log), fn (string $sql) => ! str_starts_with($sql, 'insert into "conversion_events"')));
 }
 
 function seedCatalogue(): array

@@ -123,6 +123,10 @@ return [
 
     'analytics' => [
         'event_retention_days' => (int) env('MARKEDGE_EVENT_RETENTION_DAYS', 400),
+        // Page views are high-volume and only feed aggregates; they are pruned sooner (Phase 13 §8.8).
+        'pageview_retention_days' => (int) env('MARKEDGE_PAGEVIEW_RETENTION_DAYS', 90),
+        'session_minutes' => 30,
+        'bot_pattern' => '/bot|crawl|spider|slurp|lighthouse|headlesschrome|curl|wget|python-requests|httpclient|facebookexternalhit|preview|monitor/i',
     ],
 
     /*

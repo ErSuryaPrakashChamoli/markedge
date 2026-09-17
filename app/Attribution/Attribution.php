@@ -19,6 +19,8 @@ final class Attribution
         public int $visits = 0,
         public ?int $lastCtaId = null,
         public ?string $lastCtaAt = null,
+        public ?string $sessionId = null,
+        public ?string $sessionAt = null,
     ) {}
 
     public static function fresh(): self
@@ -45,6 +47,8 @@ final class Attribution
             visits: max(0, min(100000, (int) ($data['visits'] ?? 0))),
             lastCtaId: is_int($data['cta'] ?? null) && $data['cta'] > 0 ? $data['cta'] : null,
             lastCtaAt: $ctaAt,
+            sessionId: is_string($data['sid'] ?? null) && Str::isUuid($data['sid']) ? $data['sid'] : null,
+            sessionAt: is_string($data['sat'] ?? null) && strtotime($data['sat']) !== false ? $data['sat'] : null,
         );
     }
 
@@ -61,6 +65,8 @@ final class Attribution
             'visits' => $this->visits,
             'cta' => $this->lastCtaId,
             'cta_at' => $this->lastCtaAt,
+            'sid' => $this->sessionId,
+            'sat' => $this->sessionAt,
         ], fn ($value) => $value !== null);
     }
 
@@ -83,6 +89,26 @@ final class Attribution
         } elseif (config('markedge.attribution.direct_overwrites_last_touch')) {
             $this->last = new Touch(null, null, null, null, null, null, $landingPage, now()->toIso8601String());
         }
+    }
+
+    /**
+     * Rolling session: a new id after the configured inactivity gap. Returns true when a session started.
+     */
+    public function touchSession(): bool
+    {
+        $gap = (int) config('markedge.analytics.session_minutes', 30);
+        $expired = $this->sessionAt === null || now()->diffInMinutes($this->sessionAt, true) > $gap;
+
+        if ($this->sessionId === null || $expired) {
+            $this->sessionId = (string) Str::uuid();
+            $this->sessionAt = now()->toIso8601String();
+
+            return true;
+        }
+
+        $this->sessionAt = now()->toIso8601String();
+
+        return false;
     }
 
     public function recordCtaClick(int $ctaId): void

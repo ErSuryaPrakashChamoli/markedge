@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Site;
 
+use App\Analytics\Analytics;
 use App\Attribution\AttributionCookie;
 use App\Attribution\Normaliser;
 use App\Enums\ConversionEventType;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
-use App\Models\ConversionEvent;
 use App\Models\Cta;
 use App\Models\CtaClick;
 use App\Services\Cms\CtaDestination;
@@ -57,17 +57,12 @@ class CtaClickController extends Controller
                 'created_at' => now(),
             ]);
 
-            ConversionEvent::query()->create([
-                'type' => ConversionEventType::CtaClicked,
+            app(Analytics::class)->record(ConversionEventType::CtaClicked, [
                 'cta_id' => $cta->id,
                 'campaign_id' => $campaign?->id,
                 'path' => $path,
-                'visitor_id' => $attribution->visitorId,
-                'source' => $attribution->last?->source,
-                'medium' => $attribution->last?->medium,
-                'campaign' => $attribution->last?->campaign,
                 'meta' => ['slot' => $slot, 'action' => $action],
-            ]);
+            ], $request, $attribution);
 
             // Query builder increment: no model events, so no content-cache invalidation.
             Cta::query()->whereKey($cta->id)->increment('click_count');

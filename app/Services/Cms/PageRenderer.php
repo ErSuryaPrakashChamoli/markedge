@@ -35,6 +35,8 @@ class PageRenderer
 
     public function render(Model $entity, bool $preview = false): View
     {
+        request()?->attributes->set('markedge.entity', $entity);
+
         $view = match (true) {
             $entity instanceof Page => $entity->isHome() ? 'pages.home' : 'pages.page',
             $entity instanceof ServiceCategory => 'pages.services.category',

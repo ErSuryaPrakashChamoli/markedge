@@ -13,7 +13,7 @@ it('records an aggregate search event with the anonymous visitor id and no perso
     $this->get('/search?q=a')->assertOk();
     $this->get('/search')->assertOk();
 
-    $event = ConversionEvent::query()->sole();
+    $event = ConversionEvent::query()->where('type', 'search_performed')->sole();
 
     expect($event->type->value)->toBe('search_performed')
         ->and($event->visitor_id)->toBe($attribution->visitorId)

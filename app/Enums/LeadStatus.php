@@ -14,6 +14,11 @@ enum LeadStatus: string implements HasColor, HasLabel
     case Converted = 'converted';
     case Spam = 'spam';
 
+    public function isWon(): bool
+    {
+        return $this === self::Converted;
+    }
+
     public function getLabel(): string
     {
         return match ($this) {

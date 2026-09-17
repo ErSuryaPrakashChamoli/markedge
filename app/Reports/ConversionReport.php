@@ -59,7 +59,7 @@ class ConversionReport
             $end = $start->copy()->addDay();
         }
 
-        return new self($start, $end);
+        return new static($start, $end);
     }
 
     protected static function parse(?string $date): ?Carbon
@@ -169,7 +169,7 @@ class ConversionReport
     /**
      * @return Builder<Lead>
      */
-    protected function leads(): Builder
+    public function leads(): Builder
     {
         return Lead::query()->where('leads.status', '!=', LeadStatus::Spam->value)
             ->where('leads.created_at', '>=', $this->from)->where('leads.created_at', '<', $this->until);
@@ -178,7 +178,7 @@ class ConversionReport
     /**
      * @return Builder<ConversionEvent>
      */
-    protected function events(): Builder
+    public function events(): Builder
     {
         return ConversionEvent::query()->where('created_at', '>=', $this->from)->where('created_at', '<', $this->until);
     }
@@ -186,7 +186,7 @@ class ConversionReport
     /**
      * @return Builder<CtaClick>
      */
-    protected function clicks(): Builder
+    public function clicks(): Builder
     {
         return CtaClick::query()->where('cta_clicks.created_at', '>=', $this->from)->where('cta_clicks.created_at', '<', $this->until);
     }

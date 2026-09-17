@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\Lead;
 use App\Reports\ConversionReport;
+use App\Reports\MarketingReport;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
@@ -23,7 +24,7 @@ class ConversionReports extends Page
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $title = 'Conversion reports';
+    protected static ?string $title = 'Marketing analytics';
 
     protected string $view = 'filament.pages.conversion-reports';
 
@@ -35,6 +36,9 @@ class ConversionReports extends Page
 
     #[Url]
     public ?string $until = null;
+
+    #[Url]
+    public string $granularity = 'daily';
 
     public static function canAccess(): bool
     {
@@ -53,14 +57,26 @@ class ConversionReports extends Page
     {
         abort_unless(static::canAccess(), 403);
 
-        $report = ConversionReport::forRange($this->range, $this->from, $this->until);
+        $report = MarketingReport::forRange($this->range, $this->from, $this->until);
+        $granularity = in_array($this->granularity, ['daily', 'weekly', 'monthly', 'quarterly'], true) ? $this->granularity : 'daily';
 
         return [
             'ranges' => ConversionReport::ranges(),
             'report' => $report,
             'timezone' => config('app.timezone'),
             'totals' => $report->totals(),
+            'traffic' => $report->traffic(),
+            'funnel' => $report->funnel(),
+            'trend' => $report->trend($granularity),
+            'granularity' => $granularity,
+            'paths' => $report->conversionPaths(),
+            'content' => $report->contentPerformance(),
+            'productInterest' => $report->interest('product', 'products', 'product_id'),
+            'serviceInterest' => $report->interest('service', 'services', 'service_id'),
             'sections' => [
+                'Sessions by landing source / medium' => $report->sessionsBySource(),
+                'Top pages (views)' => $report->topPages(),
+                'Landing pages (sessions)' => $report->landingPages(),
                 'Leads by first-touch source / medium' => $report->leadsBySourceMedium('first'),
                 'Leads by last-touch source / medium' => $report->leadsBySourceMedium('last'),
                 'Leads by last-touch campaign (UTM)' => $report->leadsBy('last_campaign', 'No campaign'),
