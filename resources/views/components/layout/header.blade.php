@@ -4,7 +4,7 @@
     @keydown.escape.window="closeAll()"
     class="sticky top-0 z-50 border-b border-line bg-charcoal-800"
 >
-    <x-ui.container class="relative flex h-16 items-center justify-between gap-6 lg:h-[4.5rem]">
+    <x-ui.container class="relative flex h-14 items-center justify-between gap-6 lg:h-16">
         <x-layout.logo :company-name="$companyName" :logo-url="$logoUrl" />
 
         @unless ($minimal)
