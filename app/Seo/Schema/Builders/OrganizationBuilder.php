@@ -32,7 +32,7 @@ class OrganizationBuilder implements SchemaBuilder
             'name' => $this->settings->get('company.name', config('app.name')),
             'legalName' => $this->settings->get('company.legal_name'),
             'url' => $context->siteUrl,
-            'logo' => $this->settings->logoUrl(),
+            'logo' => $this->settings->logoUrl() ?? asset('images/logo.png'),
             'description' => $this->text($this->settings->get('company.description')),
             'email' => $this->settings->get('contact.email'),
             'telephone' => $this->settings->get('contact.phone'),

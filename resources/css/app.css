@@ -509,42 +509,42 @@
     /* ---- Signatures ---- */
 
     /* Home: cards rise with a spring and a slight lean, settling like tiles. */
-    .js-motion body[data-motion="rise"] .reveal .reveal-item { transform: translateY(56px) scale(0.96); }
-    .js-motion body[data-motion="rise"] .reveal .reveal-item:nth-child(3n+1) { transform: translateY(56px) rotate(-1.5deg) scale(0.96); }
-    .js-motion body[data-motion="rise"] .reveal .reveal-item:nth-child(3n) { transform: translateY(56px) rotate(1.5deg) scale(0.96); }
+    .js-motion :where(body[data-motion="rise"]) .reveal :where(.reveal-item) { transform: translateY(56px) scale(0.96); }
+    .js-motion :where(body[data-motion="rise"]) .reveal :where(.reveal-item:nth-child(3n+1)) { transform: translateY(56px) rotate(-1.5deg) scale(0.96); }
+    .js-motion :where(body[data-motion="rise"]) .reveal :where(.reveal-item:nth-child(3n)) { transform: translateY(56px) rotate(1.5deg) scale(0.96); }
 
     /* Services: panels swing in from alternating sides on a 3D hinge. */
-    .js-motion body[data-motion="slide"] .reveal { perspective: 1400px; }
-    .js-motion body[data-motion="slide"] .reveal .reveal-item:nth-child(odd) { transform: translateX(-72px) rotateY(14deg); transform-origin: right center; }
-    .js-motion body[data-motion="slide"] .reveal .reveal-item:nth-child(even) { transform: translateX(72px) rotateY(-14deg); transform-origin: left center; }
+    .js-motion :where(body[data-motion="slide"]) .reveal { perspective: 1400px; }
+    .js-motion :where(body[data-motion="slide"]) .reveal :where(.reveal-item:nth-child(odd)) { transform: translateX(-72px) rotateY(14deg); transform-origin: right center; }
+    .js-motion :where(body[data-motion="slide"]) .reveal :where(.reveal-item:nth-child(even)) { transform: translateX(72px) rotateY(-14deg); transform-origin: left center; }
 
     /* Products: screens power on: zoom out of a blur with a bright sweep. */
-    .js-motion body[data-motion="scale"] .reveal .reveal-item { transform: scale(0.82) translateY(24px); filter: blur(12px) saturate(0.6); }
+    .js-motion :where(body[data-motion="scale"]) .reveal :where(.reveal-item) { transform: scale(0.82) translateY(24px); filter: blur(12px) saturate(0.6); }
 
     /* Solutions: curtain wipe from the bottom with a lift. */
-    .js-motion body[data-motion="curtain"] .reveal .reveal-item { transform: translateY(28px); clip-path: inset(0 0 100% 0); }
+    .js-motion :where(body[data-motion="curtain"]) .reveal :where(.reveal-item) { transform: translateY(28px); clip-path: inset(0 0 100% 0); }
 
     /* Industries: diagonal sweep from the left. */
-    .js-motion body[data-motion="sweep"] .reveal .reveal-item { transform: translateX(-48px); clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); }
+    .js-motion :where(body[data-motion="sweep"]) .reveal :where(.reveal-item) { transform: translateX(-48px); clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); }
     .js-motion body[data-motion="sweep"] .reveal.is-visible .reveal-item { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
     /* Case studies: the story snaps into focus from a close-up. */
-    .js-motion body[data-motion="focus"] .reveal .reveal-item { transform: scale(1.08) translateY(16px); filter: blur(14px); }
+    .js-motion :where(body[data-motion="focus"]) .reveal :where(.reveal-item) { transform: scale(1.08) translateY(16px); filter: blur(14px); }
 
     /* Insights: cards flip up from the table like pages. */
-    .js-motion body[data-motion="lift"] .reveal { perspective: 1200px; }
-    .js-motion body[data-motion="lift"] .reveal .reveal-item { transform: translateY(48px) rotateX(-28deg); transform-origin: top center; }
+    .js-motion :where(body[data-motion="lift"]) .reveal { perspective: 1200px; }
+    .js-motion :where(body[data-motion="lift"]) .reveal :where(.reveal-item) { transform: translateY(48px) rotateX(-28deg); transform-origin: top center; }
 
     /* Landing pages: fast, decisive rise so the offer is on screen quickly. */
-    .js-motion body[data-motion="landing"] { --reveal-duration: 0.6s; --reveal-stagger: 55ms; }
-    .js-motion body[data-motion="landing"] .reveal .reveal-item { transform: translateY(36px) scale(0.97); }
+    .js-motion :where(body[data-motion="landing"]) { --reveal-duration: 0.6s; --reveal-stagger: 55ms; }
+    .js-motion :where(body[data-motion="landing"]) .reveal :where(.reveal-item) { transform: translateY(36px) scale(0.97); }
 
     @media (prefers-reduced-motion: reduce) {
         .scroll-progress { display: none; }
 
         .js-motion .reveal,
         .js-motion .reveal .reveal-item,
-        .js-motion body[data-motion] .reveal .reveal-item,
+        .js-motion :where(body[data-motion]) .reveal :where(.reveal-item),
         .js-motion .reveal .word-inner,
         .js-motion .reveal .reveal-media,
         .js-motion .reveal .reveal-media img,

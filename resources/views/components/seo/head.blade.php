@@ -43,5 +43,7 @@
 @if ($meta->schema !== [])
     <script type="application/ld+json">{!! \App\Seo\Schema\SchemaGraphBuilder::encode($meta->schema) !!}</script>
 @endif
-<link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+<link rel="icon" href="{{ asset('favicon.ico') }}" sizes="48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
 <meta name="theme-color" content="#16191d">
