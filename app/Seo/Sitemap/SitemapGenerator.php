@@ -10,9 +10,11 @@ use App\Models\Industry;
 use App\Models\LandingPage;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Solution;
+use App\Products\ProductComparison;
 use App\Seo\IndexabilityResolver;
 use App\Services\Cms\ContentVersion;
 use Illuminate\Database\Eloquent\Builder;
@@ -110,6 +112,32 @@ class SitemapGenerator
                 $add($decision->canonical, $lastmod ? Carbon::parse($lastmod) : null);
             }
         }
+
+        $this->addProductListings($add);
+    }
+
+    /**
+     * The comparison page (two or more visible products) and each product's documentation index.
+     */
+    protected function addProductListings(\Closure $add): void
+    {
+        if (Product::query()->publiclyVisible()->count() >= ProductComparison::MINIMUM) {
+            $decision = $this->indexability->forListing('/products/compare');
+
+            if ($decision->inSitemap) {
+                $add($decision->canonical, Product::query()->publiclyVisible()->max('updated_at') ? Carbon::parse(Product::query()->publiclyVisible()->max('updated_at')) : null);
+            }
+        }
+
+        Product::query()->publiclyVisible()->whereHas('documents', fn (Builder $q) => $q->published())
+            ->withMax(['documents as documents_updated_at' => fn (Builder $q) => $q->published()], 'updated_at')
+            ->get(['id', 'slug'])->each(function (Product $product) use ($add): void {
+                $decision = $this->indexability->forListing("/products/{$product->slug}/docs");
+
+                if ($decision->inSitemap) {
+                    $add($decision->canonical, $product->documents_updated_at ? Carbon::parse($product->documents_updated_at) : null);
+                }
+            });
     }
 
     /**
@@ -122,6 +150,7 @@ class SitemapGenerator
             ServiceCategory::query()->published(),
             Service::query()->published(),
             Product::query()->publiclyVisible(),
+            ProductDocument::query()->publiclyAvailable()->with('product'),
             Solution::query()->published(),
             Industry::query()->published(),
             CaseStudy::query()->published(),

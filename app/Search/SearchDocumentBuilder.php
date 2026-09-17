@@ -7,6 +7,7 @@ use App\Models\CaseStudy;
 use App\Models\Industry;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Solution;
@@ -82,6 +83,12 @@ class SearchDocumentBuilder
             return [$entity->slug, $entity->name];
         }
 
+        if ($entity instanceof ProductDocument) {
+            $entity->loadMissing('product');
+
+            return [$entity->product?->slug, $entity->product?->name];
+        }
+
         return [null, null];
     }
 
@@ -95,6 +102,7 @@ class SearchDocumentBuilder
             $entity instanceof Industry => [$entity->description, ...$this->repeaterText($entity->challenges)],
             $entity instanceof CaseStudy => [$entity->challenge, $entity->solution, $entity->implementation, $entity->results],
             $entity instanceof Article => [$entity->body],
+            $entity instanceof ProductDocument => [$entity->body, $entity->section],
             $entity instanceof Page => $this->blockText($entity->blocks),
             default => [],
         };

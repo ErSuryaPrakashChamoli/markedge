@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\CaseStudy;
 use App\Models\Industry;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\Service;
 use App\Models\Solution;
 use App\Seo\IndexabilityResolver;
@@ -62,6 +63,16 @@ class RelatedContentResolver
         }
 
         return $this->rank($scored, $host, $limit);
+    }
+
+    /**
+     * Sibling documentation pages of the same product, in reading order.
+     *
+     * @return Collection<int, ProductDocument>
+     */
+    public function productDocuments(ProductDocument $document): Collection
+    {
+        return ProductDocument::query()->where('product_id', $document->product_id)->published()->ordered()->get(['id', 'product_id', 'title', 'slug', 'section', 'sort_order']);
     }
 
     /**

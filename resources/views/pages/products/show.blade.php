@@ -1,6 +1,6 @@
 {{-- Generic product skeleton (architecture §9.1). LMS, RMS and every future product render through this file. --}}
 @inject('urls', 'App\Services\Cms\PublicUrl')
-@php $screenshots = $entity->getMedia('screenshots'); $grouped = $entity->features->groupBy(fn ($feature) => $feature->group_label ?: ''); @endphp
+@php $screenshots = $entity->getMedia('screenshots'); $grouped = $entity->features->whereNull('product_module_id')->groupBy(fn ($feature) => $feature->group_label ?: ''); $hasDocs = ($entity->published_documents_count ?? 0) > 0; @endphp
 <x-layouts.app :meta="$meta" :preview="$preview">
     <x-sections.entity-hero eyebrow="Product" :title="$entity->name" :intro="$entity->tagline" :breadcrumbs="$breadcrumbs" :media="$entity->getFirstMedia('hero')" :cta="$cta" :entity-name="$entity->name" :badge="$entity->isComingSoon() ? 'Coming soon' : null">
         @if ($entity->short_description)
@@ -10,7 +10,7 @@
 
     <x-sections.rich-content :html="$entity->long_description" heading="Overview" />
 
-    @if ($entity->features->isNotEmpty())
+    @if ($grouped->isNotEmpty())
         <x-ui.section theme="neutral" id="features">
             <x-ui.section-header title="Features" class="mb-10" />
             <div class="space-y-12">
@@ -23,6 +23,7 @@
                                     @if ($feature->icon && preg_match('/^heroicon-[a-z]-[a-z0-9-]+$/', $feature->icon))<x-ui.icon :name="$feature->icon" class="mb-3 size-6 text-brand" />@endif
                                     <h4 class="text-h4">{{ $feature->title }}</h4>
                                     @if ($feature->description)<p class="mt-2 text-body-sm text-fg-secondary">{{ $feature->description }}</p>@endif
+                                    <x-products.capabilities :capabilities="$feature->capabilities" />
                                 </div>
                             @endforeach
                         </x-ui.grid>
@@ -47,6 +48,7 @@
                                 @if ($module->summary)<p class="mt-3 text-body-lg text-fg-secondary">{{ $module->summary }}</p>@endif
                                 @if (filled(strip_tags((string) $module->description)))<x-ui.prose :html="$module->description" class="mt-4" />@endif
                                 @if (filled($module->highlights))<ul class="mt-5 space-y-2">@foreach ($module->highlights as $highlight)@if (filled($highlight))<li class="flex items-start gap-2 text-body-sm text-fg"><x-ui.icon name="heroicon-m-check" class="mt-0.5 size-4 text-brand" />{{ $highlight }}</li>@endif @endforeach</ul>@endif
+                                <x-products.module-features :features="$module->features" />
                             @endif
                         </x-slot:left>
                         <x-slot:right>
@@ -54,6 +56,7 @@
                                 <h3 class="text-h3">{{ $module->name }}</h3>
                                 @if ($module->summary)<p class="mt-3 text-body-lg text-fg-secondary">{{ $module->summary }}</p>@endif
                                 @if (filled(strip_tags((string) $module->description)))<x-ui.prose :html="$module->description" class="mt-4" />@endif
+                                <x-products.module-features :features="$module->features" />
                             @elseif ($image)
                                 <x-ui.picture :media="$image" conversion="card" sizes="(min-width: 1024px) 50vw, 100vw" />
                             @endif
@@ -93,6 +96,17 @@
                     @endif
                 @endforeach
             </ul>
+        </x-ui.section>
+    @endif
+
+    <x-products.fact-list :items="$entity->deployment ?? []" heading="Deployment options" id="deployment" />
+    <x-products.fact-list :items="$entity->security ?? []" heading="Security" id="security" theme="neutral" />
+
+    @if ($hasDocs)
+        <x-ui.section spacing="sm" id="documentation">
+            <h2 class="text-h3 mb-3">Documentation</h2>
+            <p class="text-body text-fg-secondary">Guides and reference for {{ $entity->name }}.</p>
+            <p class="mt-4"><x-ui.arrow-link :href="url('/products/'.$entity->slug.'/docs')">Read the documentation</x-ui.arrow-link></p>
         </x-ui.section>
     @endif
 

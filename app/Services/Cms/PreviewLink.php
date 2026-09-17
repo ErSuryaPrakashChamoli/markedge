@@ -8,6 +8,7 @@ use App\Models\Industry;
 use App\Models\LandingPage;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Solution;
@@ -25,6 +26,7 @@ class PreviewLink
         'service-category' => ServiceCategory::class,
         'service' => Service::class,
         'product' => Product::class,
+        'product-document' => ProductDocument::class,
         'solution' => Solution::class,
         'industry' => Industry::class,
         'case-study' => CaseStudy::class,

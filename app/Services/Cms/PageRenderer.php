@@ -10,6 +10,7 @@ use App\Models\Industry;
 use App\Models\LandingPage;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Solution;
@@ -42,6 +43,7 @@ class PageRenderer
             $entity instanceof ServiceCategory => 'pages.services.category',
             $entity instanceof Service => 'pages.services.show',
             $entity instanceof Product => 'pages.products.show',
+            $entity instanceof ProductDocument => 'pages.products.docs.show',
             $entity instanceof Solution => 'pages.solutions.show',
             $entity instanceof Industry => 'pages.industries.show',
             $entity instanceof CaseStudy => 'pages.case-studies.show',
@@ -105,6 +107,9 @@ class PageRenderer
             $entity instanceof Product => [
                 'services' => $this->related->services($entity),
                 'articles' => $this->related->articles($entity),
+            ],
+            $entity instanceof ProductDocument => [
+                'documents' => $this->related->productDocuments($entity),
             ],
             $entity instanceof Solution => [
                 'articles' => $this->related->articles($entity),

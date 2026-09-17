@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 
 #[Fillable(['product_id', 'name', 'summary', 'description', 'highlights', 'sort_order'])]
@@ -33,5 +34,10 @@ class ProductModule extends Model implements HasMedia
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function features(): HasMany
+    {
+        return $this->hasMany(ProductFeature::class)->orderBy('sort_order')->orderBy('id');
     }
 }

@@ -11,7 +11,9 @@ use App\Http\Controllers\Site\IndustryController;
 use App\Http\Controllers\Site\InsightsController;
 use App\Http\Controllers\Site\LandingPageController;
 use App\Http\Controllers\Site\PageController;
+use App\Http\Controllers\Site\ProductCompareController;
 use App\Http\Controllers\Site\ProductController;
+use App\Http\Controllers\Site\ProductDocumentController;
 use App\Http\Controllers\Site\SearchController;
 use App\Http\Controllers\Site\ServiceController;
 use App\Http\Controllers\Site\SolutionController;
@@ -59,7 +61,10 @@ Route::get('/industries', [IndustryController::class, 'index'])->name('industrie
 Route::get('/industries/{slug}', [IndustryController::class, 'show'])->where('slug', $slug)->name('industries.show');
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/compare', ProductCompareController::class)->name('products.compare');
 Route::get('/products/{slug}', [ProductController::class, 'show'])->where('slug', $slug)->name('products.show');
+Route::get('/products/{slug}/docs', [ProductDocumentController::class, 'index'])->where('slug', $slug)->name('products.docs.index');
+Route::get('/products/{slug}/docs/{document}', [ProductDocumentController::class, 'show'])->where(['slug' => $slug, 'document' => $slug])->name('products.docs.show');
 
 Route::get('/case-studies', [CaseStudyController::class, 'index'])->name('case-studies.index');
 Route::get('/case-studies/{slug}', [CaseStudyController::class, 'show'])->where('slug', $slug)->name('case-studies.show');

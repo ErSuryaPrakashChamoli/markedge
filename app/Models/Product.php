@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ConversionEventType;
 use App\Enums\ProductStatus;
 use App\Models\Concerns\BumpsContentVersion;
 use App\Models\Concerns\HasBlocks;
@@ -32,7 +33,7 @@ use Spatie\MediaLibrary\HasMedia;
  */
 #[Fillable([
     'name', 'slug', 'tagline', 'product_type', 'short_description', 'long_description', 'status',
-    'benefits', 'use_cases', 'integrations', 'blocks', 'cta_id', 'demo_form_id', 'external_url',
+    'benefits', 'use_cases', 'integrations', 'deployment', 'security', 'blocks', 'cta_id', 'demo_form_id', 'external_url',
     'is_featured', 'sort_order', 'published_at', 'launched_at',
 ])]
 class Product extends Model implements HasMedia
@@ -51,6 +52,8 @@ class Product extends Model implements HasMedia
             'benefits' => 'array',
             'use_cases' => 'array',
             'integrations' => 'array',
+            'deployment' => 'array',
+            'security' => 'array',
             'is_featured' => 'boolean',
             'published_at' => 'datetime',
             'launched_at' => 'date',
@@ -102,6 +105,29 @@ class Product extends Model implements HasMedia
     public function modules(): HasMany
     {
         return $this->hasMany(ProductModule::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(ProductDocument::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    /**
+     * Phase 13 page views recorded against this product.
+     */
+    public function pageViews(): HasMany
+    {
+        return $this->hasMany(ConversionEvent::class, 'entity_id')
+            ->where('entity_type', $this->getMorphClass())
+            ->where('type', ConversionEventType::PageViewed->value);
+    }
+
+    /**
+     * Features that are not attached to a module, grouped by their label.
+     */
+    public function ungroupedFeatures(): HasMany
+    {
+        return $this->features()->whereNull('product_module_id');
     }
 
     public function cta(): BelongsTo

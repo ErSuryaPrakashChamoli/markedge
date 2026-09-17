@@ -9,6 +9,7 @@ use App\Seo\Schema\Builders\BreadcrumbBuilder;
 use App\Seo\Schema\Builders\FaqBuilder;
 use App\Seo\Schema\Builders\OrganizationBuilder;
 use App\Seo\Schema\Builders\ProductBuilder;
+use App\Seo\Schema\Builders\ProductDocumentBuilder;
 use App\Seo\Schema\Builders\ServiceBuilder;
 use App\Seo\Schema\Builders\WebPageBuilder;
 use App\Seo\Schema\Builders\WebSiteBuilder;
@@ -28,6 +29,7 @@ class SchemaGraphBuilder
         ServiceBuilder::class,
         ArticleBuilder::class,
         ProductBuilder::class,
+        ProductDocumentBuilder::class,
         FaqBuilder::class,
     ];
 
@@ -102,7 +104,7 @@ class SchemaGraphBuilder
      */
     protected function primaryNodeId(array $nodes, SchemaContext $context): ?string
     {
-        foreach (['#service', '#article', '#product'] as $suffix) {
+        foreach (['#service', '#article', '#product', '#techarticle'] as $suffix) {
             if (isset($nodes[$context->url.$suffix])) {
                 return $context->url.$suffix;
             }

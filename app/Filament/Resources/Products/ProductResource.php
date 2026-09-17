@@ -8,6 +8,7 @@ use App\Filament\RelationManagers\TechnologiesRelationManager;
 use App\Filament\Resources\Products\Pages\CreateProduct;
 use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Resources\Products\Pages\ListProducts;
+use App\Filament\Resources\Products\RelationManagers\DocumentsRelationManager;
 use App\Filament\Resources\Products\RelationManagers\FeaturesRelationManager;
 use App\Filament\Resources\Products\RelationManagers\ModulesRelationManager;
 use App\Filament\Support\AuditSection;
@@ -102,6 +103,18 @@ class ProductResource extends Resource
                         TextInput::make('url')->url()->maxLength(255),
                     ])->collapsible()->collapsed()->itemLabel(fn (array $state): ?string => $state['name'] ?? null)->maxItems(24)->columns(2)->columnSpanFull(),
                 ]),
+                Tab::make('Deployment and security')->icon(Heroicon::OutlinedShieldCheck)->schema([
+                    Repeater::make('deployment')->label('Deployment options')->defaultItems(0)->schema([
+                        TextInput::make('label')->required()->maxLength(80),
+                        Textarea::make('text')->rows(2)->maxLength(400),
+                    ])->collapsible()->collapsed()->itemLabel(fn (array $state): ?string => $state['label'] ?? null)->maxItems(8)->columnSpanFull()
+                        ->helperText('State only deployment options that exist today. Leave empty rather than promise.'),
+                    Repeater::make('security')->label('Security statements')->defaultItems(0)->schema([
+                        TextInput::make('label')->required()->maxLength(80),
+                        Textarea::make('text')->rows(2)->maxLength(400),
+                    ])->collapsible()->collapsed()->itemLabel(fn (array $state): ?string => $state['label'] ?? null)->maxItems(12)->columnSpanFull()
+                        ->helperText('Factual, verifiable statements only. Certifications or audits must not be listed unless they are held.'),
+                ]),
                 Tab::make('Media')->icon(Heroicon::OutlinedPhoto)->schema([
                     MediaFields::gallery('screenshots', 'Screenshots'),
                     MediaFields::gallery('gallery', 'Gallery'),
@@ -154,6 +167,10 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withCount([
+                'pageViews as views_30d' => fn (Builder $q) => $q->where('created_at', '>=', now()->subDays(30)),
+                'leads as leads_30d' => fn (Builder $q) => $q->where('created_at', '>=', now()->subDays(30)),
+            ]))
             ->reorderable('sort_order')
             ->defaultSort('sort_order')
             ->columns([
@@ -163,6 +180,8 @@ class ProductResource extends Resource
                 Columns::status(),
                 Columns::featured(),
                 TextColumn::make('features_count')->counts('features')->label('Features'),
+                TextColumn::make('views_30d')->label('Views (30d)')->numeric()->sortable()->toggleable(),
+                TextColumn::make('leads_30d')->label('Leads (30d)')->numeric()->sortable()->toggleable(),
                 Columns::updatedAt(),
             ])
             ->filters([SelectFilter::make('status')->options(ProductStatus::class)->multiple(), TrashedFilter::make()])
@@ -201,7 +220,7 @@ class ProductResource extends Resource
 
     public static function getRelations(): array
     {
-        return [FeaturesRelationManager::class, ModulesRelationManager::class, FaqsRelationManager::class, TechnologiesRelationManager::class];
+        return [ModulesRelationManager::class, FeaturesRelationManager::class, DocumentsRelationManager::class, FaqsRelationManager::class, TechnologiesRelationManager::class];
     }
 
     public static function getPages(): array

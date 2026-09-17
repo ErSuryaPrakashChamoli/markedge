@@ -25,6 +25,8 @@ use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductCapability;
+use App\Models\ProductDocument;
 use App\Models\ProductFeature;
 use App\Models\ProductModule;
 use App\Models\Redirect;
@@ -143,6 +145,8 @@ class AppServiceProvider extends ServiceProvider
             'menu_item' => MenuItem::class,
             'page' => Page::class,
             'product' => Product::class,
+            'product_capability' => ProductCapability::class,
+            'product_document' => ProductDocument::class,
             'product_feature' => ProductFeature::class,
             'product_module' => ProductModule::class,
             'redirect' => Redirect::class,

@@ -11,6 +11,7 @@ use App\Models\Industry;
 use App\Models\LandingPage;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Solution;
@@ -29,6 +30,7 @@ class PublicUrl
             $model instanceof Page => $model->isHome() ? '/' : "/{$model->slug}",
             $model instanceof ServiceCategory, $model instanceof Service => "/services/{$model->slug}",
             $model instanceof Product => "/products/{$model->slug}",
+            $model instanceof ProductDocument => $model->product ? "/products/{$model->product->slug}/docs/{$model->slug}" : null,
             $model instanceof Solution => "/solutions/{$model->slug}",
             $model instanceof Industry => "/industries/{$model->slug}",
             $model instanceof CaseStudy => "/case-studies/{$model->slug}",
@@ -55,6 +57,10 @@ class PublicUrl
     {
         if ($model instanceof Product) {
             return $model->isPubliclyVisible();
+        }
+
+        if ($model instanceof ProductDocument) {
+            return $model->isPubliclyAvailable();
         }
 
         if (in_array(Publishable::class, class_uses_recursive($model), true)) {

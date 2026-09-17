@@ -8,6 +8,7 @@ use App\Models\Industry;
 use App\Models\LandingPage;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Solution;
@@ -36,6 +37,12 @@ class Breadcrumbs
                 $this->crumb($entity->name),
             ])),
             $entity instanceof Product => [['label' => 'Products', 'url' => '/products'], $this->crumb($entity->name)],
+            $entity instanceof ProductDocument => [
+                ['label' => 'Products', 'url' => '/products'],
+                ['label' => $entity->product->name, 'url' => $this->urls->pathFor($entity->product)],
+                ['label' => 'Documentation', 'url' => $this->urls->pathFor($entity->product).'/docs'],
+                $this->crumb($entity->title),
+            ],
             $entity instanceof Solution => [['label' => 'Solutions', 'url' => '/solutions'], $this->crumb($entity->name)],
             $entity instanceof Industry => [['label' => 'Industries', 'url' => '/industries'], $this->crumb($entity->name)],
             $entity instanceof CaseStudy => [['label' => 'Case Studies', 'url' => '/case-studies'], $this->crumb($entity->title)],

@@ -12,6 +12,7 @@ use App\Models\Industry;
 use App\Models\LandingPage;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Solution;
@@ -75,9 +76,9 @@ class ContentResolver
 
     public function product(string $slug): ?Product
     {
-        $product = Product::query()->where('slug', $slug)->with([
+        $product = Product::query()->where('slug', $slug)->withCount(['documents as published_documents_count' => fn ($q) => $q->published()])->with([
             'seo', 'cta', 'media', 'demoForm.fields', 'technologies',
-            'features', 'modules.media',
+            'features.capabilities', 'modules.media', 'modules.features.capabilities',
             'industries' => fn ($q) => $q->published()->ordered(),
             'services' => fn ($q) => $q->published()->ordered()->with('category'),
             'solutions' => fn ($q) => $q->published()->ordered(),
@@ -95,6 +96,31 @@ class ContentResolver
         }
 
         return $product;
+    }
+
+    /**
+     * @return Collection<int, ProductDocument>
+     */
+    public function productDocuments(Product $product): Collection
+    {
+        return $product->documents()->published()->get();
+    }
+
+    public function productDocument(string $productSlug, string $documentSlug): ?ProductDocument
+    {
+        $product = $this->product($productSlug);
+
+        if ($product === null) {
+            return null;
+        }
+
+        $document = $product->documents()->where('slug', $documentSlug)->with('seo')->first();
+
+        if ($document === null || ! $document->isPublished()) {
+            return null;
+        }
+
+        return $document->setRelation('product', $product);
     }
 
     /**

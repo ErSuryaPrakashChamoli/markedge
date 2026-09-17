@@ -7,6 +7,7 @@ use App\Models\CaseStudy;
 use App\Models\Industry;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Solution;
@@ -21,6 +22,7 @@ class SearchTypes
     public const array TYPES = [
         'service' => ['model' => Service::class, 'label' => 'Service', 'plural' => 'Services', 'weight' => 30],
         'product' => ['model' => Product::class, 'label' => 'Product', 'plural' => 'Products', 'weight' => 30],
+        'product_document' => ['model' => ProductDocument::class, 'label' => 'Documentation', 'plural' => 'Documentation', 'weight' => 12],
         'service_category' => ['model' => ServiceCategory::class, 'label' => 'Service area', 'plural' => 'Service areas', 'weight' => 25],
         'solution' => ['model' => Solution::class, 'label' => 'Solution', 'plural' => 'Solutions', 'weight' => 25],
         'industry' => ['model' => Industry::class, 'label' => 'Industry', 'plural' => 'Industries', 'weight' => 20],
