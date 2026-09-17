@@ -7,13 +7,15 @@
     $highlightCount = count($words) >= 6 ? 2 : (count($words) >= 3 ? 1 : 0);
     $lead = implode(' ', array_slice($words, 0, count($words) - $highlightCount));
     $highlight = implode(' ', array_slice($words, count($words) - $highlightCount));
+    $carousel = $variant === 'carousel' && ($data['slides'] ?? []) !== [];
 @endphp
 <x-ui.section :theme="$data['theme'] ?? 'dark'" pattern="mesh" spacing="sm" :id="$data['anchor'] ?? null" as="div" class="flex flex-col justify-center lg:min-h-[min(calc(100svh-4.5rem),50rem)]">
     <div @class([
         'grid grid-cols-1 gap-10 lg:items-center',
         'lg:grid-cols-2' => $variant === 'image' && $data['imageUrl'],
         'lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]' => $variant === 'ecosystem' && ! $center,
-        'mx-auto text-center' => $center,
+        'lg:grid-cols-[3fr_2fr]' => $carousel,
+        'mx-auto text-center' => $center && ! $carousel,
     ])>
         <div @class(['max-w-3xl py-6 lg:py-8', 'mx-auto' => $center])>
             @if (filled($data['eyebrow'] ?? null))
@@ -39,6 +41,8 @@
                 <div class="absolute -inset-6 rounded-[2.5rem] bg-brand/25 blur-3xl" aria-hidden="true"></div>
                 <img src="{{ $data['imageUrl'] }}" alt="{{ $data['image_alt'] ?? '' }}" class="relative h-auto w-full rounded-card object-cover shadow-lift" loading="eager" fetchpriority="high" decoding="async">
             </div>
+        @elseif ($carousel)
+            <x-blocks.partials.hero-carousel :slides="$data['slides']" :autoplay="(int) ($data['autoplay_seconds'] ?? 6)" :ratio="$data['slide_ratio'] ?? 'portrait'" />
         @elseif ($variant === 'ecosystem' && ! $center)
             <x-blocks.partials.ecosystem-visual class="hidden lg:flex lg:justify-end" />
         @endif

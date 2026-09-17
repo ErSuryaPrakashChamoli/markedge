@@ -6,6 +6,7 @@
 import siteNav from './modules/nav';
 import accordion from './modules/accordion';
 import counter from './modules/counter';
+import carousel from './modules/carousel';
 import { initReveal } from './modules/reveal';
 import { initInteractive } from './modules/interactive';
 
@@ -13,6 +14,7 @@ export function bootSite(Alpine) {
     Alpine.data('siteNav', siteNav);
     Alpine.data('accordion', accordion);
     Alpine.data('counter', counter);
+    Alpine.data('carousel', carousel);
 
     const boot = () => {
         initReveal();

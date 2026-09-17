@@ -292,11 +292,11 @@
 
 /* ---------- Spacing rhythm ---------- */
 @utility section-py {
-    padding-block: clamp(3.5rem, 2.5rem + 4vw, 7rem);
+    padding-block: clamp(2.5rem, 2rem + 1.5vw, 4rem);
 }
 
 @utility section-py-sm {
-    padding-block: clamp(2.5rem, 2rem + 2vw, 4rem);
+    padding-block: clamp(2rem, 1.5rem + 1vw, 3rem);
 }
 
 @utility gutter-px {
@@ -524,6 +524,20 @@
     .js-pointer .card-hover:hover { transform: none; }
     .card-hover:hover img { transform: none; }
     .btn-shine::after { display: none; }
+}
+
+/* Hero carousel: slow Ken Burns drift on the active picture. */
+.hero-carousel .hero-slide-img {
+    animation: hero-kenburns 12s ease-in-out infinite alternate;
+}
+
+@keyframes hero-kenburns {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-carousel .hero-slide-img { animation: none; }
 }
 
 @utility hairline {

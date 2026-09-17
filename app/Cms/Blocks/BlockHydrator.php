@@ -47,14 +47,20 @@ class BlockHydrator
         $entityName = $host?->name ?? $host?->title ?? null;
 
         return match ($block->key()) {
-            'hero' => $data + [
+            'hero' => array_replace($data, [
                 'primaryCta' => $this->ctaLink($data['primary_cta_id'] ?? null, $entityName),
                 'secondaryCta' => $this->ctaLink($data['secondary_cta_id'] ?? null, $entityName)
                     ?? (filled($data['secondary_label'] ?? null) && filled($data['secondary_url'] ?? null)
                         ? ['label' => $data['secondary_label'], 'href' => $data['secondary_url'], 'external' => str_starts_with($data['secondary_url'], 'http')]
                         : null),
                 'imageUrl' => $this->imageUrl($data['image'] ?? null),
-            ],
+                'slides' => collect($data['slides'] ?? [])
+                    ->filter(fn ($slide) => is_array($slide) && filled($slide['image'] ?? null))
+                    ->map(fn (array $slide) => $slide + [
+                        'imageUrl' => $this->imageUrl($slide['image']),
+                        'external' => str_starts_with((string) ($slide['button_url'] ?? ''), 'http'),
+                    ])->values()->all(),
+            ]),
             'capability_intro' => $this->nonEmpty(['categories', 'products'], $data + [
                 'categories' => ServiceCategory::query()->published()->ordered()->withCount(['services' => fn ($q) => $q->published()])->get(),
                 'products' => ($data['show_products'] ?? true) ? Product::query()->publiclyVisible()->ordered()->get() : new Collection,
