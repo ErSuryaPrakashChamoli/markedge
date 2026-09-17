@@ -334,24 +334,119 @@
 }
 
 /* ---------- Motion ---------- */
+/*
+ * Scroll reveal (see resources/js/modules/reveal.js). Sections are the reveal roots; their lists
+ * and grids stagger with --i. body[data-motion] selects the page's signature: restrained
+ * distances, one easing, so it reads as corporate rather than playful. Without JS (no
+ * .js-motion on <html>) nothing is hidden; reduced-motion users see instant content.
+ */
 @layer components {
-    .reveal {
-        opacity: 0;
-        transform: translateY(14px);
-        transition:
-            opacity 0.6s var(--ease-out-soft),
-            transform 0.6s var(--ease-out-soft);
+    :root {
+        --reveal-duration: 0.7s;
+        --reveal-stagger: 70ms;
     }
 
-    .reveal.is-visible {
+    .js-motion .reveal {
+        opacity: 0;
+        transform: translateY(12px);
+        transition:
+            opacity var(--reveal-duration) var(--ease-out-soft),
+            transform var(--reveal-duration) var(--ease-out-soft);
+        will-change: opacity, transform;
+    }
+
+    .js-motion .reveal.is-visible {
         opacity: 1;
         transform: none;
     }
 
+    .js-motion .reveal .reveal-item {
+        opacity: 0;
+        transition:
+            opacity var(--reveal-duration) var(--ease-out-soft),
+            transform var(--reveal-duration) var(--ease-out-soft),
+            filter var(--reveal-duration) var(--ease-out-soft),
+            clip-path var(--reveal-duration) var(--ease-out-soft);
+        transition-delay: calc(120ms + var(--i, 0) * var(--reveal-stagger));
+    }
+
+    .js-motion .reveal.is-visible .reveal-item {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        clip-path: inset(0 0 0 0);
+    }
+
+    /* Signature per page type. Default (fade): a quiet upward drift. */
+    .js-motion .reveal .reveal-item { transform: translateY(16px); }
+
+    /* Home: content rises with a hint of scale, like cards settling into place. */
+    .js-motion body[data-motion="rise"] .reveal .reveal-item { transform: translateY(28px) scale(0.985); }
+
+    /* Services: alternating entrance from left and right, mirroring the split layouts. */
+    .js-motion body[data-motion="slide"] .reveal .reveal-item:nth-child(odd) { transform: translateX(-32px); }
+    .js-motion body[data-motion="slide"] .reveal .reveal-item:nth-child(even) { transform: translateX(32px); }
+
+    /* Products: scale in from slightly out of focus, like a screen coming to life. */
+    .js-motion body[data-motion="scale"] .reveal .reveal-item { transform: scale(0.94); filter: blur(6px); }
+
+    /* Solutions: curtain wipe from the bottom edge. */
+    .js-motion body[data-motion="curtain"] .reveal .reveal-item { transform: translateY(10px); clip-path: inset(0 0 100% 0); }
+
+    /* Industries: sweep in from the left with a revealing edge. */
+    .js-motion body[data-motion="sweep"] .reveal .reveal-item { transform: translateX(-24px); clip-path: inset(0 100% 0 0); }
+
+    /* Case studies: bring the story into focus. */
+    .js-motion body[data-motion="focus"] .reveal .reveal-item { transform: translateY(8px); filter: blur(10px); }
+
+    /* Insights: articles lift in from a slight tilt, like pages turning. */
+    .js-motion body[data-motion="lift"] .reveal { perspective: 1200px; }
+    .js-motion body[data-motion="lift"] .reveal .reveal-item { transform: translateY(22px) rotateX(7deg); transform-origin: top center; }
+
+    /* Landing pages: fast, decisive rise so the offer is on screen quickly. */
+    .js-motion body[data-motion="landing"] { --reveal-duration: 0.5s; --reveal-stagger: 45ms; }
+    .js-motion body[data-motion="landing"] .reveal .reveal-item { transform: translateY(20px); }
+
+    /* Section headings draw a brand rule under themselves once revealed (headings only, never stats or CTA copy). */
+    .js-motion .reveal h2.text-h2::after,
+    .js-motion .reveal h1.text-h1::after {
+        content: "";
+        display: block;
+        width: 3rem;
+        height: 2px;
+        margin-top: 0.75rem;
+        background: var(--color-brand);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.8s var(--ease-out-soft) 0.25s;
+    }
+
+    .js-motion .reveal.is-visible h2.text-h2::after,
+    .js-motion .reveal.is-visible h1.text-h1::after {
+        transform: scaleX(1);
+    }
+
+    .js-motion .reveal .text-center h2.text-h2::after,
+    .js-motion .reveal .text-center h1.text-h1::after {
+        margin-inline: auto;
+        transform-origin: center;
+    }
+
     @media (prefers-reduced-motion: reduce) {
-        .reveal {
+        .js-motion .reveal,
+        .js-motion .reveal .reveal-item,
+        .js-motion body[data-motion] .reveal .reveal-item {
             opacity: 1;
             transform: none;
+            filter: none;
+            clip-path: none;
+            transition: none;
+        }
+
+        .js-motion .reveal h2.text-h2::after,
+        .js-motion .reveal h1.text-h1::after {
+            transform: none;
+            transition: none;
         }
     }
 

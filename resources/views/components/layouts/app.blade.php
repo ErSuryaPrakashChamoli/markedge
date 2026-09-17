@@ -16,6 +16,20 @@
         'robots' => $robots,
         'canonical' => $robots && str_contains($robots, 'noindex') ? null : request()->url(),
     ], fn ($value) => $value !== null));
+
+    // Scroll-reveal signature per page type (resources/css/app.css "Motion").
+    $routeName = (string) (request()->route()?->getName() ?? '');
+    $motion = match (true) {
+        $routeName === 'home' => 'rise',
+        str_starts_with($routeName, 'services.') => 'slide',
+        str_starts_with($routeName, 'products.') => 'scale',
+        str_starts_with($routeName, 'solutions.') => 'curtain',
+        str_starts_with($routeName, 'industries.') => 'sweep',
+        str_starts_with($routeName, 'case-studies.') => 'focus',
+        str_starts_with($routeName, 'insights.') => 'lift',
+        str_starts_with($routeName, 'landing.') => 'landing',
+        default => 'fade',
+    };
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
@@ -31,12 +45,13 @@
         // Livewire component; every other page loads the lean Alpine entry (Phase 10 §5).
         $needsLivewire = str_contains((string) $slot, 'wire:snapshot');
     @endphp
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">document.documentElement.classList.add('js-motion');</script>
     @vite(['resources/css/app.css', $needsLivewire ? 'resources/js/app.js' : 'resources/js/lean.js'])
     @if ($needsLivewire)
         @livewireStyles
     @endif
 </head>
-<body {{ $attributes->merge(['class' => 'flex min-h-full flex-col bg-canvas text-fg '.$bodyClass]) }} @if ($preview) data-preview @endif>
+<body {{ $attributes->merge(['class' => 'flex min-h-full flex-col bg-canvas text-fg '.$bodyClass]) }} data-motion="{{ $motion }}" @if ($preview) data-preview @endif>
     <x-layout.skip-link />
     @if ($preview)
         <x-layout.preview-banner />
