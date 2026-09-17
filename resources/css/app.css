@@ -590,6 +590,19 @@
         to { transform: scaleX(1); }
     }
 
+    /* Reveal roots are hidden from the very first paint (no flash of visible-then-hidden content).
+       The selector mirrors resources/js/modules/reveal.js; a fallback animation forces everything
+       visible after 3s in case the script never runs. */
+    .js-motion :is([data-reveal], #main > section, #main > * > section, #main > div:not([class*="grid"]), body > footer):not(.is-visible) {
+        opacity: 0;
+        transform: translateY(18px);
+        animation: reveal-fallback 0s linear 3s forwards;
+    }
+
+    @keyframes reveal-fallback {
+        to { opacity: 1; transform: none; }
+    }
+
     /* Section root: quiet lift so the whole block settles as its children play. */
     .js-motion .reveal {
         opacity: 0;

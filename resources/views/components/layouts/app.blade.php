@@ -45,7 +45,15 @@
         // Livewire component; every other page loads the lean Alpine entry (Phase 10 §5).
         $needsLivewire = str_contains((string) $slot, 'wire:snapshot');
     @endphp
-    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">document.documentElement.classList.add('js-motion');</script>
+    <script nonce="{{ \Illuminate\Support\Facades\Vite::cspNonce() }}">
+        document.documentElement.classList.add('js-motion');
+        // A reload always starts at the top; back/forward navigation keeps the browser's own restoration.
+        if (!location.hash && performance.getEntriesByType('navigation')[0]?.type === 'reload' && 'scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+            window.scrollTo(0, 0);
+            addEventListener('pageshow', () => window.scrollTo(0, 0), { once: true });
+        }
+    </script>
     @vite(['resources/css/app.css', $needsLivewire ? 'resources/js/app.js' : 'resources/js/lean.js'])
     @if ($needsLivewire)
         @livewireStyles
