@@ -2,9 +2,9 @@
 <nav class="hidden lg:block" aria-label="Primary">
     <ul class="flex items-center gap-1">
         @foreach ($items as $index => $item)
-            @php $key = 'panel-'.$index; @endphp
+            @php $key = 'panel-'.$index; $mega = $item->hasChildren() && $item->isMegaMenu(); @endphp
             <li
-                class="relative"
+                @class(['relative' => ! $mega, 'static' => $mega])
                 @if ($item->hasChildren())
                     @mouseenter="showPanel('{{ $key }}')"
                     @mouseleave="scheduleClose()"
@@ -26,24 +26,96 @@
                         <x-ui.icon name="heroicon-m-chevron-down" class="size-4 transition-transform" ::class="isOpen('{{ $key }}') && 'rotate-180'" />
                     </button>
 
-                    <div
-                        x-show="isOpen('{{ $key }}')"
-                        x-cloak
-                        x-transition.opacity.duration.150ms
-                        @class([
-                            'absolute top-full z-40 pt-3',
-                            'left-1/2 w-[min(64rem,calc(100vw-4rem))] -translate-x-1/2' => $item->isMegaMenu(),
-                            'left-0 w-72' => ! $item->isMegaMenu(),
-                        ])
-                    >
-                        <div class="rounded-card border border-line bg-surface-elevated p-2 shadow-overlay">
-                            @if ($item->isMegaMenu())
-                                <div class="grid grid-cols-{{ min(count($item->children), 3) }} gap-2 p-2">
-                                    @foreach ($item->children as $group)
-                                        <x-navigation.column :node="$group" />
+                    @if ($mega)
+                        {{-- Anchored to the header container's right edge so it always sits under the navigation and inside the viewport. --}}
+                        <div
+                            x-show="isOpen('{{ $key }}')"
+                            x-cloak
+                            x-transition.opacity.duration.150ms
+                            x-data="{ group: 0 }"
+                            class="absolute top-full right-[var(--spacing-gutter-lg)] z-40 w-[min(66rem,calc(100%-2*var(--spacing-gutter-lg)))] pt-2"
+                        >
+                            <div class="flex overflow-hidden rounded-card border border-line bg-surface-elevated shadow-overlay">
+                                <ul class="w-60 shrink-0 border-r border-line bg-canvas-muted/40 p-3" role="list">
+                                    @foreach ($item->children as $i => $group)
+                                        <li>
+                                            <a
+                                                href="{{ $group->url ?? '#' }}"
+                                                @mouseenter="group = {{ $i }}"
+                                                @focus="group = {{ $i }}"
+                                                :class="group === {{ $i }} ? 'bg-brand/10 text-fg' : 'text-fg-secondary hover:bg-canvas-muted hover:text-fg'"
+                                                class="flex items-center justify-between gap-2 rounded-control px-3 py-2.5 text-nav transition-colors"
+                                                :aria-current="group === {{ $i }} ? 'true' : null"
+                                            >
+                                                <span class="truncate">{{ $group->label }}</span>
+                                                <x-ui.icon name="heroicon-m-chevron-right" class="size-4 shrink-0 text-fg-muted" x-show="group === {{ $i }}" x-cloak />
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+
+                                <div class="min-w-0 flex-1 p-6">
+                                    @foreach ($item->children as $i => $group)
+                                        @php
+                                            $sections = collect($group->children)->filter->hasChildren();
+                                            $flat = collect($group->children)->reject->hasChildren();
+                                        @endphp
+                                        <div x-show="group === {{ $i }}" @if ($i !== 0) x-cloak @endif>
+                                            <div class="flex items-start justify-between gap-6 border-b border-line pb-4">
+                                                <div class="min-w-0">
+                                                    <p class="text-h4 text-fg">{{ $group->label }}</p>
+                                                    @if ($group->description)
+                                                        <p class="mt-1 text-caption text-fg-muted">{{ $group->description }}</p>
+                                                    @endif
+                                                    @if ($group->url)
+                                                        <a href="{{ $group->url }}" class="mt-1 inline-flex items-center gap-1 text-body-sm text-fg-secondary hover:text-brand">View overview <x-ui.icon name="heroicon-m-arrow-right" class="size-4" /></a>
+                                                    @endif
+                                                </div>
+                                                @if ($group->url)
+                                                    <x-ui.button :href="$group->url" size="sm">Explore {{ $group->label }}</x-ui.button>
+                                                @endif
+                                            </div>
+
+                                            <div class="mt-5 grid grid-cols-3 gap-x-8 gap-y-1">
+                                                @if ($sections->isNotEmpty())
+                                                    @foreach ($sections as $section)
+                                                        <div>
+                                                            <p class="mb-2 px-3 text-eyebrow text-fg-muted">{{ $section->label }}</p>
+                                                            <ul>
+                                                                @foreach ($section->children as $child)
+                                                                    <li><x-navigation.link :node="$child" compact /></li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    @endforeach
+                                                    @if ($flat->isNotEmpty())
+                                                        <div>
+                                                            <ul>@foreach ($flat as $child)<li><x-navigation.link :node="$child" compact /></li>@endforeach</ul>
+                                                        </div>
+                                                    @endif
+                                                @else
+                                                    @foreach ($flat->chunk(max(1, (int) ceil($flat->count() / 3))) as $chunk)
+                                                        <ul>
+                                                            @foreach ($chunk as $child)
+                                                                <li><x-navigation.link :node="$child" compact /></li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        </div>
                                     @endforeach
                                 </div>
-                            @else
+                            </div>
+                        </div>
+                    @else
+                        <div
+                            x-show="isOpen('{{ $key }}')"
+                            x-cloak
+                            x-transition.opacity.duration.150ms
+                            class="absolute top-full left-0 z-40 w-72 pt-3"
+                        >
+                            <div class="rounded-card border border-line bg-surface-elevated p-2 shadow-overlay">
                                 <ul class="p-1">
                                     @foreach ($item->children as $child)
                                         @if ($child->hasChildren())
@@ -56,9 +128,9 @@
                                         @endif
                                     @endforeach
                                 </ul>
-                            @endif
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 @else
                     <a
                         href="{{ $item->url }}"
