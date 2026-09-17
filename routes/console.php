@@ -14,5 +14,6 @@ $guard(Schedule::command('content:publish-scheduled')->everyMinute(), 'content:p
 $guard(Schedule::command('markedge:events-prune')->daily(), 'markedge:events-prune');
 $guard(Schedule::command('content:expiring-reminders')->dailyAt('08:00'), 'content:expiring-reminders');
 $guard(Schedule::command('markedge:follow-up-reminders')->hourly(), 'markedge:follow-up-reminders');
+$guard(Schedule::command('markedge:automation-scan')->hourly(), 'markedge:automation-scan');
 $guard(Schedule::command('queue:prune-failed', ['--hours' => 720])->weekly(), 'queue:prune-failed');
 $guard(Schedule::command('markedge:search-reindex')->weeklyOn(0, '03:00'), 'markedge:search-reindex');

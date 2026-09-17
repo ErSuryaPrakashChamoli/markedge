@@ -220,11 +220,11 @@ class MarketingReport extends ConversionReport
         return $query->whereRaw($expression);
     }
 
-    protected function bucketExpression(string $granularity): string
+    public function bucketExpression(string $granularity, string $column = 'created_at'): string
     {
         $offset = now(config('app.timezone'))->getOffset();
         $mysql = $this->driver() === 'mysql';
-        $local = $mysql ? "DATE_ADD(created_at, INTERVAL {$offset} SECOND)" : "datetime(created_at, '+{$offset} seconds')";
+        $local = $mysql ? "DATE_ADD({$column}, INTERVAL {$offset} SECOND)" : "datetime({$column}, '+{$offset} seconds')";
 
         return match ($granularity) {
             'weekly' => $mysql ? "DATE_FORMAT({$local}, '%x-W%v')" : "strftime('%Y-W%W', {$local})",

@@ -4,9 +4,12 @@ namespace App\Providers;
 
 use App\Editorial\RevisionManager;
 use App\Models\Announcement;
+use App\Models\ApiKey;
 use App\Models\Article;
 use App\Models\ArticleCategory;
 use App\Models\Author;
+use App\Models\AutomationRule;
+use App\Models\AutomationRun;
 use App\Models\Campaign;
 use App\Models\CaseStudy;
 use App\Models\Client;
@@ -114,6 +117,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('search', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.rate_limits.search', 30))->by($request->ip()));
         RateLimiter::for('cta', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.rate_limits.cta', 60))->by($request->ip()));
         RateLimiter::for('health', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.rate_limits.health', 60))->by($request->ip()));
+        RateLimiter::for('api', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.rate_limits.api', 60))->by($request->bearerToken() ? 'key:'.hash('sha256', $request->bearerToken()) : 'ip:'.$request->ip()));
         RateLimiter::for('lead-form', fn (Request $request): Limit => Limit::perMinute((int) config('markedge.leads.submissions_per_minute', 5))->by($request->ip()));
     }
 
@@ -124,6 +128,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Relation::enforceMorphMap([
             'announcement' => Announcement::class,
+            'api_key' => ApiKey::class,
+            'automation_rule' => AutomationRule::class,
+            'automation_run' => AutomationRun::class,
             'article' => Article::class,
             'article_category' => ArticleCategory::class,
             'author' => Author::class,

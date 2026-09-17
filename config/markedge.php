@@ -204,6 +204,23 @@ return [
         'cta' => (int) env('MARKEDGE_RATE_CTA', 60),
         'preview' => (int) env('MARKEDGE_RATE_PREVIEW', 60),
         'health' => (int) env('MARKEDGE_RATE_HEALTH', 60),
+        // Requests per minute per API key (unauthenticated calls are limited per IP).
+        'api' => (int) env('MARKEDGE_RATE_API', 60),
+    ],
+
+    /*
+    | Phase 16: notification channel adapters and AI readiness. Null means NOT CONFIGURED.
+    */
+    'notifications' => [
+        'webhook_url' => env('MARKEDGE_WEBHOOK_URL'),
+        'webhook_secret' => env('MARKEDGE_WEBHOOK_SECRET'),
+        'webhook_timeout' => (int) env('MARKEDGE_WEBHOOK_TIMEOUT', 5),
+    ],
+
+    'ai' => [
+        // Name of an AI provider integration. No provider ships with the codebase; the interfaces
+        // in App\Ai\Contracts resolve to UnavailableAssistant until one is implemented and bound.
+        'provider' => env('MARKEDGE_AI_PROVIDER'),
     ],
 
     'editorial' => [
@@ -219,7 +236,7 @@ return [
             'case_studies', 'clients', 'testimonials', 'articles',
             'article_categories', 'tags', 'authors', 'faqs', 'landing_pages',
             'campaigns', 'forms', 'ctas', 'leads', 'redirects', 'seo', 'media',
-            'users', 'roles', 'activity',
+            'users', 'roles', 'activity', 'automation', 'api_keys',
         ],
         'actions' => [
             'view_any', 'view', 'create', 'update', 'delete', 'restore',
@@ -265,7 +282,7 @@ return [
             'testimonials.view_any', 'testimonials.view',
         ],
         'Sales Manager' => [
-            'leads.*',
+            'leads.*', 'automation.view_any', 'automation.view', 'automation.create', 'automation.update',
             'ctas.view_any', 'ctas.view',
             'campaigns.view_any', 'campaigns.view',
             'forms.view_any', 'forms.view',
