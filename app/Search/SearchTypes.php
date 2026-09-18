@@ -18,11 +18,11 @@ use App\Models\Solution;
  */
 class SearchTypes
 {
-    /** @var array<string, array{model: class-string, label: string, plural: string, weight: int}> */
+    /** @var array<string, array{model: class-string, label: string, plural: string, weight: int, with?: array<int, string>}> */
     public const array TYPES = [
         'service' => ['model' => Service::class, 'label' => 'Service', 'plural' => 'Services', 'weight' => 30],
         'product' => ['model' => Product::class, 'label' => 'Product', 'plural' => 'Products', 'weight' => 30],
-        'product_document' => ['model' => ProductDocument::class, 'label' => 'Documentation', 'plural' => 'Documentation', 'weight' => 12],
+        'product_document' => ['model' => ProductDocument::class, 'label' => 'Documentation', 'plural' => 'Documentation', 'weight' => 12, 'with' => ['product']],
         'service_category' => ['model' => ServiceCategory::class, 'label' => 'Service area', 'plural' => 'Service areas', 'weight' => 25],
         'solution' => ['model' => Solution::class, 'label' => 'Solution', 'plural' => 'Solutions', 'weight' => 25],
         'industry' => ['model' => Industry::class, 'label' => 'Industry', 'plural' => 'Industries', 'weight' => 20],
@@ -52,6 +52,16 @@ class SearchTypes
     public static function weight(string $key): int
     {
         return self::TYPES[$key]['weight'] ?? 0;
+    }
+
+    /**
+     * Relations every indexing pass needs, so building documents never lazy loads.
+     *
+     * @return array<int, string>
+     */
+    public static function eagerLoadsFor(string $key): array
+    {
+        return ['seo', ...(self::TYPES[$key]['with'] ?? [])];
     }
 
     /**

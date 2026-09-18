@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/lean.js'],
+            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/lean.js', 'resources/css/filament/admin/theme.css'],
             refresh: true,
             fonts: [
                 // Brand typeface (self-hosted at build). Swap here and in resources/css/app.css if the brand font changes.

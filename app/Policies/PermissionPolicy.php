@@ -28,6 +28,14 @@ abstract class PermissionPolicy
         return $this->allows($user, 'create');
     }
 
+    /**
+     * Duplicating a record creates a new one, so it takes the create permission.
+     */
+    public function replicate(User $user, Model $model): bool
+    {
+        return $this->allows($user, 'create');
+    }
+
     public function update(User $user, Model $model): bool
     {
         return $this->allows($user, 'update');

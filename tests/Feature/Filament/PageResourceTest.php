@@ -4,6 +4,7 @@ use App\Enums\PublishStatus;
 use App\Filament\Resources\Articles\Pages\EditArticle;
 use App\Filament\Resources\Pages\Pages\CreatePage;
 use App\Filament\Resources\Pages\Pages\EditPage;
+use App\Filament\Resources\Pages\Pages\ListPages;
 use App\Filament\Support\PublishingFields;
 use App\Models\Article;
 use App\Models\Page;
@@ -29,6 +30,23 @@ it('creates a draft page with a generated slug and typed blocks', function () {
         ->and($page->status)->toBe(PublishStatus::Draft)
         ->and($page->blocks[0]['type'])->toBe('rich_text')
         ->and($page->creator?->id)->toBe(auth()->id());
+});
+
+it('lists pages and duplicates one as a draft copy', function () {
+    $page = Page::factory()->create(['title' => 'Pricing', 'slug' => 'pricing']);
+    $this->actingAs(adminUser('Website Manager'));
+
+    Livewire::test(ListPages::class)
+        ->assertOk()
+        ->assertCanSeeTableRecords([$page])
+        ->callTableAction('replicate', $page)
+        ->assertHasNoTableActionErrors();
+
+    $copy = Page::query()->where('title', 'Pricing (copy)')->first();
+
+    expect($copy)->not->toBeNull()
+        ->and($copy->status)->toBe(PublishStatus::Draft)
+        ->and($copy->slug)->not->toBe('pricing');
 });
 
 it('rejects a reserved slug', function () {

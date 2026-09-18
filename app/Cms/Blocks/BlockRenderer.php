@@ -25,6 +25,7 @@ class BlockRenderer
     {
         $prepared = [];
         $hostKey = $host?->getMorphClass();
+        $previousTheme = 'dark';
 
         foreach ($blocks as $index => $entry) {
             $type = is_array($entry) && is_string($entry['type'] ?? null) ? $entry['type'] : null;
@@ -50,14 +51,30 @@ class BlockRenderer
                 continue;
             }
 
+            $theme = $this->resolveTheme($data['theme'] ?? null, $previousTheme);
+            $previousTheme = $theme;
+
             $prepared[] = [
                 'key' => $block->key(),
                 'component' => 'blocks.'.str_replace('_', '-', $block->key()),
-                'data' => $hydrated + ['theme' => $data['theme'] ?? 'light', 'anchor' => $data['anchor'] ?? null],
+                'data' => array_merge($hydrated, ['theme' => $theme, 'anchor' => $data['anchor'] ?? null]),
                 'label' => $block->label(),
             ];
         }
 
         return $prepared;
+    }
+
+    /**
+     * Dark and neutral are deliberate editor choices and are kept as-is. The default light
+     * theme alternates with neutral so consecutive sections never share the same background.
+     */
+    private function resolveTheme(mixed $stored, string $previousTheme): string
+    {
+        if (in_array($stored, ['dark', 'neutral'], true)) {
+            return $stored;
+        }
+
+        return $previousTheme === 'light' ? 'neutral' : 'light';
     }
 }

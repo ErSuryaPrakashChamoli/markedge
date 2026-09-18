@@ -2,7 +2,7 @@
     <div class="flex flex-wrap items-end gap-3 text-sm">
         <label class="flex flex-col gap-1">
             <span class="text-xs font-medium text-gray-500">Owner</span>
-            <select wire:model.live="owner" class="fi-input rounded-lg border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900">
+            <select wire:model.live="owner" class="fi-input rounded-lg border border-solid border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900">
                 <option value="all">Everyone</option>
                 <option value="mine">My leads</option>
                 <option value="unassigned">Unassigned</option>
@@ -12,7 +12,7 @@
         @if ($teams !== [])
             <label class="flex flex-col gap-1">
                 <span class="text-xs font-medium text-gray-500">Team</span>
-                <select wire:model.live="team" class="fi-input rounded-lg border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900">
+                <select wire:model.live="team" class="fi-input rounded-lg border border-solid border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900">
                     <option value="">All teams</option>
                     @foreach ($teams as $name)<option value="{{ $name }}">{{ $name }}</option>@endforeach
                 </select>
@@ -20,7 +20,7 @@
         @endif
         <label class="flex flex-col gap-1">
             <span class="text-xs font-medium text-gray-500">Priority</span>
-            <select wire:model.live="priority" class="fi-input rounded-lg border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900">
+            <select wire:model.live="priority" class="fi-input rounded-lg border border-solid border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900">
                 <option value="">Any</option>
                 @foreach ($priorities as $case)<option value="{{ $case->value }}">{{ $case->getLabel() }}</option>@endforeach
             </select>

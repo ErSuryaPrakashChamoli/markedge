@@ -12,7 +12,10 @@ use Illuminate\Database\Seeder;
 
 /**
  * Header, footer and legal menus. Product and service children are attached
- * automatically at render time through the auto_children setting.
+ * automatically at render time through the auto_children setting. The footer
+ * seeds two link columns (Company, Services) so that, with the brand and
+ * contact blocks, the footer renders as four sections. Column titles link to
+ * their section page so they are clickable, not just labels.
  */
 class MenuSeeder extends Seeder
 {
@@ -61,38 +64,30 @@ class MenuSeeder extends Seeder
             return;
         }
 
+        $page = fn (string $slug): ?Page => Page::query()->where('slug', $slug)->first();
+
+        /** @var array<string, array{url: string, linkable: Model|null, links: array<int, array{0: string, 1: string}>}> $columns */
         $columns = [
-            'Company' => [
-                ['About', '/about'], ['Careers', '/careers'], ['Contact', '/contact'], ['Insights', '/insights'],
-            ],
-            'Technology' => [
-                ['Software Development', '/services/software-development'],
-                ['Web Development', '/services/web-development'],
-                ['Mobile Apps', '/services/mobile-app-development'],
-                ['Product Development', '/services/product-development'],
-            ],
-            'IT Infrastructure' => [
-                ['IT AMC', '/services/it-amc'], ['Networking', '/services/networking'],
-                ['Cloud', '/services/cloud'], ['Cybersecurity', '/services/cybersecurity'],
-            ],
-            'Digital Growth' => [
-                ['Digital Marketing', '/services/digital-marketing'], ['SEO', '/services/seo'],
-                ['Social Media', '/services/social-media-marketing'], ['Performance Marketing', '/services/performance-marketing'],
-            ],
-            'Products' => [
-                ['Lead Management System', '/products/lead-management-system'],
-                ['Recruitment Management System', '/products/recruitment-management-system'],
-                ['All Products', '/products'],
-            ],
+            'Company' => ['url' => '/about', 'linkable' => $page('about'), 'links' => [
+                ['About', '/about'], ['Case Studies', '/case-studies'], ['Insights', '/insights'],
+                ['Careers', '/careers'], ['Contact', '/contact'],
+            ]],
+            'Services' => ['url' => '/services', 'linkable' => null, 'links' => [
+                ['Technology', '/services/technology'],
+                ['IT Infrastructure', '/services/it-infrastructure'],
+                ['Digital Growth', '/services/digital-growth'],
+                ['Products', '/products'],
+                ['Solutions', '/solutions'],
+            ]],
         ];
 
         $columnIndex = 0;
 
-        foreach ($columns as $heading => $links) {
-            $column = $this->item($menu, null, $heading, $columnIndex++, type: MenuItemType::Heading);
+        foreach ($columns as $heading => $column) {
+            $parent = $this->item($menu, null, $heading, $columnIndex++, url: $column['url'], linkable: $column['linkable']);
 
-            foreach ($links as $index => [$label, $url]) {
-                $this->item($menu, $column, $label, $index, url: $url);
+            foreach ($column['links'] as $index => [$label, $url]) {
+                $this->item($menu, $parent, $label, $index, url: $url);
             }
         }
     }

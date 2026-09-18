@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Cache;
 /**
  * Turns a menu row and its items into a tree of MenuNode objects, resolving entity
  * links, dropping unpublished targets and appending automatic children
- * (architecture §4.2). The tree is cached by content version.
+ * (architecture §4.2). A group whose linked target is unpublished keeps its
+ * children and degrades to a plain heading, so a footer column never vanishes
+ * because its title page went offline. The tree is cached by content version.
  */
 class MenuBuilder
 {
@@ -90,16 +92,18 @@ class MenuBuilder
     {
         $url = $item->url;
         $label = $item->label;
+        $isHeading = $item->type->value === 'heading';
 
         if ($item->linkable_type !== null) {
             $target = $item->linkable;
 
             if ($target === null || ! $this->urls->isPubliclyVisible($target)) {
-                return null;
+                $url = null;
+                $isHeading = true;
+            } else {
+                $url = $this->urls->pathFor($target) ?? $url;
+                $label = $label ?: ($target->name ?? $target->title ?? $label);
             }
-
-            $url = $this->urls->pathFor($target) ?? $url;
-            $label = $label ?: ($target->name ?? $target->title ?? $label);
         }
 
         $children = array_merge(
@@ -107,15 +111,19 @@ class MenuBuilder
             $this->nodesFor($items, $item->id),
         );
 
+        if ($isHeading && $item->linkable_type !== null && $children === []) {
+            return null;
+        }
+
         return new MenuNode(
             label: $label,
-            url: $item->type->value === 'heading' ? null : $url,
+            url: $isHeading ? null : $url,
             children: $children,
             description: $item->description,
             icon: $item->icon,
             badge: $item->badge,
             openInNewTab: $item->open_in_new_tab,
-            isHeading: $item->type->value === 'heading',
+            isHeading: $isHeading,
             settings: $item->settings ?? [],
         );
     }

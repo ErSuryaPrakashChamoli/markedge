@@ -4,7 +4,7 @@
 @if ($items->isNotEmpty())
     <x-ui.section :theme="$theme" :id="$id">
         @if ($heading)
-            <x-ui.section-header :title="$heading" :intro="$intro" class="mb-12" />
+            <x-ui.section-header :title="$heading" :intro="$intro" class="mb-10" />
         @endif
         <x-ui.grid :cols="$columns">
             @foreach ($items as $item)

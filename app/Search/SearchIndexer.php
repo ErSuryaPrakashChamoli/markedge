@@ -59,7 +59,7 @@ class SearchIndexer
             $scanned = 0;
             $count = 0;
 
-            $definition['model']::query()->with('seo')->chunkById($chunk, function ($records) use (&$indexed, &$scanned, &$count): void {
+            $definition['model']::query()->with(SearchTypes::eagerLoadsFor($type))->chunkById($chunk, function ($records) use (&$indexed, &$scanned, &$count): void {
                 foreach ($records as $record) {
                     $scanned++;
 
@@ -95,7 +95,7 @@ class SearchIndexer
             $indexedIds = SearchEntry::query()->where('searchable_type', $type)->pluck('searchable_id')->all();
             $discoverableIds = [];
 
-            $definition['model']::query()->with('seo')->chunkById(500, function ($records) use (&$discoverableIds): void {
+            $definition['model']::query()->with(SearchTypes::eagerLoadsFor($type))->chunkById(500, function ($records) use (&$discoverableIds): void {
                 foreach ($records as $record) {
                     if ($this->documents->forEntity($record) !== null) {
                         $discoverableIds[] = (int) $record->getKey();

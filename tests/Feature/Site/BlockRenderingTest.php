@@ -133,3 +133,15 @@ it('escapes user-entered text in blocks and titles', function () {
 
     expect($response->getContent())->toContain('&lt;script&gt;')->not->toContain('<script>alert("x")');
 });
+
+it('alternates light and neutral backgrounds for consecutive default-theme blocks', function () {
+    $prepared = app(BlockRenderer::class)->prepare([
+        ['type' => 'rich_text', 'data' => ['body' => '<p>One</p>']],
+        ['type' => 'rich_text', 'data' => ['body' => '<p>Two</p>', 'theme' => 'light']],
+        ['type' => 'rich_text', 'data' => ['body' => '<p>Three</p>', 'theme' => 'dark']],
+        ['type' => 'rich_text', 'data' => ['body' => '<p>Four</p>']],
+        ['type' => 'rich_text', 'data' => ['body' => '<p>Five</p>', 'theme' => 'neutral']],
+    ]);
+
+    expect(array_column(array_column($prepared, 'data'), 'theme'))->toBe(['light', 'neutral', 'dark', 'light', 'neutral']);
+});

@@ -54,7 +54,13 @@ class ItemsRelationManager extends RelationManager
                     ->searchable()
                     ->native(false)
                     ->helperText('Up to three levels: top item → group → link.'),
-                Select::make('type')->options(MenuItemType::class)->default(MenuItemType::Url)->required()->native(false)->live(),
+                Select::make('type')
+                    ->options(MenuItemType::class)
+                    ->default(MenuItemType::Url)
+                    ->required()
+                    ->native(false)
+                    ->live()
+                    ->helperText('Footer column titles and header groups become clickable when given a URL or site content; a heading is a plain label.'),
                 TextInput::make('url')
                     ->label('URL')
                     ->maxLength(500)

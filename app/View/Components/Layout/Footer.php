@@ -22,8 +22,6 @@ class Footer extends Component
 
     public function render(): View
     {
-        $cta = $this->minimal ? null : $this->ctas->fromSetting('cta.default');
-
         return view('components.layout.footer', [
             'columns' => $this->minimal ? [] : $this->menus->build('footer'),
             'legal' => $this->menus->build('legal'),
@@ -36,9 +34,8 @@ class Footer extends Component
             'address' => $this->settings->get('contact.address'),
             'emailHref' => $this->ctas->emailHref(),
             'phoneHref' => $this->ctas->phoneHref(),
-            'cta' => $cta,
-            'ctaHref' => $cta ? ($this->ctas->trackedHref($cta) ?? $this->ctas->primaryHref($cta)) : null,
-            'ctaSecondaryHref' => $cta ? $this->ctas->secondaryHref($cta) : null,
+            'whatsappHref' => $this->ctas->whatsappHref(),
+            'contactUrl' => url('/contact'),
         ]);
     }
 }

@@ -41,7 +41,7 @@
             @if ($canComment)
                 <form wire:submit="addComment" class="mb-4 space-y-2">
                     <label for="comment-body" class="sr-only">Comment</label>
-                    <textarea id="comment-body" wire:model="commentBody" rows="3" class="fi-input w-full rounded-lg border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900" placeholder="Add a note for the team"></textarea>
+                    <textarea id="comment-body" wire:model="commentBody" rows="3" class="fi-input w-full rounded-lg border border-solid border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900" placeholder="Add a note for the team"></textarea>
                     @error('commentBody')<p class="text-xs text-danger-600">{{ $message }}</p>@enderror
                     <x-filament::button type="submit" size="sm">Add comment</x-filament::button>
                 </form>
@@ -74,15 +74,16 @@
             @if ($revisions->isEmpty())
                 <p class="text-sm text-gray-500">No versions yet. The first save creates v1.</p>
             @else
+                <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead><tr class="text-left text-gray-500"><th class="pb-2">Version</th><th class="pb-2">Author</th><th class="pb-2">When</th><th class="pb-2">Reason</th><th class="pb-2"></th></tr></thead>
+                    <thead><tr class="text-left text-gray-500"><th class="pb-2 pr-4">Version</th><th class="pb-2 pr-4">Author</th><th class="pb-2 pr-4">When</th><th class="pb-2 pr-4">Reason</th><th class="pb-2"></th></tr></thead>
                     <tbody>
                         @foreach ($revisions as $revision)
                             <tr class="border-t border-gray-100 dark:border-gray-800" wire:key="revision-{{ $revision->id }}">
-                                <td class="py-2 font-medium">v{{ $revision->version }} @if ($revision->version === $latestVersion)<x-filament::badge color="success" size="sm">current</x-filament::badge>@endif</td>
-                                <td class="py-2">{{ $revision->author?->name ?? 'System' }}</td>
-                                <td class="py-2">{{ $revision->created_at->format('d M Y H:i') }}</td>
-                                <td class="py-2 text-gray-500">{{ $revision->reason ?? '—' }}</td>
+                                <td class="py-2 pr-4 font-medium whitespace-nowrap">v{{ $revision->version }} @if ($revision->version === $latestVersion)<x-filament::badge color="success" size="sm">current</x-filament::badge>@endif</td>
+                                <td class="py-2 pr-4">{{ $revision->author?->name ?? 'System' }}</td>
+                                <td class="py-2 pr-4 whitespace-nowrap">{{ $revision->created_at->format('d M Y H:i') }}</td>
+                                <td class="py-2 pr-4 text-gray-500">{{ $revision->reason ?? '—' }}</td>
                                 <td class="py-2 text-right whitespace-nowrap">
                                     @if ($revision->version !== $latestVersion)
                                         {{ ($this->compareAction)(['revision' => $revision->id, 'version' => $revision->version]) }}
@@ -96,6 +97,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
                 {{ $revisions->links() }}
             @endif
         </x-filament::section>

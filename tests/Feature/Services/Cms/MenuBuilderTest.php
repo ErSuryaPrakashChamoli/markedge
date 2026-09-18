@@ -40,6 +40,20 @@ it('resolves entity links and drops unpublished targets', function () {
         ->and($tree[0]->url)->toBe('/about');
 });
 
+it('keeps a group as a plain heading when its linked target is unpublished', function () {
+    $menu = Menu::factory()->create(['key' => 'footer']);
+    $draft = Page::factory()->create(['slug' => 'about']);
+    $column = MenuItem::factory()->for($menu)->create(['label' => 'Company', 'type' => MenuItemType::Entity, 'linkable_type' => 'page', 'linkable_id' => $draft->id, 'url' => '/about']);
+    MenuItem::factory()->for($menu)->create(['label' => 'Contact', 'url' => '/contact', 'parent_id' => $column->id]);
+
+    $tree = app(MenuBuilder::class)->build('footer');
+
+    expect($tree)->toHaveCount(1)
+        ->and($tree[0]->url)->toBeNull()
+        ->and($tree[0]->isHeading)->toBeTrue()
+        ->and(collect($tree[0]->children)->pluck('label')->all())->toBe(['Contact']);
+});
+
 it('appends publicly visible products as automatic children', function () {
     $menu = Menu::factory()->create(['key' => 'header']);
     MenuItem::factory()->for($menu)->create(['label' => 'Products', 'url' => '/products', 'settings' => ['auto_children' => 'products']]);

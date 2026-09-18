@@ -6,9 +6,9 @@
         @endforeach
         <form wire:submit="setRange('custom')" class="flex items-center gap-2">
             <label class="sr-only" for="report-from">From</label>
-            <input id="report-from" type="date" wire:model="from" class="fi-input rounded-lg border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900">
+            <input id="report-from" type="date" wire:model="from" class="fi-input rounded-lg border border-solid border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900">
             <label class="sr-only" for="report-until">Until</label>
-            <input id="report-until" type="date" wire:model="until" class="fi-input rounded-lg border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900">
+            <input id="report-until" type="date" wire:model="until" class="fi-input rounded-lg border border-solid border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900">
             <x-filament::button size="sm" type="submit" :color="$range === 'custom' ? 'primary' : 'gray'">Apply</x-filament::button>
         </form>
     </div>

@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\Lead;
 use App\Models\Page;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\SearchEntry;
 use App\Models\SeoMeta;
 use App\Models\Service;
@@ -144,6 +145,17 @@ it('reports missing and stale documents in the audit', function () {
 
     expect($audit['by_type']['service']['missing'])->toBe(1)
         ->and($audit['by_type']['article']['stale'])->toBe(1);
+});
+
+it('audits and rebuilds product documentation without lazy loading its product', function () {
+    $documents = ProductDocument::factory()->published()->count(2)->for(Product::factory()->active())->create();
+    SearchEntry::query()->delete();
+
+    $audit = app(SearchIndexer::class)->audit();
+    expect($audit['by_type']['product_document'])->toMatchArray(['discoverable' => 2, 'missing' => 2]);
+
+    app(SearchIndexer::class)->rebuild();
+    expect(indexed('product_document', $documents->first()->id))->not->toBeNull();
 });
 
 it('does not resurrect content unpublished after the sync job was dispatched', function () {
