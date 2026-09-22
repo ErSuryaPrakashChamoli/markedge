@@ -6,8 +6,8 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 
 /**
- * Creates the initial Super Admin only when credentials are provided through the
- * environment. No default password is ever shipped.
+ * Creates the initial Super Admin from MARKEDGE_ADMIN_EMAIL / MARKEDGE_ADMIN_PASSWORD, falling back
+ * to the defaults in config/markedge.php. Change the default password after the first login.
  */
 class AdminUserSeeder extends Seeder
 {
