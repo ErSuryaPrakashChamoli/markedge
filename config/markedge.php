@@ -27,8 +27,8 @@ return [
 
     'admin' => [
         'name' => env('MARKEDGE_ADMIN_NAME', 'Markedge Admin'),
-        'email' => env('MARKEDGE_ADMIN_EMAIL'),
-        'password' => env('MARKEDGE_ADMIN_PASSWORD'),
+        'email' => env('MARKEDGE_ADMIN_EMAIL') ?: 'admin@markedge.com',
+        'password' => env('MARKEDGE_ADMIN_PASSWORD') ?: 'Markedge@12345',
     ],
 
     /*
