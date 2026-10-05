@@ -7,10 +7,12 @@ use App\Enums\CampaignStatus;
 use App\Filament\Resources\Articles\Pages\EditArticle;
 use App\Filament\Resources\Media\MediaResource;
 use App\Filament\Resources\Media\Pages\ListMedia;
+use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Filament\Support\MediaFields;
 use App\Models\Article;
 use App\Models\Campaign;
 use App\Models\Cta;
+use App\Models\Product;
 use App\Models\Service;
 use App\Models\Setting;
 use App\Services\Cms\CampaignTargeting;
@@ -20,6 +22,7 @@ use Database\Seeders\RolesAndPermissionsSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -57,6 +60,39 @@ it('keeps SVG uploads blocked and media edits permission gated', function () {
 
     $this->actingAs(adminUser('Sales'));
     $this->get(MediaResource::getUrl('index'))->assertForbidden();
+});
+
+it('stores admin media uploads on the public media disk even when the default disk is private', function () {
+    Storage::fake('public');
+    Storage::fake('local');
+    config(['filament.default_filesystem_disk' => 'local']);
+    $this->actingAs(adminUser());
+    $product = Product::factory()->create();
+
+    Livewire::test(EditProduct::class, ['record' => $product->getRouteKey()])
+        ->fillForm(['logo' => [UploadedFile::fake()->image('logo.png')]])
+        ->call('save')->assertHasNoFormErrors();
+
+    $logo = $product->fresh()->getFirstMedia('logo');
+
+    expect($logo->disk)->toBe('public')->and($logo->conversions_disk)->toBe('public');
+    Storage::disk('public')->assertExists($logo->getPathRelativeToRoot());
+});
+
+it('moves media stranded on the private disk onto the public media disk', function () {
+    Storage::fake('public');
+    Storage::fake('local');
+    $product = Product::factory()->create();
+    $logo = $product->addMedia(UploadedFile::fake()->image('logo.png'))->toMediaCollection('logo', 'local');
+    $original = $logo->getPathRelativeToRoot();
+    $thumb = $logo->getPathRelativeToRoot('thumb');
+    Storage::disk('local')->assertExists([$original, $thumb]);
+
+    (require database_path('migrations/2026_10_05_065735_move_private_media_to_media_disk.php'))->up();
+
+    expect($logo->fresh())->disk->toBe('public')->conversions_disk->toBe('public');
+    Storage::disk('public')->assertExists([$original, $thumb]);
+    Storage::disk('local')->assertMissing([$original, $thumb]);
 });
 
 it('swaps the CTA for running campaign visitors only, with a deterministic default and stable SEO', function () {

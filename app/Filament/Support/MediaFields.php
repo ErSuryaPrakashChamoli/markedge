@@ -7,6 +7,8 @@ use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 /**
  * Upload fields with the approved file-type policy (architecture §24.2).
  * SVG is rejected everywhere until an SVG sanitiser is added; AVIF output is deferred.
+ * Uploads always go to the media library disk: Filament would otherwise fall back to FILESYSTEM_DISK
+ * (private `local`), whose files the public site cannot serve.
  */
 class MediaFields
 {
@@ -21,6 +23,7 @@ class MediaFields
         return SpatieMediaLibraryFileUpload::make($collection)
             ->label($label)
             ->collection($collection)
+            ->disk(self::disk())
             ->image()
             ->imageEditor()
             ->acceptedFileTypes(self::IMAGE_TYPES)
@@ -42,10 +45,16 @@ class MediaFields
         return SpatieMediaLibraryFileUpload::make($collection)
             ->label($label)
             ->collection($collection)
+            ->disk(self::disk())
             ->acceptedFileTypes(self::DOCUMENT_TYPES)
             ->maxSize(20480)
             ->multiple()
             ->downloadable()
             ->helperText('PDF up to 20 MB.');
+    }
+
+    public static function disk(): string
+    {
+        return config('media-library.disk_name');
     }
 }

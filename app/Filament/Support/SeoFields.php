@@ -58,10 +58,10 @@ class SeoFields
                     Section::make('Social sharing')->collapsible()->collapsed()->schema([
                         TextInput::make('og_title')->label('Open Graph title'),
                         Textarea::make('og_description')->label('Open Graph description')->rows(2),
-                        SpatieMediaLibraryFileUpload::make('og_image')->label('Open Graph image (1200×630)')->collection('og_image')->image()->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])->maxSize(4096),
+                        SpatieMediaLibraryFileUpload::make('og_image')->label('Open Graph image (1200×630)')->collection('og_image')->disk(MediaFields::disk())->image()->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])->maxSize(4096),
                         TextInput::make('twitter_title')->label('X / Twitter title'),
                         Textarea::make('twitter_description')->label('X / Twitter description')->rows(2),
-                        SpatieMediaLibraryFileUpload::make('twitter_image')->label('X / Twitter image')->collection('twitter_image')->image()->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])->maxSize(4096),
+                        SpatieMediaLibraryFileUpload::make('twitter_image')->label('X / Twitter image')->collection('twitter_image')->disk(MediaFields::disk())->image()->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])->maxSize(4096),
                     ])->columns(2),
                     Section::make('Schema and sitemap')->collapsible()->collapsed()->schema([
                         Select::make('schema_type')->label('Schema type override')->options(self::SCHEMA_TYPES)->native(false)->helperText('Schema is generated from real content; only override the primary type when needed.'),
