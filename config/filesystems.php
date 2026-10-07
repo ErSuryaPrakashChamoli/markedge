@@ -30,19 +30,24 @@ return [
 
     'disks' => [
 
+        // Signed temporary URLs only. Kept off /storage, which belongs to the public disk below.
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/private-storage',
             'serve' => true,
             'throw' => false,
             'report' => false,
         ],
 
+        // The web server answers /storage straight from the public/storage symlink. When that link is
+        // missing or stale (e.g. after the app folder moves), Laravel serves the upload instead of a 404.
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
+            'serve' => true,
             'throw' => false,
             'report' => false,
         ],

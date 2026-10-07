@@ -38,6 +38,7 @@ class EnvironmentCheck extends Command
         $check('Session driver', ! ($production && config('session.driver') === 'file'), 'Use redis or database sessions in production.', fatal: false);
         $check('Mail', ! ($production && in_array(config('mail.default'), ['log', 'array'], true)), 'Production mail is configured to log/array; lead notifications will not be delivered.', fatal: false);
         $check('Media disk', filled(config('media-library.disk_name')) && array_key_exists(config('media-library.disk_name'), config('filesystems.disks', [])), 'MEDIA_DISK must reference a configured filesystem disk.');
+        $check('Storage link', $this->storageIsLinked(), 'public/storage does not resolve to storage/app/public, so new uploads are served through PHP. Run php artisan storage:link --force.', fatal: false);
         $check('Indexability flag', env('MARKEDGE_INDEXABLE') !== null || ! $production, 'MARKEDGE_INDEXABLE must be set explicitly in production (true only on the live domain).', fatal: $production);
         $check('Trusted proxies', ! $production || filled(config('markedge.security.trusted_proxies')), 'Set TRUSTED_PROXIES when behind a CDN or load balancer so HTTPS and client IPs are detected.', fatal: false);
         $check('HSTS', ! $production || (bool) config('markedge.security.hsts'), 'Enable MARKEDGE_HSTS=true on HTTPS-only production.', fatal: false);
@@ -60,6 +61,16 @@ class EnvironmentCheck extends Command
         } catch (Throwable) {
             return false;
         }
+    }
+
+    /**
+     * A copied folder or a symlink left pointing at an old release resolves somewhere else and hides new uploads.
+     */
+    protected function storageIsLinked(): bool
+    {
+        $link = realpath(public_path('storage'));
+
+        return $link !== false && $link === realpath(storage_path('app/public'));
     }
 
     protected function usesRedis(): bool
