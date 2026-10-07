@@ -2,6 +2,7 @@
 
 namespace App\Cms\Blocks;
 
+use App\Filament\Support\RichTextEditor;
 use App\Models\Cta;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -29,11 +30,9 @@ class Fields
 
     public static function richText(string $name = 'body', string $label = 'Body', bool $required = false): RichEditor
     {
-        return RichEditor::make($name)
+        return RichTextEditor::make($name)
             ->label($label)
-            ->required($required)
-            ->toolbarButtons(['bold', 'italic', 'underline', 'h2', 'h3', 'bulletList', 'orderedList', 'link', 'blockquote'])
-            ->columnSpanFull();
+            ->required($required);
     }
 
     public static function image(string $name = 'image', string $label = 'Image'): FileUpload

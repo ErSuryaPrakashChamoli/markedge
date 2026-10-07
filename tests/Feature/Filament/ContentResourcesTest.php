@@ -32,6 +32,25 @@ it('lets a product manager create a new product without any code', function () {
         ->and($product->isPubliclyVisible())->toBeTrue();
 });
 
+it('replaces rich text with the HTML entered in the Edit HTML dialog', function () {
+    $product = Product::factory()->create(['long_description' => '<p>Old overview</p><p>Second line</p>']);
+    $this->actingAs(adminUser('Product Manager'));
+
+    Livewire::test(EditProduct::class, ['record' => $product->getRouteKey()])
+        ->mountAction(TestAction::make('editHtml')->schemaComponent('long_description'))
+        ->assertActionDataSet(['html' => "<p>Old overview</p>\n<p>Second line</p>"])
+        ->setActionData(['html' => "<h2>Advantages</h2>\n<ul><li>Centralised lead data</li></ul>"])
+        ->callMountedAction()
+        ->assertHasNoActionErrors()
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($product->fresh()->long_description)
+        ->toContain('<h2>Advantages</h2>')
+        ->toContain('Centralised lead data')
+        ->not->toContain('Old overview');
+});
+
 it('offers only the draft status to users who cannot publish products', function () {
     $this->actingAs(adminUser('Content Manager'));
 

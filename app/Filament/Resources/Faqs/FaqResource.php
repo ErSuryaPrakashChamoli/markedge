@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Faqs;
 
 use App\Filament\Resources\Faqs\Pages\ManageFaqs;
+use App\Filament\Support\RichTextEditor;
 use App\Models\Article;
 use App\Models\Faq;
 use App\Models\Industry;
@@ -18,7 +19,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\MorphToSelect;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -66,7 +66,7 @@ class FaqResource extends Resource
                 ->required()
                 ->columnSpanFull(),
             TextInput::make('question')->required()->maxLength(255)->columnSpanFull(),
-            RichEditor::make('answer')->required()->toolbarButtons(['bold', 'italic', 'bulletList', 'orderedList', 'link'])->columnSpanFull(),
+            RichTextEditor::make('answer', RichTextEditor::BASIC_TOOLBAR)->required(),
             Toggle::make('is_visible')->label('Visible')->default(true)->inline(false),
             TextInput::make('sort_order')->numeric()->default(0),
         ])->columns(2);

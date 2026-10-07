@@ -54,6 +54,14 @@ class Settings
     }
 
     /**
+     * Light logo for the dark footer; null means the footer shows the built-in light logo.
+     */
+    public function footerLogoUrl(): ?string
+    {
+        return $this->fileUrl('footer.logo');
+    }
+
+    /**
      * Public URL for an image setting stored as a path on the public disk.
      */
     public function fileUrl(string $key): ?string

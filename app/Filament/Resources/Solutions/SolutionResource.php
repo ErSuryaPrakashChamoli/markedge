@@ -16,6 +16,7 @@ use App\Filament\Support\PreviewAction;
 use App\Filament\Support\PublishActions;
 use App\Filament\Support\PublishingFields;
 use App\Filament\Support\RelationSelect;
+use App\Filament\Support\RichTextEditor;
 use App\Filament\Support\SeoFields;
 use App\Filament\Support\SlugField;
 use App\Models\Solution;
@@ -26,7 +27,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -65,8 +65,8 @@ class SolutionResource extends Resource
                         SlugField::make()->helperText('Public URL: /solutions/{slug}.'),
                         TextInput::make('tagline')->maxLength(160)->columnSpanFull(),
                         Textarea::make('short_description')->label('Summary')->rows(2)->maxLength(400)->columnSpanFull(),
-                        RichEditor::make('problem_statement')->label('The business problem')->columnSpanFull(),
-                        RichEditor::make('approach')->label('How Markedge solves it')->columnSpanFull(),
+                        RichTextEditor::make('problem_statement')->label('The business problem'),
+                        RichTextEditor::make('approach')->label('How Markedge solves it'),
                         Repeater::make('outcomes')->defaultItems(0)->label('Outcomes (qualitative statements, never invented numbers)')->schema([
                             TextInput::make('label')->required()->maxLength(120),
                             Textarea::make('text')->rows(2)->maxLength(300),

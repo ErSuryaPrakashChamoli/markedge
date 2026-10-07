@@ -10,7 +10,7 @@
         <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.3fr] lg:gap-10">
             {{-- 1. Brand --}}
             <div class="max-w-sm md:col-span-2 lg:col-span-1">
-                <x-layout.logo :company-name="$companyName" inverse />
+                <x-layout.logo :company-name="$companyName" :logo-url="$logoUrl" inverse />
                 @if ($tagline)
                     <p class="mt-5 text-eyebrow text-brand">{{ $tagline }}</p>
                 @endif

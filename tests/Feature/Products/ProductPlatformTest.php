@@ -42,6 +42,15 @@ it('renders the product hierarchy module → feature → capability and factual 
     $this->get('/products/lms')->assertOk()->assertSee('Deployment options')->assertSee('Cloud hosted')->assertSee('Role-based access');
 });
 
+it('prints the product overview in the site style even when the editor content carries pasted styles', function () {
+    platformProduct()->update(['long_description' => '<p style="text-align: justify;">Gather enquiries from every channel.</p><h2 style="text-align: justify;"><strong>Advantages</strong></h2><h2 style="text-align: justify;"></h2>']);
+
+    $this->get('/products/lms')->assertOk()
+        ->assertSee('<p>Gather enquiries from every channel.</p>', false)
+        ->assertSee('<h2><strong>Advantages</strong></h2>', false)
+        ->assertDontSee('style="text-align', false);
+});
+
 it('compares publicly visible products from stored modules and features only', function () {
     $lms = platformProduct('LMS');
     ProductModule::factory()->create(['product_id' => $lms->id, 'name' => 'Pipeline']);

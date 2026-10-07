@@ -75,6 +75,7 @@ class GlobalSettings extends Page
         'leads.notify_emails' => ['group' => 'leads', 'type' => 'json'],
         'privacy.attribution_requires_consent' => ['group' => 'privacy', 'type' => 'boolean'],
         'privacy.cookie_banner_enabled' => ['group' => 'privacy', 'type' => 'boolean'],
+        'footer.logo' => ['group' => 'footer', 'type' => 'image'],
         'footer.copyright' => ['group' => 'footer', 'type' => 'text'],
     ];
 
@@ -143,6 +144,7 @@ class GlobalSettings extends Page
                     Toggle::make('privacy__cookie_banner_enabled')->label('Show the cookie banner')->inline(false),
                 ])->columns(2),
                 Tab::make('Footer')->icon(Heroicon::OutlinedBars3)->schema([
+                    $this->imageUpload('footer__logo', 'Footer logo', 'The footer has a dark background, so upload a white or light version of the logo. PNG or WebP with a transparent background, at least 320px wide. Remove it to go back to the built-in logo.'),
                     TextInput::make('footer__copyright')->label('Copyright line')->helperText('Defaults to "© {year} {company name}. All rights reserved." when empty.')->columnSpanFull(),
                 ]),
             ])->columnSpanFull()->persistTabInQueryString(),

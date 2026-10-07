@@ -6,6 +6,7 @@ use App\Filament\Resources\Authors\Pages\CreateAuthor;
 use App\Filament\Resources\Authors\Pages\EditAuthor;
 use App\Filament\Resources\Authors\Pages\ListAuthors;
 use App\Filament\Support\MediaFields;
+use App\Filament\Support\RichTextEditor;
 use App\Filament\Support\SeoFields;
 use App\Filament\Support\SlugField;
 use App\Models\Author;
@@ -15,7 +16,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -49,7 +49,7 @@ class AuthorResource extends Resource
                 SlugField::make()->helperText('Public URL: /insights/author/{slug}.'),
                 TextInput::make('role_title')->label('Role')->maxLength(120),
                 Select::make('user_id')->label('Linked admin user')->relationship('user', 'name')->searchable()->preload()->native(false)->helperText('Optional. Links the author profile to a CMS account.'),
-                RichEditor::make('bio')->toolbarButtons(['bold', 'italic', 'link'])->columnSpanFull(),
+                RichTextEditor::make('bio', RichTextEditor::BASIC_TOOLBAR),
                 MediaFields::image('avatar', 'Photo'),
                 KeyValue::make('social_links')->label('Profile links')->keyLabel('Network')->valueLabel('URL')->addActionLabel('Add link'),
                 Toggle::make('is_visible')->label('Visible')->default(true)->inline(false),

@@ -16,6 +16,7 @@ use App\Filament\Support\PreviewAction;
 use App\Filament\Support\PublishActions;
 use App\Filament\Support\PublishingFields;
 use App\Filament\Support\RelationSelect;
+use App\Filament\Support\RichTextEditor;
 use App\Filament\Support\SeoFields;
 use App\Filament\Support\SlugField;
 use App\Models\Industry;
@@ -26,7 +27,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -65,7 +65,7 @@ class IndustryResource extends Resource
                         SlugField::make()->helperText('Public URL: /industries/{slug}.'),
                         TextInput::make('tagline')->maxLength(160)->columnSpanFull(),
                         Textarea::make('short_description')->rows(2)->maxLength(400)->columnSpanFull(),
-                        RichEditor::make('description')->columnSpanFull(),
+                        RichTextEditor::make('description'),
                         Repeater::make('challenges')->defaultItems(0)->label('Business challenges')->schema([
                             TextInput::make('title')->required()->maxLength(120),
                             Textarea::make('text')->rows(2)->maxLength(400),

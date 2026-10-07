@@ -18,6 +18,7 @@ use App\Filament\Support\CtaSelect;
 use App\Filament\Support\MediaFields;
 use App\Filament\Support\PreviewAction;
 use App\Filament\Support\RelationSelect;
+use App\Filament\Support\RichTextEditor;
 use App\Filament\Support\SeoFields;
 use App\Filament\Support\SlugField;
 use App\Models\Product;
@@ -31,7 +32,6 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -81,7 +81,7 @@ class ProductResource extends Resource
                         TextInput::make('tagline')->maxLength(160),
                         TextInput::make('product_type')->label('Product type')->maxLength(60)->helperText('e.g. Business platform, SaaS'),
                         Textarea::make('short_description')->rows(2)->maxLength(400)->columnSpanFull(),
-                        RichEditor::make('long_description')->columnSpanFull(),
+                        RichTextEditor::make('long_description'),
                     ])->columns(2),
                     Section::make('Brand and hero')->schema([
                         MediaFields::image('logo', 'Product logo'),

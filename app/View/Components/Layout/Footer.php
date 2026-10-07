@@ -27,6 +27,7 @@ class Footer extends Component
             'legal' => $this->menus->build('legal'),
             'social' => SocialLink::query()->visible()->ordered()->get(),
             'companyName' => $this->settings->get('company.name', config('app.name')),
+            'logoUrl' => $this->settings->footerLogoUrl(),
             'tagline' => $this->settings->get('company.tagline'),
             'description' => $this->settings->get('company.description'),
             'email' => $this->settings->get('contact.email'),

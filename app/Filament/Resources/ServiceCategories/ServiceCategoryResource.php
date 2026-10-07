@@ -14,6 +14,7 @@ use App\Filament\Support\MediaFields;
 use App\Filament\Support\PreviewAction;
 use App\Filament\Support\PublishActions;
 use App\Filament\Support\PublishingFields;
+use App\Filament\Support\RichTextEditor;
 use App\Filament\Support\SeoFields;
 use App\Filament\Support\SlugField;
 use App\Models\Service;
@@ -25,7 +26,6 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -65,7 +65,7 @@ class ServiceCategoryResource extends Resource
                         TextInput::make('pillar_label')->label('Pillar label')->maxLength(20)->helperText('e.g. BUILD, OPERATE, GROW'),
                         TextInput::make('tagline')->maxLength(160),
                         Textarea::make('short_description')->rows(2)->maxLength(400)->columnSpanFull(),
-                        RichEditor::make('description')->columnSpanFull(),
+                        RichTextEditor::make('description'),
                         TextInput::make('icon')->maxLength(60)->helperText('Optional Heroicon name.'),
                         CtaSelect::make(),
                         MediaFields::image('hero', 'Hero image')->columnSpanFull(),

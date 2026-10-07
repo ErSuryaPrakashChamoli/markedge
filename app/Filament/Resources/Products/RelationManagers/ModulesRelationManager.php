@@ -3,13 +3,13 @@
 namespace App\Filament\Resources\Products\RelationManagers;
 
 use App\Filament\Support\MediaFields;
+use App\Filament\Support\RichTextEditor;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -27,7 +27,7 @@ class ModulesRelationManager extends RelationManager
             TextInput::make('name')->required()->maxLength(120),
             TextInput::make('sort_order')->numeric()->default(0),
             Textarea::make('summary')->rows(2)->maxLength(300)->columnSpanFull(),
-            RichEditor::make('description')->columnSpanFull(),
+            RichTextEditor::make('description'),
             Repeater::make('highlights')->defaultItems(0)->simple(TextInput::make('text')->required()->maxLength(160))->maxItems(8)->columnSpanFull(),
             MediaFields::image('image', 'Module screenshot')->columnSpanFull(),
         ])->columns(2);

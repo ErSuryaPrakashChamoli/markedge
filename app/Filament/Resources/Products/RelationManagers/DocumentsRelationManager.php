@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\RelationManagers;
 
 use App\Enums\PublishStatus;
 use App\Filament\Support\PreviewAction;
+use App\Filament\Support\RichTextEditor;
 use App\Filament\Support\SlugField;
 use App\Models\Product;
 use App\Models\ProductDocument;
@@ -13,7 +14,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -43,7 +43,7 @@ class DocumentsRelationManager extends RelationManager
             TextInput::make('section')->maxLength(80)->helperText('Groups pages on the documentation index, e.g. Getting started.'),
             TextInput::make('sort_order')->numeric()->default(0),
             Textarea::make('excerpt')->rows(2)->maxLength(300)->columnSpanFull(),
-            RichEditor::make('body')->columnSpanFull(),
+            RichTextEditor::make('body'),
             Select::make('status')
                 ->options(fn (): array => collect(PublishStatus::cases())->filter(fn (PublishStatus $s) => $canPublish() || $s === PublishStatus::Draft)->mapWithKeys(fn (PublishStatus $s) => [$s->value => $s->getLabel()])->all())
                 ->default(PublishStatus::Draft->value)->required()->native(false)

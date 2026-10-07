@@ -17,6 +17,7 @@ use App\Filament\Support\PreviewAction;
 use App\Filament\Support\PublishActions;
 use App\Filament\Support\PublishingFields;
 use App\Filament\Support\RelationSelect;
+use App\Filament\Support\RichTextEditor;
 use App\Filament\Support\SeoFields;
 use App\Filament\Support\SlugField;
 use App\Models\Service;
@@ -30,7 +31,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -73,7 +73,7 @@ class ServiceResource extends Resource
                         SlugField::make(extraRules: [fn (?Model $record) => new UniqueSlugAcross([ServiceCategory::class], $record)])->helperText('Public URL: /services/{slug}.'),
                         TextInput::make('tagline')->maxLength(160),
                         Textarea::make('short_description')->rows(2)->maxLength(400)->columnSpanFull(),
-                        RichEditor::make('overview')->columnSpanFull(),
+                        RichTextEditor::make('overview'),
                         MediaFields::image('hero', 'Hero image')->columnSpanFull(),
                     ])->columns(2),
                 ]),

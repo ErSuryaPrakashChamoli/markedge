@@ -15,6 +15,7 @@ use App\Filament\Support\PreviewAction;
 use App\Filament\Support\PublishActions;
 use App\Filament\Support\PublishingFields;
 use App\Filament\Support\RelationSelect;
+use App\Filament\Support\RichTextEditor;
 use App\Filament\Support\SeoFields;
 use App\Filament\Support\SlugField;
 use App\Models\CaseStudy;
@@ -25,7 +26,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -66,10 +66,10 @@ class CaseStudyResource extends Resource
                         Select::make('client_id')->label('Client')->relationship('client', 'name')->searchable()->preload()->native(false),
                         Select::make('industry_id')->label('Industry')->relationship('industry', 'name')->searchable()->preload()->native(false),
                         Textarea::make('excerpt')->rows(2)->maxLength(400)->columnSpanFull(),
-                        RichEditor::make('challenge')->required()->columnSpanFull(),
-                        RichEditor::make('solution')->label('Approach and solution')->required()->columnSpanFull(),
-                        RichEditor::make('implementation')->columnSpanFull(),
-                        RichEditor::make('results')->columnSpanFull(),
+                        RichTextEditor::make('challenge')->required(),
+                        RichTextEditor::make('solution')->label('Approach and solution')->required(),
+                        RichTextEditor::make('implementation'),
+                        RichTextEditor::make('results'),
                         Repeater::make('outcomes')->defaultItems(0)->label('Outcomes')->schema([
                             TextInput::make('label')->required()->maxLength(120),
                             TextInput::make('value')->required()->maxLength(80)->helperText('Shown exactly as entered.'),

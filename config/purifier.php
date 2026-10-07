@@ -31,6 +31,21 @@ return [
             'AutoFormat.AutoParagraph' => true,
             'AutoFormat.RemoveEmpty' => true,
         ],
+        // Public rich text (App\Cms\RichTextSanitizer). Structure only: inline styles, classes
+        // and scripts are dropped so every page follows the design system, whether the text
+        // came from the visual editor, the HTML editor or a paste from another document.
+        'cms' => [
+            'HTML.Doctype' => 'HTML 4.01 Transitional',
+            'HTML.Allowed' => 'p,br,h2,h3,h4,h5,h6,strong,b,em,i,u,s,del,sub,sup,mark,small,code,pre,blockquote,'
+                .'ul,ol[start],li,hr,a[href|title|target|rel],img[src|alt|title|width|height],figure,figcaption,'
+                .'table,caption,colgroup,col[span],thead,tbody,tfoot,tr,th[colspan|rowspan|scope],td[colspan|rowspan]',
+            'Attr.AllowedFrameTargets' => ['_blank'],
+            'Attr.AllowedRel' => ['nofollow', 'noopener', 'noreferrer', 'sponsored', 'ugc'],
+            'URI.AllowedSchemes' => ['http' => true, 'https' => true, 'mailto' => true, 'tel' => true],
+            'AutoFormat.AutoParagraph' => true,
+            'AutoFormat.RemoveEmpty' => true,
+            'AutoFormat.RemoveEmpty.RemoveNbsp' => true,
+        ],
         'test' => [
             'Attr.EnableID' => 'true',
         ],

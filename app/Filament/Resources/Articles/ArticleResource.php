@@ -14,6 +14,7 @@ use App\Filament\Support\PreviewAction;
 use App\Filament\Support\PublishActions;
 use App\Filament\Support\PublishingFields;
 use App\Filament\Support\RelationSelect;
+use App\Filament\Support\RichTextEditor;
 use App\Filament\Support\SeoFields;
 use App\Filament\Support\SlugField;
 use App\Models\Article;
@@ -24,7 +25,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -64,7 +64,7 @@ class ArticleResource extends Resource
                         SlugField::make()->helperText('Public URL: /insights/{slug}.'),
                         Placeholder::make('reading_time')->label('Reading time')->content(fn (?Article $record): string => $record ? "{$record->reading_time_minutes} min (calculated from the body)" : 'Calculated on save'),
                         Textarea::make('excerpt')->required()->rows(3)->maxLength(500)->columnSpanFull(),
-                        RichEditor::make('body')->required()->columnSpanFull(),
+                        RichTextEditor::make('body')->required(),
                         MediaFields::image('featured', 'Featured image')->columnSpanFull(),
                     ])->columns(2),
                 ]),

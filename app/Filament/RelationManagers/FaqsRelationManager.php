@@ -2,12 +2,12 @@
 
 namespace App\Filament\RelationManagers;
 
+use App\Filament\Support\RichTextEditor;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -29,7 +29,7 @@ class FaqsRelationManager extends RelationManager
     {
         return $schema->components([
             TextInput::make('question')->required()->maxLength(255)->columnSpanFull(),
-            RichEditor::make('answer')->required()->toolbarButtons(['bold', 'italic', 'bulletList', 'orderedList', 'link'])->columnSpanFull(),
+            RichTextEditor::make('answer', RichTextEditor::BASIC_TOOLBAR)->required(),
             Toggle::make('is_visible')->label('Visible')->default(true),
             TextInput::make('sort_order')->numeric()->default(0),
         ]);
