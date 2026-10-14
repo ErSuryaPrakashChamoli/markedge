@@ -9,6 +9,9 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
+use League\Flysystem\FilesystemException;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 /**
  * Field factories shared by block types so every block asks for content the same way.
@@ -35,6 +38,10 @@ class Fields
             ->required($required);
     }
 
+    /**
+     * Livewire reports the stored path even when the disk refused the write (the public disk does not
+     * throw), which would save a path to a file that does not exist. The save fails with a field error instead.
+     */
     public static function image(string $name = 'image', string $label = 'Image'): FileUpload
     {
         return FileUpload::make($name)
@@ -45,7 +52,22 @@ class Fields
             ->visibility('public')
             ->acceptedFileTypes(self::IMAGE_TYPES)
             ->maxSize(5120)
-            ->imageEditor();
+            ->imageEditor()
+            ->saveUploadedFileUsing(static function (FileUpload $component, TemporaryUploadedFile $file): ?string {
+                try {
+                    $path = $component->saveUploadedFile($file);
+                } catch (FilesystemException) {
+                    $path = false;
+                }
+
+                if ($path === false || (filled($path) && ! $component->getDisk()->exists($path))) {
+                    throw ValidationException::withMessages([
+                        $component->getStatePath() => 'The picture could not be saved to storage. The web server needs write access to storage/app/public; upload it again once that is fixed.',
+                    ]);
+                }
+
+                return $path;
+            });
     }
 
     public static function imageAlt(string $name = 'image_alt'): TextInput

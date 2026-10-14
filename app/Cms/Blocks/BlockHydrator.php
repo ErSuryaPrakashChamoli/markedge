@@ -55,11 +55,13 @@ class BlockHydrator
                         : null),
                 'imageUrl' => $this->imageUrl($data['image'] ?? null),
                 'slides' => collect($data['slides'] ?? [])
-                    ->filter(fn ($slide) => is_array($slide) && filled($slide['image'] ?? null))
+                    ->filter(fn ($slide) => is_array($slide))
                     ->map(fn (array $slide) => $slide + [
-                        'imageUrl' => $this->imageUrl($slide['image']),
+                        'imageUrl' => $this->imageUrl($slide['image'] ?? null),
                         'external' => str_starts_with((string) ($slide['button_url'] ?? ''), 'http'),
-                    ])->values()->all(),
+                    ])
+                    ->filter(fn (array $slide) => filled($slide['imageUrl']))
+                    ->values()->all(),
             ]),
             'capability_intro' => $this->nonEmpty(['categories', 'products'], $data + [
                 'categories' => ServiceCategory::query()->published()->ordered()->withCount(['services' => fn ($q) => $q->published()])->get(),
@@ -296,13 +298,23 @@ class BlockHydrator
         return $cta ? $this->ctas->links($cta, $entityName)['primary'] : null;
     }
 
+    /**
+     * An uploaded path whose file is gone (lost in a deploy, removed by hand) resolves to null, so the
+     * slide or block drops its picture instead of rendering a broken image.
+     */
     protected function imageUrl(?string $path): ?string
     {
         if (blank($path)) {
             return null;
         }
 
-        return str_starts_with($path, 'http') ? $path : Storage::disk('public')->url($path);
+        if (str_starts_with($path, 'http')) {
+            return $path;
+        }
+
+        $disk = Storage::disk('public');
+
+        return $disk->exists($path) ? $disk->url($path) : null;
     }
 
     protected function embedUrl(string $provider, string $source): ?string

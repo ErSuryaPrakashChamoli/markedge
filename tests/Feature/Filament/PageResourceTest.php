@@ -8,6 +8,13 @@ use App\Filament\Resources\Pages\Pages\ListPages;
 use App\Filament\Support\PublishingFields;
 use App\Models\Article;
 use App\Models\Page;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use League\Flysystem\Config;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\UnableToWriteFile;
 use Livewire\Livewire;
 
 it('creates a draft page with a generated slug and typed blocks', function () {
@@ -166,4 +173,52 @@ it('rejects schema overrides that are not a JSON object', function () {
         ->fillForm(['seo' => ['schema_overrides' => '["list"]']])
         ->call('save')
         ->assertHasFormErrors(['seo.schema_overrides']);
+});
+
+it('stores a block picture on the public disk and saves its path', function () {
+    Storage::fake('public');
+    $this->actingAs(adminUser('Website Manager'));
+
+    Livewire::test(CreatePage::class)
+        ->fillForm([
+            'title' => 'Gallery',
+            'template' => 'default',
+            'blocks' => [
+                ['type' => 'image_content', 'data' => ['image' => [UploadedFile::fake()->image('team.png')], 'image_alt' => 'Team', 'is_enabled' => true, 'theme' => 'light']],
+            ],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $path = Page::query()->where('slug', 'gallery')->first()->blocks[0]['data']['image'];
+
+    expect($path)->toStartWith('blocks/');
+    Storage::disk('public')->assertExists($path);
+});
+
+it('refuses to save a block picture the public disk could not write', function () {
+    // The public disk swallows write errors, as it does when the web server cannot write to storage/app/public.
+    $root = Storage::fake('public')->path('');
+    $adapter = new class($root) extends LocalFilesystemAdapter
+    {
+        public function writeStream(string $path, $contents, Config $config): void
+        {
+            throw UnableToWriteFile::atLocation($path, 'Permission denied');
+        }
+    };
+    Storage::set('public', new FilesystemAdapter(new Filesystem($adapter), $adapter, ['root' => $root, 'throw' => false]));
+    $this->actingAs(adminUser('Website Manager'));
+
+    Livewire::test(CreatePage::class)
+        ->fillForm([
+            'title' => 'Gallery',
+            'template' => 'default',
+            'blocks' => [
+                ['type' => 'image_content', 'data' => ['image' => [UploadedFile::fake()->image('team.png')], 'image_alt' => 'Team', 'is_enabled' => true, 'theme' => 'light']],
+            ],
+        ])
+        ->call('create')
+        ->assertSee('The picture could not be saved to storage.');
+
+    expect(Page::query()->where('slug', 'gallery')->exists())->toBeFalse();
 });

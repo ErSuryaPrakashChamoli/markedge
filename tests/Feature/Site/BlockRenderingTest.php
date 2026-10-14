@@ -13,6 +13,7 @@ use App\Models\ServiceCategory;
 use App\Models\Solution;
 use App\Models\Technology;
 use App\Models\Testimonial;
+use Illuminate\Support\Facades\Storage;
 
 function pageWithBlocks(array $blocks): Page
 {
@@ -20,6 +21,8 @@ function pageWithBlocks(array $blocks): Page
 }
 
 it('renders every content block type through its Blade view', function () {
+    Storage::fake('public');
+    Storage::disk('public')->put('blocks/test.jpg', 'image');
     $cta = Cta::factory()->create();
     $form = Form::factory()->create();
     $page = pageWithBlocks([
