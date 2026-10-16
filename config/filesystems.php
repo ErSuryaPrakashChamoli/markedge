@@ -42,10 +42,13 @@ return [
 
         // The web server answers /storage straight from the public/storage symlink. When that link is
         // missing or stale (e.g. after the app folder moves), Laravel serves the upload instead of a 404.
+        // URLs stay root-relative: an APP_URL host that differs from the one in the address bar (127.0.0.1
+        // vs localhost, http vs https, www vs apex) makes uploads cross-origin, and the CSP then blocks the
+        // <img> on the site and the admin's upload preview. SEO tags make them absolute where they must be.
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'url' => '/storage',
             'visibility' => 'public',
             'serve' => true,
             'throw' => false,

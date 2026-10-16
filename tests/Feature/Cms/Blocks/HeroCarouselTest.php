@@ -58,3 +58,17 @@ it('drops a slide whose uploaded picture is missing instead of rendering a broke
         ->assertDontSee('blocks/hero/lost.png', false)
         ->assertDontSee('Lost highlight');
 });
+
+it('links uploaded slide pictures from the site root so they load on whichever host serves the page', function () {
+    Storage::fake('public', ['url' => config('filesystems.disks.public.url')]);
+    Storage::disk('public')->put('blocks/hero/one.jpg', 'image');
+
+    Page::factory()->home()->create(['status' => 'published', 'published_at' => now()->subMinute(), 'blocks' => [
+        ['type' => 'hero', 'data' => ['headline' => 'Technology that moves business forward.', 'variant' => 'carousel', 'slides' => [
+            ['image' => 'blocks/hero/one.jpg', 'image_alt' => 'First slide', 'heading' => 'Our first highlight'],
+        ]]],
+    ]]);
+
+    $this->get('http://127.0.0.1:8000/')->assertOk()
+        ->assertSee('src="/storage/blocks/hero/one.jpg"', false);
+});

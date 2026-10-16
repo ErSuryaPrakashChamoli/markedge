@@ -32,7 +32,7 @@ class OrganizationBuilder implements SchemaBuilder
             'name' => $this->settings->get('company.name', config('app.name')),
             'legalName' => $this->settings->get('company.legal_name'),
             'url' => $context->siteUrl,
-            'logo' => $this->settings->logoUrl() ?? asset('images/logo.png'),
+            'logo' => $this->logoUrl($context),
             'description' => $this->text($this->settings->get('company.description')),
             'email' => $this->settings->get('contact.email'),
             'telephone' => $this->settings->get('contact.phone'),
@@ -60,5 +60,15 @@ class OrganizationBuilder implements SchemaBuilder
         }
 
         return $nodes;
+    }
+
+    /**
+     * An uploaded logo links root-relative (/storage/...); structured data needs the full URL.
+     */
+    protected function logoUrl(SchemaContext $context): string
+    {
+        $logo = $this->settings->logoUrl() ?? asset('images/logo.png');
+
+        return str_starts_with($logo, 'http') ? $logo : $context->siteUrl.$logo;
     }
 }

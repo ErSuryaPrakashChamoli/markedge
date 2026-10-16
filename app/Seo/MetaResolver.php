@@ -63,6 +63,7 @@ class MetaResolver
         $description ??= $this->settings->get('seo.default_description');
         $decision = $this->indexability->forListing($path, $indexable);
         $full = $this->withSuffix($title);
+        $ogImage = $this->absoluteImage($this->settings->fileUrl('seo.default_og_image'));
 
         return new PageMeta(
             title: $full,
@@ -71,10 +72,10 @@ class MetaResolver
             robots: $decision->robots(),
             ogTitle: $full,
             ogDescription: $description,
-            ogImage: $this->settings->fileUrl('seo.default_og_image'),
+            ogImage: $ogImage,
             twitterTitle: $full,
             twitterDescription: $description,
-            twitterImage: $this->settings->fileUrl('seo.default_og_image'),
+            twitterImage: $ogImage,
             indexability: $decision,
         );
     }
@@ -116,19 +117,31 @@ class MetaResolver
                 $media = $entity->getFirstMedia($collection);
 
                 if ($media) {
-                    return $media->hasGeneratedConversion('og') ? $media->getUrl('og') : $media->getUrl();
+                    return $this->absoluteImage($media->hasGeneratedConversion('og') ? $media->getUrl('og') : $media->getUrl());
                 }
             }
         }
 
-        return $this->settings->fileUrl('seo.default_og_image');
+        return $this->absoluteImage($this->settings->fileUrl('seo.default_og_image'));
     }
 
     protected function mediaUrl(?SeoMeta $seo, string $collection): ?string
     {
         $media = $seo?->getFirstMedia($collection);
 
-        return $media?->getUrl() ?: null;
+        return $this->absoluteImage($media?->getUrl());
+    }
+
+    /**
+     * Uploads link root-relative (/storage/...); social cards and structured data need the full URL.
+     */
+    protected function absoluteImage(?string $url): ?string
+    {
+        if (blank($url)) {
+            return null;
+        }
+
+        return str_starts_with($url, 'http') ? $url : $this->absolute($url);
     }
 
     /**

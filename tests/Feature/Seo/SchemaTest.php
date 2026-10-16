@@ -149,3 +149,11 @@ it('emits collection page schema with breadcrumbs on listing pages', function ()
     expect($graph)->toHaveKeys(['Organization', 'WebSite', 'CollectionPage', 'BreadcrumbList'])
         ->and($graph['CollectionPage']['url'])->toBe('http://localhost/services');
 });
+
+it('gives an uploaded organization logo a full url in structured data', function () {
+    Setting::factory()->create(['key' => 'company.logo', 'value' => 'settings/logo.png']);
+
+    $graph = graphFrom($this->get('/services'));
+
+    expect($graph['Organization']['logo'])->toBe('http://localhost/storage/settings/logo.png');
+});

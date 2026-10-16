@@ -69,7 +69,7 @@ class MediaResource extends Resource
                 Placeholder::make('owner')->label('Used by')->content(fn (Media $record): string => static::ownerLabel($record)),
                 Placeholder::make('collection_name')->label('Collection')->content(fn (Media $record): string => $record->collection_name),
                 Placeholder::make('conversions')->label('Conversions')->content(fn (Media $record): string => implode(', ', array_keys(array_filter($record->generated_conversions ?? []))) ?: 'None yet'),
-                Placeholder::make('url')->label('URL')->content(fn (Media $record): string => $record->getUrl()),
+                Placeholder::make('url')->label('URL')->content(fn (Media $record): string => $record->getFullUrl()),
             ])->columns(3)->collapsible(),
         ]);
     }
