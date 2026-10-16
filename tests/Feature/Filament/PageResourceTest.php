@@ -218,7 +218,31 @@ it('refuses to save a block picture the public disk could not write', function (
             ],
         ])
         ->call('create')
-        ->assertSee('The picture could not be saved to storage. The web server needs write access to storage/app/public/blocks;');
+        ->assertSee('The picture could not be saved to storage.');
 
     expect(Page::query()->where('slug', 'gallery')->exists())->toBeFalse();
 });
+
+it('names the folder owner and the fix when the web server cannot write a block picture', function () {
+    // A folder created by another user (e.g. db:seed run over SSH) that the web server may only read.
+    $disk = Storage::fake('public', config('filesystems.disks.public'));
+    $disk->makeDirectory('blocks');
+    chmod($disk->path('blocks'), 0555);
+    $this->actingAs(adminUser('Website Manager'));
+
+    $component = Livewire::test(CreatePage::class)
+        ->fillForm([
+            'title' => 'Gallery',
+            'template' => 'default',
+            'blocks' => [
+                ['type' => 'image_content', 'data' => ['image' => [UploadedFile::fake()->image('team.png')], 'image_alt' => 'Team', 'is_enabled' => true, 'theme' => 'light']],
+            ],
+        ])
+        ->call('create');
+
+    chmod($disk->path('blocks'), 0755);
+    $user = posix_getpwuid(posix_geteuid())['name'];
+
+    $component->assertSee("The web server (user {$user}) cannot write to storage/framework/testing/disks/public/blocks: it belongs to {$user} with permissions 555. On the server run: sudo chown -R {$user} storage/app/public");
+    expect(Page::query()->where('slug', 'gallery')->exists())->toBeFalse();
+})->skip(fn (): bool => posix_geteuid() === 0, 'root can write to a read-only folder');

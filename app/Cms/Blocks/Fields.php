@@ -9,6 +9,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use League\Flysystem\FilesystemException;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -62,12 +63,60 @@ class Fields
 
                 if ($path === false || (filled($path) && ! $component->getDisk()->exists($path))) {
                     throw ValidationException::withMessages([
-                        $component->getStatePath() => 'The picture could not be saved to storage. The web server needs write access to '.rtrim('storage/app/public/'.$component->getDirectory(), '/').'; upload it again once that is fixed.',
+                        $component->getStatePath() => 'The picture could not be saved to storage. '.self::storageProblem($component).' Upload it again once that is fixed.',
                     ]);
                 }
 
                 return $path;
             });
+    }
+
+    /**
+     * The public disk swallows write errors, so this works out why the folder refused the picture
+     * (wrong owner, missing folder, SELinux, full disk) and says it in terms the server admin can act on.
+     */
+    protected static function storageProblem(FileUpload $component): string
+    {
+        $absolute = rtrim($component->getDisk()->path((string) $component->getDirectory()), '/');
+        $folder = Str::after($absolute, base_path().'/');
+        $user = self::systemUserName(function_exists('posix_geteuid') ? posix_geteuid() : false);
+        $server = $user !== null ? "The web server (user {$user})" : 'The web server';
+        $fix = $user !== null ? " On the server run: sudo chown -R {$user} storage/app/public" : '';
+
+        if (! is_dir($absolute)) {
+            return "{$server} cannot create the folder {$folder}.{$fix}";
+        }
+
+        if (! is_writable($absolute)) {
+            $owner = self::systemUserName(fileowner($absolute)) ?? 'another user';
+            $permissions = substr(sprintf('%o', fileperms($absolute)), -3);
+
+            return "{$server} cannot write to {$folder}: it belongs to {$owner} with permissions {$permissions}.{$fix}";
+        }
+
+        $probe = $absolute.'/.write-check-'.Str::random(8);
+        error_clear_last();
+
+        if (@file_put_contents($probe, '') === false) {
+            return "{$server} cannot write to {$folder}: ".Str::afterLast(error_get_last()['message'] ?? 'unknown error', ': ').'.';
+        }
+
+        @unlink($probe);
+
+        return "{$server} needs write access to {$folder}.";
+    }
+
+    protected static function systemUserName(int|false $id): ?string
+    {
+        if ($id === false) {
+            return null;
+        }
+
+        if (function_exists('posix_getpwuid') && is_array($entry = posix_getpwuid($id))) {
+            return $entry['name'];
+        }
+
+        return (string) $id;
     }
 
     public static function imageAlt(string $name = 'image_alt'): TextInput
