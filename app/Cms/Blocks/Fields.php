@@ -62,7 +62,7 @@ class Fields
 
                 if ($path === false || (filled($path) && ! $component->getDisk()->exists($path))) {
                     throw ValidationException::withMessages([
-                        $component->getStatePath() => 'The picture could not be saved to storage. The web server needs write access to storage/app/public; upload it again once that is fixed.',
+                        $component->getStatePath() => 'The picture could not be saved to storage. The web server needs write access to '.rtrim('storage/app/public/'.$component->getDirectory(), '/').'; upload it again once that is fixed.',
                     ]);
                 }
 

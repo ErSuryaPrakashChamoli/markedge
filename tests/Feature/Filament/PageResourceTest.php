@@ -218,7 +218,7 @@ it('refuses to save a block picture the public disk could not write', function (
             ],
         ])
         ->call('create')
-        ->assertSee('The picture could not be saved to storage.');
+        ->assertSee('The picture could not be saved to storage. The web server needs write access to storage/app/public/blocks;');
 
     expect(Page::query()->where('slug', 'gallery')->exists())->toBeFalse();
 });
