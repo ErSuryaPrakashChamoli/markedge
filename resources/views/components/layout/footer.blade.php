@@ -101,6 +101,7 @@
                         </x-ui.button>
                     @endif
                 </div>
+                <x-blocks.partials.contact-map class="mt-6" />
             </div>
         </div>
 

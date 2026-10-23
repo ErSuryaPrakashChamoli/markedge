@@ -85,3 +85,10 @@ it('places the social icons in the bottom bar after the copyright', function () 
 
     $this->get('/')->assertSeeInOrder(['All rights reserved.', 'aria-label="Instagram"'], false);
 });
+
+it('shows the office map from the contact settings in the footer', function () {
+    $embed = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503';
+    Setting::factory()->create(['key' => 'contact.map_embed', 'value' => $embed]);
+
+    $this->get('/')->assertSeeInOrder(['Contact us', '<iframe src="'.e($embed).'"', 'All rights reserved.'], false);
+});

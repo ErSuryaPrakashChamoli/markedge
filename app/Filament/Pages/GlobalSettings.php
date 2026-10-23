@@ -122,7 +122,7 @@ class GlobalSettings extends Page
                     TextInput::make('contact__city')->label('City')->maxLength(80),
                     TextInput::make('contact__country')->label('Country')->maxLength(80),
                     Textarea::make('contact__address')->label('Address')->rows(3)->columnSpanFull(),
-                    Section::make('Google Map')->description('Shown beside the contact form on the Contact page. With neither field filled, the map pins the address above.')->schema([
+                    Section::make('Google Map')->description('Shown beside the contact form on the Contact page and in the footer. With neither field filled, the map pins the address above.')->schema([
                         TextInput::make('contact__map_location')->label('Map location')->maxLength(255)
                             ->helperText('Business name, address or coordinates (e.g. 30.3165, 78.0322) to pin on the map.'),
                         Textarea::make('contact__map_embed')->label('Google Maps embed code')->rows(3)
