@@ -40,7 +40,7 @@ class FaqResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQuestionMarkCircle;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Insights';
+    protected static string|UnitEnum|null $navigationGroup = 'Resources';
 
     protected static ?int $navigationSort = 5;
 

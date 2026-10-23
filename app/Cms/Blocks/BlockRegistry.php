@@ -10,18 +10,22 @@ use App\Cms\Blocks\Types\ContactForm;
 use App\Cms\Blocks\Types\Cta;
 use App\Cms\Blocks\Types\Faq;
 use App\Cms\Blocks\Types\FeatureGrid;
+use App\Cms\Blocks\Types\GrievanceRedressal;
 use App\Cms\Blocks\Types\Hero;
 use App\Cms\Blocks\Types\ImageContent;
 use App\Cms\Blocks\Types\IndustryGrid;
 use App\Cms\Blocks\Types\LeadForm;
 use App\Cms\Blocks\Types\LogoCloud;
+use App\Cms\Blocks\Types\Newsletter;
 use App\Cms\Blocks\Types\Process;
 use App\Cms\Blocks\Types\ProductShowcase;
 use App\Cms\Blocks\Types\RelatedContent;
 use App\Cms\Blocks\Types\RelatedProducts;
 use App\Cms\Blocks\Types\RelatedServices;
+use App\Cms\Blocks\Types\ResourcesHub;
 use App\Cms\Blocks\Types\RichText;
 use App\Cms\Blocks\Types\ServiceGrid;
+use App\Cms\Blocks\Types\SocialVideos;
 use App\Cms\Blocks\Types\SolutionGrid;
 use App\Cms\Blocks\Types\SplitContent;
 use App\Cms\Blocks\Types\Stats;
@@ -63,7 +67,11 @@ class BlockRegistry
         Cta::class,
         LeadForm::class,
         ContactForm::class,
+        GrievanceRedressal::class,
         ArticleGrid::class,
+        ResourcesHub::class,
+        SocialVideos::class,
+        Newsletter::class,
         RelatedContent::class,
         RelatedServices::class,
         RelatedProducts::class,

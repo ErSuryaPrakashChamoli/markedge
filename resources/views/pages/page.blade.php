@@ -27,6 +27,7 @@
                         <h2 class="text-h2">{{ $entity->form->heading ?? 'Contact Markedge' }}</h2>
                         @if ($entity->form->intro)<p class="mt-4 text-body-lg text-fg-secondary">{{ $entity->form->intro }}</p>@endif
                         <x-blocks.partials.contact-details class="mt-8" />
+                        <x-blocks.partials.contact-map class="mt-8" />
                     </x-slot:left>
                     <x-slot:right>
                         <livewire:lead-form :form="$entity->form" :preview="$preview" layout="card" :key="'page-form-'.$entity->form->id" />

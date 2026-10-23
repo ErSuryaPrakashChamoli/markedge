@@ -42,7 +42,7 @@ it('round-trips published content and uploaded files through the snapshot', func
     expect($home->title)->toBe('Edited in admin')
         ->and($home->status)->toBe(PublishStatus::Published)
         ->and($home->created_by)->toBeNull()
-        ->and(Page::count())->toBe(12)
+        ->and(Page::count())->toBe(13)
         ->and(Storage::disk('public')->get('blocks/hero/slide.jpg'))->toBe('image-bytes');
 });
 

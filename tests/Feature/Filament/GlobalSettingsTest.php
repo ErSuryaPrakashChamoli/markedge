@@ -81,3 +81,29 @@ it('lets website managers view but hides tracking from them', function () {
 
     Livewire::test(GlobalSettings::class)->assertOk()->assertSee('Company');
 });
+
+it('keeps only the Google Maps source from pasted embed code', function () {
+    $this->actingAs(adminUser());
+    $source = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3443';
+
+    Livewire::test(GlobalSettings::class)
+        ->fillForm([
+            'company__name' => 'Markedge',
+            'contact__map_location' => 'Rajpur Road, Dehradun',
+            'contact__map_embed' => '<iframe src="'.$source.'" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Setting::valueOf('contact.map_embed'))->toBe($source)
+        ->and(Setting::valueOf('contact.map_location'))->toBe('Rajpur Road, Dehradun');
+});
+
+it('rejects map embed code that is not from Google Maps', function () {
+    $this->actingAs(adminUser());
+
+    Livewire::test(GlobalSettings::class)
+        ->fillForm(['company__name' => 'Markedge', 'contact__map_embed' => 'https://maps.app.goo.gl/abc123'])
+        ->call('save')
+        ->assertHasFormErrors(['contact__map_embed']);
+});

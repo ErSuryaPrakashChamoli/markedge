@@ -21,6 +21,8 @@ use App\Models\EditorialComment;
 use App\Models\Faq;
 use App\Models\Form;
 use App\Models\FormField;
+use App\Models\GrievanceContact;
+use App\Models\GrievanceLevel;
 use App\Models\Industry;
 use App\Models\LandingPage;
 use App\Models\Lead;
@@ -39,6 +41,7 @@ use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\Models\Setting;
 use App\Models\SocialLink;
+use App\Models\SocialVideo;
 use App\Models\Solution;
 use App\Models\Tag;
 use App\Models\Technology;
@@ -145,6 +148,8 @@ class AppServiceProvider extends ServiceProvider
             'faq' => Faq::class,
             'form' => Form::class,
             'form_field' => FormField::class,
+            'grievance_contact' => GrievanceContact::class,
+            'grievance_level' => GrievanceLevel::class,
             'industry' => Industry::class,
             'landing_page' => LandingPage::class,
             'lead' => Lead::class,
@@ -163,6 +168,7 @@ class AppServiceProvider extends ServiceProvider
             'service_category' => ServiceCategory::class,
             'setting' => Setting::class,
             'social_link' => SocialLink::class,
+            'social_video' => SocialVideo::class,
             'solution' => Solution::class,
             'tag' => Tag::class,
             'technology' => Technology::class,

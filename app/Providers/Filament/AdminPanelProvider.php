@@ -51,7 +51,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make('Products')->icon(Heroicon::OutlinedCube),
                 NavigationGroup::make('Industries')->icon(Heroicon::OutlinedBuildingOffice2),
                 NavigationGroup::make('Work')->icon(Heroicon::OutlinedBriefcase),
-                NavigationGroup::make('Insights')->icon(Heroicon::OutlinedNewspaper),
+                NavigationGroup::make('Resources')->icon(Heroicon::OutlinedNewspaper),
                 NavigationGroup::make('Marketing')->icon(Heroicon::OutlinedMegaphone),
                 NavigationGroup::make('Leads')->icon(Heroicon::OutlinedInboxArrowDown),
                 NavigationGroup::make('SEO')->icon(Heroicon::OutlinedMagnifyingGlass),

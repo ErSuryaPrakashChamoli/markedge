@@ -2,6 +2,7 @@
 
 namespace App\Cms\Blocks;
 
+use App\Enums\ArticleType;
 use App\Enums\TechnologyCategory;
 use App\Models\Article;
 use App\Models\CaseStudy;
@@ -9,12 +10,14 @@ use App\Models\Client;
 use App\Models\Cta;
 use App\Models\Faq;
 use App\Models\Form;
+use App\Models\GrievanceLevel;
 use App\Models\Industry;
 use App\Models\LandingPage;
 use App\Models\Page;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\ServiceCategory;
+use App\Models\SocialVideo;
 use App\Models\Solution;
 use App\Models\Technology;
 use App\Models\Testimonial;
@@ -106,12 +109,17 @@ class BlockHydrator
             'faq' => $this->faqs($data, $host),
             'cta' => ($cta = $this->cta($data['cta_id'] ?? null)) ? $data + ['cta' => $cta, 'links' => $this->ctas->links($cta, $entityName)] : null,
             'lead_form', 'contact_form' => $this->form($data, $host),
+            'grievance' => $this->nonEmpty(['levels'], $data + ['levels' => GrievanceLevel::query()->visible()->ordered()->with('contacts')->get()]),
             'article_grid' => $this->nonEmpty(['articles'], $data + ['articles' => $this->pick(
                 ($data['mode'] ?? 'latest') === 'ids' ? $data['article_ids'] ?? [] : null,
                 Article::query()->published()->with(['author', 'category', 'media'])->latest('published_at')
-                    ->when(($data['mode'] ?? 'latest') === 'category' && filled($data['article_category_id'] ?? null), fn ($q) => $q->where('article_category_id', $data['article_category_id'])),
+                    ->when(($data['mode'] ?? 'latest') === 'category' && filled($data['article_category_id'] ?? null), fn ($q) => $q->where('article_category_id', $data['article_category_id']))
+                    ->when(($data['mode'] ?? 'latest') !== 'ids', fn ($q) => $q->ofType($data['article_type'] ?? null)),
                 $data['limit'] ?? 3,
             )]),
+            'resources' => $this->resources($data),
+            'social_videos' => $this->nonEmpty(['videos'], $data + ['videos' => $this->socialVideos($data)]),
+            'newsletter' => $data,
             'related_content' => $this->relatedContent($data, $host),
             'related_services' => $this->nonEmpty(['services'], $data + ['services' => ($data['mode'] ?? 'auto') === 'ids'
                 ? $this->pick($data['service_ids'] ?? [], Service::query()->published()->ordered()->with('category'), $data['limit'] ?? 4)
@@ -243,6 +251,39 @@ class BlockHydrator
         $items = $this->related->discover($host, (int) ($data['limit'] ?? 6));
 
         return $items->isEmpty() ? null : $data + ['items' => $items];
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>|null
+     */
+    protected function resources(array $data): ?array
+    {
+        $limit = (int) ($data['limit'] ?? 3);
+        $articles = fn (ArticleType $type): Collection => Article::query()->published()->ofType($type)
+            ->with(['author', 'category', 'media'])->latest('published_at')->limit($limit)->get();
+
+        return $this->nonEmpty(['blogs', 'news', 'videos'], $data + [
+            'blogs' => ($data['show_blog'] ?? true) ? $articles(ArticleType::Blog) : new Collection,
+            'news' => ($data['show_news'] ?? true) ? $articles(ArticleType::News) : new Collection,
+            'videos' => ($data['show_videos'] ?? true) ? SocialVideo::query()->visible()->forDisplay()->with('media')->limit($limit)->get() : new Collection,
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function socialVideos(array $data): Collection
+    {
+        $mode = $data['mode'] ?? 'latest';
+
+        return $this->pick(
+            $mode === 'ids' ? $data['social_video_ids'] ?? [] : null,
+            SocialVideo::query()->visible()->forDisplay()->with('media')
+                ->when($mode === 'featured', fn ($q) => $q->featured())
+                ->when($mode === 'platforms', fn ($q) => $q->whereIn('platform', (array) ($data['platforms'] ?? []))),
+            $data['limit'] ?? 8,
+        );
     }
 
     /**

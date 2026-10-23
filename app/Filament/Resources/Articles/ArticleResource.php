@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Articles;
 
+use App\Enums\ArticleType;
 use App\Filament\RelationManagers\FaqsRelationManager;
 use App\Filament\Resources\Articles\Pages\CreateArticle;
 use App\Filament\Resources\Articles\Pages\EditArticle;
@@ -48,7 +49,7 @@ class ArticleResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedNewspaper;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Insights';
+    protected static string|UnitEnum|null $navigationGroup = 'Resources';
 
     protected static ?int $navigationSort = 1;
 
@@ -62,6 +63,8 @@ class ArticleResource extends Resource
                     Section::make()->schema([
                         SlugField::source('title', 'Title')->columnSpanFull(),
                         SlugField::make()->helperText('Public URL: /insights/{slug}.'),
+                        Select::make('type')->label('Type')->options(ArticleType::class)->default(ArticleType::Blog->value)->required()->native(false)
+                            ->helperText('Blog for articles and guides, News for company and industry updates. Both appear under Resources.'),
                         Placeholder::make('reading_time')->label('Reading time')->content(fn (?Article $record): string => $record ? "{$record->reading_time_minutes} min (calculated from the body)" : 'Calculated on save'),
                         Textarea::make('excerpt')->required()->rows(3)->maxLength(500)->columnSpanFull(),
                         RichTextEditor::make('body')->required(),
@@ -97,6 +100,7 @@ class ArticleResource extends Resource
             ->defaultSort('updated_at', 'desc')
             ->columns([
                 TextColumn::make('title')->searchable()->sortable()->limit(60),
+                TextColumn::make('type')->badge()->sortable(),
                 TextColumn::make('author.name')->label('Author')->placeholder('—')->toggleable(),
                 TextColumn::make('category.name')->label('Category')->badge()->color('gray')->placeholder('—'),
                 Columns::status(),
@@ -107,6 +111,7 @@ class ArticleResource extends Resource
             ])
             ->filters([
                 Columns::statusFilter(),
+                SelectFilter::make('type')->options(ArticleType::class),
                 SelectFilter::make('article_category_id')->label('Category')->relationship('category', 'name')->preload(),
                 SelectFilter::make('author_id')->label('Author')->relationship('author', 'name')->preload(),
                 TrashedFilter::make(),

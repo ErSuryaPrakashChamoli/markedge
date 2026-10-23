@@ -73,6 +73,9 @@
         {{ $slot }}
     </main>
 
+    @unless ($minimalFooter || str_contains((string) $slot, 'data-newsletter-block'))
+        <x-layout.newsletter-band />
+    @endunless
     <x-layout.footer :minimal="$minimalFooter" />
     @if ($showStickyCta && ! $minimalHeader && ! $preview)
         <x-layout.sticky-mobile-cta />

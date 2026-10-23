@@ -28,7 +28,7 @@ class ArticleCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleGroup;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Insights';
+    protected static string|UnitEnum|null $navigationGroup = 'Resources';
 
     protected static ?int $navigationSort = 2;
 

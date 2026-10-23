@@ -35,7 +35,7 @@ class AuthorResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Insights';
+    protected static string|UnitEnum|null $navigationGroup = 'Resources';
 
     protected static ?int $navigationSort = 4;
 

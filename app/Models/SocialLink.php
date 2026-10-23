@@ -10,8 +10,9 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['platform', 'label', 'url', 'is_visible', 'sort_order'])]
+#[Fillable(['platform', 'label', 'url', 'icon', 'is_visible', 'sort_order'])]
 class SocialLink extends Model
 {
     /** @use HasFactory<SocialLinkFactory> */
@@ -22,6 +23,14 @@ class SocialLink extends Model
         return [
             'is_visible' => 'boolean',
         ];
+    }
+
+    /**
+     * Public URL of the uploaded icon; null means the built-in glyph for the platform is used.
+     */
+    public function iconUrl(): ?string
+    {
+        return filled($this->icon) ? Storage::disk('public')->url($this->icon) : null;
     }
 
     #[Scope]

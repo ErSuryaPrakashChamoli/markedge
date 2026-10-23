@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ArticleType;
 use App\Models\Concerns\BumpsContentVersion;
 use App\Models\Concerns\HasEditorialWorkflow;
 use App\Models\Concerns\HasFaqs;
@@ -24,7 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 
 #[Fillable([
-    'title', 'slug', 'excerpt', 'body', 'author_id', 'article_category_id', 'is_featured',
+    'title', 'slug', 'type', 'excerpt', 'body', 'author_id', 'article_category_id', 'is_featured',
     'cta_id', 'status', 'published_at',
 ])]
 class Article extends Model implements HasMedia
@@ -35,8 +36,11 @@ class Article extends Model implements HasMedia
 
     public const int WORDS_PER_MINUTE = 200;
 
+    /** @var array<string, mixed> */
+    protected $attributes = ['type' => 'blog'];
+
     /** @var array<int, string> */
-    protected array $activityLogAttributes = ['title', 'slug', 'status', 'published_at', 'author_id', 'article_category_id', 'is_featured'];
+    protected array $activityLogAttributes = ['title', 'slug', 'type', 'status', 'published_at', 'author_id', 'article_category_id', 'is_featured'];
 
     protected static function booted(): void
     {
@@ -48,6 +52,7 @@ class Article extends Model implements HasMedia
     protected function casts(): array
     {
         return [
+            'type' => ArticleType::class,
             'is_featured' => 'boolean',
         ];
     }
@@ -73,6 +78,14 @@ class Article extends Model implements HasMedia
     protected function featured(Builder $query): Builder
     {
         return $query->where('is_featured', true);
+    }
+
+    #[Scope]
+    protected function ofType(Builder $query, ArticleType|string|null $type): Builder
+    {
+        $type = is_string($type) ? ArticleType::tryFrom($type) : $type;
+
+        return $type ? $query->where('type', $type) : $query;
     }
 
     public function author(): BelongsTo

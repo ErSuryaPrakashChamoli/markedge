@@ -22,13 +22,13 @@ class ContentSnapshotSeeder extends Seeder
      * @var list<string>
      */
     public const array TABLES = [
-        'settings', 'social_links', 'ctas', 'forms', 'form_fields',
+        'settings', 'social_links', 'grievance_levels', 'grievance_contacts', 'ctas', 'forms', 'form_fields',
         'service_categories', 'services', 'service_service', 'solutions', 'service_solution',
         'products', 'product_modules', 'product_features', 'product_capabilities', 'product_documents',
         'product_service', 'product_solution',
         'industries', 'industry_service', 'industry_solution', 'industry_product',
         'technologies', 'technologyables',
-        'article_categories', 'authors', 'tags', 'articles', 'article_tag', 'article_links',
+        'article_categories', 'authors', 'tags', 'articles', 'article_tag', 'article_links', 'social_videos',
         'clients', 'testimonials', 'case_studies', 'case_study_product', 'case_study_service',
         'pages', 'landing_pages', 'menus', 'menu_items', 'faqs', 'seo_meta', 'redirects',
         'announcements', 'media', 'search_entries',

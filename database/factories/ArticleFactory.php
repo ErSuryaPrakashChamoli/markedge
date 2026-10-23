@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\ArticleType;
 use App\Enums\PublishStatus;
 use App\Models\Article;
 use App\Models\ArticleCategory;
@@ -17,6 +18,7 @@ class ArticleFactory extends Factory
     {
         return [
             'title' => ucfirst(fake()->unique()->sentence(5)),
+            'type' => ArticleType::Blog,
             'excerpt' => fake()->paragraph(),
             'body' => '<p>'.implode('</p><p>', fake()->paragraphs(3)).'</p>',
             'author_id' => Author::factory(),
@@ -30,6 +32,11 @@ class ArticleFactory extends Factory
     public function published(): static
     {
         return $this->state(['status' => PublishStatus::Published, 'published_at' => now()->subMinute()]);
+    }
+
+    public function news(): static
+    {
+        return $this->state(['type' => ArticleType::News]);
     }
 
     public function scheduled(): static

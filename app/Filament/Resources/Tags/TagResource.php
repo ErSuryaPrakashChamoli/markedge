@@ -23,7 +23,7 @@ class TagResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Insights';
+    protected static string|UnitEnum|null $navigationGroup = 'Resources';
 
     protected static ?int $navigationSort = 3;
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\Site\HomeController;
 use App\Http\Controllers\Site\IndustryController;
 use App\Http\Controllers\Site\InsightsController;
 use App\Http\Controllers\Site\LandingPageController;
+use App\Http\Controllers\Site\NewsletterController;
 use App\Http\Controllers\Site\PageController;
 use App\Http\Controllers\Site\ProductCompareController;
 use App\Http\Controllers\Site\ProductController;
@@ -37,6 +38,7 @@ Route::get('/health', [HealthController::class, 'live'])->middleware('throttle:h
 Route::get('/health/ready', [HealthController::class, 'ready'])->middleware('throttle:health')->name('health.ready');
 Route::get('/go/{key}/{slot?}', CtaClickController::class)->middleware('throttle:cta')->name('cta.go');
 Route::get('/search', SearchController::class)->middleware('throttle:search')->name('search');
+Route::post('/newsletter', NewsletterController::class)->name('newsletter.subscribe');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
 

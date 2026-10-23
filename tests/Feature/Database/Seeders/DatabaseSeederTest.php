@@ -28,6 +28,8 @@ it('seeds structure without any fabricated business proof', function () {
         ->and(Product::where('status', ProductStatus::Draft)->count())->toBe(2)
         ->and(Form::count())->toBe(8)
         ->and(Page::where('slug', Page::HOME_SLUG)->exists())->toBeTrue()
+        ->and(Page::where('slug', 'resources')->exists())->toBeTrue()
+        ->and(collect(Page::where('slug', Page::HOME_SLUG)->first()->blocks)->pluck('type'))->toContain('resources')->not->toContain('article_grid')
         ->and(Page::where('status', '!=', PublishStatus::Draft)->count())->toBe(0)
         ->and(Menu::where('key', 'header')->first()->items()->count())->toBeGreaterThan(5)
         ->and(Client::count())->toBe(0)
@@ -44,7 +46,7 @@ it('is idempotent', function () {
 
     expect(Service::count())->toBe(24)
         ->and(Form::count())->toBe(8)
-        ->and(Page::count())->toBe(12)
+        ->and(Page::count())->toBe(13)
         ->and(Menu::where('key', 'footer')->first()->rootItems()->count())->toBe(5);
 });
 

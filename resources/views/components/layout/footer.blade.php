@@ -1,6 +1,7 @@
 {{--
-    Four-section footer: brand & social, the footer menu columns (Company, Services), and a contact block
-    fed by settings. Menu columns collapse into accordions on mobile.
+    Four-section footer: brand, the footer menu columns (Company, Services), and a contact block fed by
+    settings, over a bottom bar with the copyright, legal links and social icons. Menu columns collapse
+    into accordions on mobile.
 --}}
 <footer data-theme="dark" class="relative overflow-hidden bg-canvas-dark bg-mesh-soft text-fg">
     <div class="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-brand to-transparent" aria-hidden="true"></div>
@@ -16,18 +17,6 @@
                 @endif
                 @if ($description)
                     <p class="mt-3 text-body-sm text-fg-secondary">{{ $description }}</p>
-                @endif
-                @if ($social->isNotEmpty())
-                    <ul class="mt-7 flex flex-wrap gap-2.5" aria-label="Social profiles">
-                        @foreach ($social as $link)
-                            <li>
-                                <a href="{{ $link->url }}" target="_blank" rel="noopener" class="group inline-flex size-10 items-center justify-center rounded-control border border-line bg-surface/40 text-fg-secondary transition-all duration-300 hover:-translate-y-0.5 hover:border-brand hover:bg-brand hover:text-white hover:shadow-glow" aria-label="{{ $link->label ?: ucfirst($link->platform) }}">
-                                    <x-ui.social-icon :platform="$link->platform" class="size-4" />
-                                    <span class="sr-only">{{ $link->label ?: ucfirst($link->platform) }}</span>
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
                 @endif
             </div>
 
@@ -117,13 +106,27 @@
 
         <div class="mt-14 flex flex-col gap-4 border-t border-line pt-6 text-caption text-fg-muted md:flex-row md:items-center md:justify-between">
             <p>&copy; {{ now()->year }} {{ $companyName }}. All rights reserved.</p>
-            @if ($legal)
-                <ul class="flex flex-wrap gap-x-5 gap-y-2">
-                    @foreach ($legal as $link)
-                        <li><a href="{{ $link->url }}" class="transition-colors hover:text-fg">{{ $link->label }}</a></li>
-                    @endforeach
-                </ul>
-            @endif
+            <div class="flex flex-col gap-5 md:flex-row md:items-center md:gap-8">
+                @if ($legal)
+                    <ul class="flex flex-wrap gap-x-5 gap-y-2">
+                        @foreach ($legal as $link)
+                            <li><a href="{{ $link->url }}" class="transition-colors hover:text-fg">{{ $link->label }}</a></li>
+                        @endforeach
+                    </ul>
+                @endif
+                @if ($social->isNotEmpty())
+                    <ul class="flex flex-wrap gap-2.5" aria-label="Social profiles">
+                        @foreach ($social as $link)
+                            <li>
+                                <a href="{{ $link->url }}" target="_blank" rel="noopener" class="group inline-flex size-10 items-center justify-center rounded-control border border-line bg-surface/40 text-fg-secondary transition-all duration-300 hover:-translate-y-0.5 hover:border-brand hover:bg-brand hover:text-white hover:shadow-glow" aria-label="{{ $link->label ?: ucfirst($link->platform) }}">
+                                    <x-ui.social-icon :platform="$link->platform" :icon-url="$link->iconUrl()" class="size-4" />
+                                    <span class="sr-only">{{ $link->label ?: ucfirst($link->platform) }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
         </div>
     </x-ui.container>
 </footer>

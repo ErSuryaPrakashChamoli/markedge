@@ -1,6 +1,16 @@
 <x-layouts.app :meta="$meta">
-    <x-sections.entity-hero eyebrow="Insights" :title="$heading" :intro="$intro" :breadcrumbs="$breadcrumbs">
-        @if ($categories->isNotEmpty())
+    <x-sections.entity-hero eyebrow="Resources" :title="$heading" :intro="$intro" :breadcrumbs="$breadcrumbs">
+        @if (request()->routeIs('insights.index'))
+            <nav class="mt-8" aria-label="Article types">
+                <ul class="inline-flex flex-wrap gap-1 rounded-pill border border-line-strong p-1">
+                    <li><a href="{{ url('/insights') }}" @class(['inline-flex h-9 items-center rounded-pill px-4 text-body-sm font-medium transition-colors', 'bg-fg text-canvas' => $type === null, 'text-fg-secondary hover:text-fg' => $type !== null]) @if ($type === null) aria-current="page" @endif>Everything</a></li>
+                    @foreach ($types as $articleType)
+                        <li><a href="{{ url('/insights?type='.$articleType->value) }}" @class(['inline-flex h-9 items-center rounded-pill px-4 text-body-sm font-medium transition-colors', 'bg-fg text-canvas' => $type === $articleType, 'text-fg-secondary hover:text-fg' => $type !== $articleType]) @if ($type === $articleType) aria-current="page" @endif>{{ $articleType->pluralLabel() }}</a></li>
+                    @endforeach
+                </ul>
+            </nav>
+        @endif
+        @if ($categories->isNotEmpty() && $type === null)
             <nav class="mt-8" aria-label="Article categories">
                 <ul class="flex flex-wrap gap-2">
                     <li><a href="{{ url('/insights') }}" @class(['inline-flex h-9 items-center rounded-pill border px-4 text-body-sm font-medium', 'border-brand bg-brand text-white' => $current === null && $author === null, 'border-line-strong text-fg-secondary hover:border-fg hover:text-fg' => $current !== null || $author !== null])>All</a></li>
@@ -41,7 +51,7 @@
             @endif
         </x-ui.section>
     @else
-        <x-ui.section container="narrow"><p class="text-body-lg text-fg-secondary">Articles are being prepared. Check back soon.</p></x-ui.section>
+        <x-ui.section container="narrow"><p class="text-body-lg text-fg-secondary">{{ $type ? $type->pluralLabel().' are being prepared.' : 'Articles are being prepared.' }} Check back soon.</p></x-ui.section>
     @endif
 
     @if ($cta)

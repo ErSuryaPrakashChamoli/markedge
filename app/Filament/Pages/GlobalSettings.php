@@ -4,8 +4,10 @@ namespace App\Filament\Pages;
 
 use App\Models\Cta;
 use App\Models\Setting;
+use App\Services\Cms\GoogleMap;
 use App\Services\Cms\Settings;
 use BackedEnum;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -55,6 +57,8 @@ class GlobalSettings extends Page
         'contact.address' => ['group' => 'contact', 'type' => 'textarea'],
         'contact.city' => ['group' => 'contact', 'type' => 'text'],
         'contact.country' => ['group' => 'contact', 'type' => 'text'],
+        'contact.map_location' => ['group' => 'contact', 'type' => 'text'],
+        'contact.map_embed' => ['group' => 'contact', 'type' => 'url'],
         'seo.title_suffix' => ['group' => 'seo', 'type' => 'text'],
         'seo.default_title' => ['group' => 'seo', 'type' => 'text'],
         'seo.default_description' => ['group' => 'seo', 'type' => 'textarea'],
@@ -77,6 +81,12 @@ class GlobalSettings extends Page
         'privacy.cookie_banner_enabled' => ['group' => 'privacy', 'type' => 'boolean'],
         'footer.logo' => ['group' => 'footer', 'type' => 'image'],
         'footer.copyright' => ['group' => 'footer', 'type' => 'text'],
+        'newsletter.footer_enabled' => ['group' => 'newsletter', 'type' => 'boolean'],
+        'newsletter.heading' => ['group' => 'newsletter', 'type' => 'text'],
+        'newsletter.intro' => ['group' => 'newsletter', 'type' => 'textarea'],
+        'newsletter.button_label' => ['group' => 'newsletter', 'type' => 'text'],
+        'newsletter.consent_text' => ['group' => 'newsletter', 'type' => 'text'],
+        'newsletter.success_message' => ['group' => 'newsletter', 'type' => 'text'],
     ];
 
     public static function canAccess(): bool
@@ -112,6 +122,18 @@ class GlobalSettings extends Page
                     TextInput::make('contact__city')->label('City')->maxLength(80),
                     TextInput::make('contact__country')->label('Country')->maxLength(80),
                     Textarea::make('contact__address')->label('Address')->rows(3)->columnSpanFull(),
+                    Section::make('Google Map')->description('Shown beside the contact form on the Contact page. With neither field filled, the map pins the address above.')->schema([
+                        TextInput::make('contact__map_location')->label('Map location')->maxLength(255)
+                            ->helperText('Business name, address or coordinates (e.g. 30.3165, 78.0322) to pin on the map.'),
+                        Textarea::make('contact__map_embed')->label('Google Maps embed code')->rows(3)
+                            ->helperText('Optional, for an exact pin: in Google Maps open your place, choose Share → Embed a map, copy the HTML and paste it here. Overrides the map location.')
+                            ->rule(fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
+                                if (filled($value) && GoogleMap::embedSource($value) === null) {
+                                    $fail('Paste the embed code from Google Maps (Share → Embed a map).');
+                                }
+                            })
+                            ->dehydrateStateUsing(fn (?string $state): ?string => GoogleMap::embedSource($state)),
+                    ])->columnSpanFull(),
                 ])->columns(2),
                 Tab::make('SEO defaults')->icon(Heroicon::OutlinedMagnifyingGlass)->schema([
                     TextInput::make('seo__default_title')->label('Default title')->helperText('Used when a page has no title of its own. No length limit; roughly 50–60 characters is advisory.'),
@@ -147,6 +169,16 @@ class GlobalSettings extends Page
                     $this->imageUpload('footer__logo', 'Footer logo', 'The footer has a dark background, so upload a white or light version of the logo. PNG or WebP with a transparent background, at least 320px wide. Remove it to go back to the built-in logo.'),
                     TextInput::make('footer__copyright')->label('Copyright line')->helperText('Defaults to "© {year} {company name}. All rights reserved." when empty.')->columnSpanFull(),
                 ]),
+                Tab::make('Newsletter')->icon(Heroicon::OutlinedEnvelope)->schema([
+                    Toggle::make('newsletter__footer_enabled')->label('Show the newsletter sign-up above the footer on every page')->inline(false)->columnSpanFull()
+                        ->helperText('Pages that place a Newsletter sign-up block show that block instead. Sign-ups are listed under Marketing → Newsletter subscribers.'),
+                    TextInput::make('newsletter__heading')->label('Heading')->maxLength(160)->columnSpanFull(),
+                    Textarea::make('newsletter__intro')->label('Short description')->rows(2)->maxLength(400)->columnSpanFull(),
+                    TextInput::make('newsletter__button_label')->label('Button label')->maxLength(40),
+                    TextInput::make('newsletter__success_message')->label('Thank-you message')->maxLength(255),
+                    TextInput::make('newsletter__consent_text')->label('Consent checkbox text')->maxLength(400)->columnSpanFull()
+                        ->helperText('Visitors must tick this before subscribing, and the wording is stored with each sign-up. Leave empty to use the default wording.'),
+                ])->columns(2),
             ])->columnSpanFull()->persistTabInQueryString(),
         ])->statePath('data');
     }

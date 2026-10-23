@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Site;
 
+use App\Enums\ArticleType;
 use App\Http\Controllers\Controller;
 use App\Seo\SeoEngine;
 use App\Services\Cms\ContentResolver;
@@ -12,14 +13,24 @@ use Illuminate\Contracts\View\View;
 
 class InsightsController extends Controller
 {
+    /**
+     * The full article listing; ?type=blog or ?type=news narrows it to one kind (noindex, the unfiltered
+     * listing stays canonical).
+     */
     public function index(ContentResolver $content, SeoEngine $meta, CtaResolver $ctas): View
     {
+        $type = ArticleType::tryFrom((string) request()->query('type'));
+
         return $this->archive($content, $ctas, [
-            'meta' => $meta->forListing('Insights', 'Articles on technology, infrastructure and digital growth from Markedge Technologies.', '/insights', breadcrumbs: [['label' => 'Insights', 'url' => null]]),
-            'articles' => $content->articles(),
-            'featured' => request()->integer('page', 1) === 1 ? $content->featuredArticles() : collect(),
-            'heading' => 'Insights',
+            'meta' => $type
+                ? $meta->forListing($type->pluralLabel(), null, '/insights', indexable: false)
+                : $meta->forListing('Insights', 'Articles on technology, infrastructure and digital growth from Markedge Technologies.', '/insights', breadcrumbs: [['label' => 'Insights', 'url' => null]]),
+            'articles' => $content->articles(type: $type),
+            'featured' => request()->integer('page', 1) === 1 ? $content->featuredArticles(type: $type) : collect(),
+            'heading' => $type?->pluralLabel() ?? 'Insights',
             'intro' => null,
+            'type' => $type,
+            'breadcrumbs' => $type ? [['label' => 'Insights', 'url' => '/insights'], ['label' => $type->pluralLabel(), 'url' => null]] : [],
         ]);
     }
 
@@ -80,6 +91,8 @@ class InsightsController extends Controller
             'breadcrumbs' => [],
             'current' => null,
             'author' => null,
+            'type' => null,
+            'types' => ArticleType::cases(),
             'cta' => $ctas->fromSetting('cta.default_article') ?? $ctas->fromSetting('cta.default'),
         ]);
     }

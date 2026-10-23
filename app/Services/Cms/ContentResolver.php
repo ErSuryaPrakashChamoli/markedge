@@ -2,6 +2,7 @@
 
 namespace App\Services\Cms;
 
+use App\Enums\ArticleType;
 use App\Enums\ProductStatus;
 use App\Enums\PublishStatus;
 use App\Models\Article;
@@ -182,10 +183,11 @@ class ContentResolver
     /**
      * @return LengthAwarePaginator<int, Article>
      */
-    public function articles(?ArticleCategory $category = null, ?Tag $tag = null, ?Author $author = null, int $perPage = 12): LengthAwarePaginator
+    public function articles(?ArticleCategory $category = null, ?Tag $tag = null, ?Author $author = null, int $perPage = 12, ?ArticleType $type = null): LengthAwarePaginator
     {
         return Article::query()->published()
             ->with(['author', 'category', 'media'])
+            ->ofType($type)
             ->when($category, fn (Builder $q) => $q->where('article_category_id', $category->id))
             ->when($tag, fn (Builder $q) => $q->whereHas('tags', fn ($t) => $t->whereKey($tag->id)))
             ->when($author, fn (Builder $q) => $q->where('author_id', $author->id))
@@ -197,9 +199,9 @@ class ContentResolver
     /**
      * @return Collection<int, Article>
      */
-    public function featuredArticles(int $limit = 1): Collection
+    public function featuredArticles(int $limit = 1, ?ArticleType $type = null): Collection
     {
-        return Article::query()->published()->featured()->with(['author', 'category', 'media'])->latest('published_at')->limit($limit)->get();
+        return Article::query()->published()->featured()->ofType($type)->with(['author', 'category', 'media'])->latest('published_at')->limit($limit)->get();
     }
 
     /**

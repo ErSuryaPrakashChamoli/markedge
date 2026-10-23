@@ -196,7 +196,11 @@ return [
         'csp_report_only' => (bool) env('MARKEDGE_CSP_REPORT_ONLY', false),
         // Extra origins allowed to serve images/media (e.g. a CDN or S3 bucket host).
         'media_origins' => array_values(array_filter(array_map('trim', explode(',', (string) env('MARKEDGE_MEDIA_ORIGINS', ''))))),
-        'frame_origins' => ['https://www.youtube.com', 'https://www.youtube-nocookie.com', 'https://player.vimeo.com'],
+        // Social video players (Resources) load only after a visitor presses play.
+        'frame_origins' => [
+            'https://www.youtube.com', 'https://www.youtube-nocookie.com', 'https://player.vimeo.com', 'https://www.google.com',
+            'https://www.instagram.com', 'https://www.linkedin.com', 'https://www.facebook.com', 'https://www.tiktok.com',
+        ],
     ],
 
     'rate_limits' => [
@@ -237,6 +241,7 @@ return [
             'article_categories', 'tags', 'authors', 'faqs', 'landing_pages',
             'campaigns', 'forms', 'ctas', 'leads', 'redirects', 'seo', 'media',
             'users', 'roles', 'activity', 'automation', 'api_keys',
+            'social_videos', 'newsletter_subscribers',
         ],
         'actions' => [
             'view_any', 'view', 'create', 'update', 'delete', 'restore',
@@ -255,10 +260,10 @@ return [
         ],
         'Content Manager' => [
             'articles.view_any', 'articles.view', 'articles.create', 'articles.update', 'articles.delete', 'articles.restore', 'articles.preview', 'articles.review',
-            'article_categories.*', 'tags.*', 'authors.*', 'faqs.*', 'media.*',
+            'article_categories.*', 'tags.*', 'authors.*', 'faqs.*', 'media.*', 'social_videos.*',
         ],
         'Editor' => [
-            'articles.*', 'article_categories.*', 'tags.*', 'authors.*', 'faqs.*', 'media.*',
+            'articles.*', 'article_categories.*', 'tags.*', 'authors.*', 'faqs.*', 'media.*', 'social_videos.*',
         ],
         'SEO Manager' => [
             'seo.*', 'redirects.*',
@@ -274,6 +279,7 @@ return [
         ],
         'Marketing Manager' => [
             'landing_pages.*', 'campaigns.*', 'forms.*', 'ctas.*', 'media.*',
+            'social_videos.*', 'newsletter_subscribers.*',
             'leads.view_any', 'leads.view', 'leads.update', 'leads.export',
             'settings.view_any',
         ],

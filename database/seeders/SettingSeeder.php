@@ -59,6 +59,14 @@ class SettingSeeder extends Seeder
                 'privacy.attribution_requires_consent' => [false, 'boolean'],
                 'privacy.cookie_banner_enabled' => [true, 'boolean'],
             ],
+            'newsletter' => [
+                'newsletter.footer_enabled' => [true, 'boolean'],
+                'newsletter.heading' => ['Ideas for growing businesses, in your inbox.', 'text'],
+                'newsletter.intro' => ['A short note on technology, IT infrastructure and digital growth, with new blogs, news and videos from Markedge. No spam.', 'textarea'],
+                'newsletter.button_label' => ['Subscribe', 'text'],
+                'newsletter.consent_text' => ['I agree to receive the Markedge newsletter. I can unsubscribe at any time.', 'text'],
+                'newsletter.success_message' => ['Thanks for subscribing. Look out for the next issue in your inbox.', 'text'],
+            ],
         ];
 
         foreach ($settings as $group => $entries) {

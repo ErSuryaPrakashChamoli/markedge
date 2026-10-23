@@ -38,6 +38,7 @@ class ContactForm extends Block
             Fields::heading(),
             Fields::intro(),
             Toggle::make('show_contact_details')->label('Show email, phone and address beside the form')->default(true),
+            Toggle::make('show_map')->label('Show the Google map beside the form')->helperText('Set the map location in Global Settings → Contact.')->default(true),
         ];
     }
 
@@ -48,6 +49,7 @@ class ContactForm extends Block
             'heading' => ['nullable', 'string', 'max:255'],
             'intro' => ['nullable', 'string', 'max:500'],
             'show_contact_details' => ['sometimes', 'boolean'],
+            'show_map' => ['sometimes', 'boolean'],
         ];
     }
 }

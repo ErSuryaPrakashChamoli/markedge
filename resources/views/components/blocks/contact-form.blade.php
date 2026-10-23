@@ -13,6 +13,9 @@
             @if ($data['show_contact_details'] ?? true)
                 <x-blocks.partials.contact-details class="mt-8" />
             @endif
+            @if ($data['show_map'] ?? true)
+                <x-blocks.partials.contact-map class="mt-8" />
+            @endif
         </x-slot:left>
         <x-slot:right>
             <livewire:lead-form :form="$data['form']" :context="$data['context']" :preview="$preview" layout="card" :key="'contact-form-'.$data['form']->id" />

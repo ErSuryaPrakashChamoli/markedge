@@ -4,6 +4,7 @@ namespace App\Cms\Blocks\Types;
 
 use App\Cms\Blocks\Block;
 use App\Cms\Blocks\Fields;
+use App\Enums\ArticleType;
 use App\Models\Article;
 use App\Models\ArticleCategory;
 use Filament\Forms\Components\Select;
@@ -33,6 +34,9 @@ class ArticleGrid extends Block
             Fields::heading(),
             Fields::intro(),
             Fields::mode(['latest' => 'Latest published', 'category' => 'Latest in a category', 'ids' => 'Selected articles'], 'latest'),
+            Select::make('article_type')->label('Type')->placeholder('Blogs and news')->native(false)
+                ->options(collect(ArticleType::cases())->mapWithKeys(fn (ArticleType $type): array => [$type->value => $type->pluralLabel().' only'])->all())
+                ->visible(fn (Get $get): bool => $get('mode') !== 'ids'),
             Select::make('article_category_id')->label('Category')->options(fn () => ArticleCategory::query()->ordered()->pluck('name', 'id'))->native(false)
                 ->visible(fn (Get $get): bool => $get('mode') === 'category')->required(fn (Get $get): bool => $get('mode') === 'category'),
             Fields::records('article_ids', 'Articles', Article::class, 'title')->visible(fn (Get $get): bool => $get('mode') === 'ids'),
@@ -46,6 +50,7 @@ class ArticleGrid extends Block
             'heading' => ['nullable', 'string', 'max:255'],
             'intro' => ['nullable', 'string', 'max:500'],
             'mode' => ['required', 'in:latest,category,ids'],
+            'article_type' => ['nullable', 'in:'.implode(',', array_column(ArticleType::cases(), 'value'))],
             'article_category_id' => ['required_if:mode,category', 'nullable', 'integer'],
             'article_ids' => ['required_if:mode,ids', 'nullable', 'array'],
             'article_ids.*' => ['integer'],

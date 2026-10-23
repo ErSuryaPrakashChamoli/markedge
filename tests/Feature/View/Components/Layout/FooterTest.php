@@ -79,3 +79,9 @@ it('renders social links as brand icons with accessible labels', function () {
         ->assertSee('href="https://linkedin.com/company/markedge"', false)
         ->assertSee('<svg', false);
 });
+
+it('places the social icons in the bottom bar after the copyright', function () {
+    SocialLink::factory()->create(['platform' => 'instagram', 'label' => 'Instagram']);
+
+    $this->get('/')->assertSeeInOrder(['All rights reserved.', 'aria-label="Instagram"'], false);
+});

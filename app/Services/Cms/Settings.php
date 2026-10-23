@@ -75,6 +75,52 @@ class Settings
         return str_starts_with($path, 'http') ? $path : Storage::disk('public')->url($path);
     }
 
+    /**
+     * Google Maps embed for the contact section: pasted embed code wins, then the map location,
+     * then the postal address. Null hides the map.
+     */
+    public function mapEmbedUrl(): ?string
+    {
+        if ($source = GoogleMap::embedSource($this->get('contact.map_embed'))) {
+            return $source;
+        }
+
+        $query = $this->mapQuery();
+
+        return $query !== null ? GoogleMap::embedUrlFor($query) : null;
+    }
+
+    /**
+     * "Get directions" link; null when only embed code is set, since it carries no searchable place.
+     */
+    public function mapDirectionsUrl(): ?string
+    {
+        $query = $this->mapQuery();
+
+        return $query !== null ? GoogleMap::directionsUrlFor($query) : null;
+    }
+
+    /**
+     * The place searched on Google Maps: the map location, or the address with city and country.
+     */
+    protected function mapQuery(): ?string
+    {
+        $location = trim((string) $this->get('contact.map_location'));
+
+        if ($location !== '') {
+            return $location;
+        }
+
+        $address = collect(preg_split('/\R/', (string) $this->get('contact.address')))
+            ->push($this->get('contact.city'), $this->get('contact.country'))
+            ->map(fn (mixed $part): string => trim((string) $part, " \t,"))
+            ->filter()
+            ->unique()
+            ->implode(', ');
+
+        return $address !== '' ? $address : null;
+    }
+
     public function forget(): void
     {
         $this->loaded = null;

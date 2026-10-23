@@ -7,6 +7,9 @@
     @endif
     <div class="card-p">
         <div class="flex flex-wrap items-center gap-2 text-caption text-fg-muted">
+            @if ($article->type === \App\Enums\ArticleType::News)
+                <x-ui.badge tone="warning">News</x-ui.badge>
+            @endif
             @if ($article->relationLoaded('category') && $article->category)
                 <x-ui.badge tone="brand">{{ $article->category->name }}</x-ui.badge>
             @endif
