@@ -109,7 +109,7 @@ class BlockHydrator
             'faq' => $this->faqs($data, $host),
             'cta' => ($cta = $this->cta($data['cta_id'] ?? null)) ? $data + ['cta' => $cta, 'links' => $this->ctas->links($cta, $entityName)] : null,
             'lead_form', 'contact_form' => $this->form($data, $host),
-            'grievance' => $this->nonEmpty(['levels'], $data + ['levels' => GrievanceLevel::query()->visible()->ordered()->with('contacts')->get()]),
+            'grievance' => $this->grievance($data),
             'article_grid' => $this->nonEmpty(['articles'], $data + ['articles' => $this->pick(
                 ($data['mode'] ?? 'latest') === 'ids' ? $data['article_ids'] ?? [] : null,
                 Article::query()->published()->with(['author', 'category', 'media'])->latest('published_at')
@@ -129,6 +129,20 @@ class BlockHydrator
                 : ($host ? $this->related->products($host, (int) ($data['limit'] ?? 3)) : new Collection)]),
             default => $data,
         };
+    }
+
+    /**
+     * The escalation ladder shows with visible levels, its note, or both; with neither the section disappears.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>|null
+     */
+    protected function grievance(array $data): ?array
+    {
+        $levels = GrievanceLevel::query()->visible()->ordered()->with('contacts')->get();
+        $hasNote = filled(strip_tags((string) ($data['note'] ?? '')));
+
+        return $levels->isNotEmpty() || $hasNote ? $data + ['levels' => $levels, 'hasNote' => $hasNote] : null;
     }
 
     /**

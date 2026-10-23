@@ -18,6 +18,7 @@ class Footer extends Component
         private readonly CtaResolver $ctas,
         private readonly ContentVersion $version,
         public bool $minimal = false,
+        public bool $showMap = true,
     ) {}
 
     public function render(): View
@@ -29,7 +30,7 @@ class Footer extends Component
             'companyName' => $this->settings->get('company.name', config('app.name')),
             'logoUrl' => $this->settings->footerLogoUrl(),
             'tagline' => $this->settings->get('company.tagline'),
-            'description' => $this->settings->get('company.description'),
+            'copyright' => str_replace('{year}', (string) now()->year, (string) $this->settings->get('footer.copyright')),
             'email' => $this->settings->get('contact.email'),
             'phone' => $this->settings->get('contact.phone'),
             'address' => $this->settings->get('contact.address'),

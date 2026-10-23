@@ -36,6 +36,8 @@ class GrievanceRedressal extends Block
         return [
             Fields::heading()->default('Grievance redressal')->helperText('Levels and contact persons come from Website → Grievance Levels.'),
             Fields::intro(),
+            Fields::richText('note', 'Note')
+                ->helperText('Optional. Shown above the levels and contact persons, e.g. the steps to raise a complaint, response timelines, or where complaints about a partner should go.'),
         ];
     }
 
@@ -44,6 +46,7 @@ class GrievanceRedressal extends Block
         return [
             'heading' => ['nullable', 'string', 'max:255'],
             'intro' => ['nullable', 'string', 'max:500'],
+            'note' => ['nullable', 'string'],
         ];
     }
 }

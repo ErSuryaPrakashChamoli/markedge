@@ -52,7 +52,7 @@ class Phase12ContentSeeder extends Seeder
         if ($footer !== null && ! $footer->items()->where('label', 'Get in touch')->exists()) {
             $column = $footer->items()->create(['label' => 'Get in touch', 'type' => MenuItemType::Heading, 'sort_order' => 1]);
 
-            foreach ([['Contact', '/contact'], ['Request a quote', '/request-quote'], ['Request a consultation', '/request-consultation'], ['Request a product demo', '/request-demo'], ['Request an IT assessment', '/request-it-assessment'], ['Request a digital growth audit', '/request-digital-growth-audit']] as $index => [$label, $url]) {
+            foreach ([['Request a quote', '/request-quote'], ['Request a consultation', '/request-consultation'], ['Request a product demo', '/request-demo'], ['Request an IT assessment', '/request-it-assessment'], ['Request a digital growth audit', '/request-digital-growth-audit']] as $index => [$label, $url]) {
                 $footer->items()->create(['parent_id' => $column->id, 'label' => $label, 'type' => MenuItemType::Url, 'url' => $url, 'sort_order' => $index]);
             }
         }

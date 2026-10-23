@@ -76,7 +76,7 @@
     @unless ($minimalFooter || str_contains((string) $slot, 'data-newsletter-block'))
         <x-layout.newsletter-band />
     @endunless
-    <x-layout.footer :minimal="$minimalFooter" />
+    <x-layout.footer :minimal="$minimalFooter" :show-map="! str_contains((string) $slot, 'data-office-map')" />
     @if ($showStickyCta && ! $minimalHeader && ! $preview)
         <x-layout.sticky-mobile-cta />
     @endif

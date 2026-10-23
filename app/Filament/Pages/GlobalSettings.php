@@ -122,7 +122,7 @@ class GlobalSettings extends Page
                     TextInput::make('contact__city')->label('City')->maxLength(80),
                     TextInput::make('contact__country')->label('Country')->maxLength(80),
                     Textarea::make('contact__address')->label('Address')->rows(3)->columnSpanFull(),
-                    Section::make('Google Map')->description('Shown beside the contact form on the Contact page and in the footer. With neither field filled, the map pins the address above.')->schema([
+                    Section::make('Google Map')->description('Shown beside the contact form on the Contact page. With neither field filled, the map pins the address above.')->schema([
                         TextInput::make('contact__map_location')->label('Map location')->maxLength(255)
                             ->helperText('Business name, address or coordinates (e.g. 30.3165, 78.0322) to pin on the map.'),
                         Textarea::make('contact__map_embed')->label('Google Maps embed code')->rows(3)
@@ -167,7 +167,7 @@ class GlobalSettings extends Page
                 ])->columns(2),
                 Tab::make('Footer')->icon(Heroicon::OutlinedBars3)->schema([
                     $this->imageUpload('footer__logo', 'Footer logo', 'The footer has a dark background, so upload a white or light version of the logo. PNG or WebP with a transparent background, at least 320px wide. Remove it to go back to the built-in logo.'),
-                    TextInput::make('footer__copyright')->label('Copyright line')->helperText('Defaults to "© {year} {company name}. All rights reserved." when empty.')->columnSpanFull(),
+                    TextInput::make('footer__copyright')->label('Copyright line')->helperText('Write {year} where the current year should appear, e.g. "© {year} Markedge Technologies Pvt. Ltd." Empty: "© {year} {company name}. All rights reserved."')->columnSpanFull(),
                 ]),
                 Tab::make('Newsletter')->icon(Heroicon::OutlinedEnvelope)->schema([
                     Toggle::make('newsletter__footer_enabled')->label('Show the newsletter sign-up above the footer on every page')->inline(false)->columnSpanFull()

@@ -5,6 +5,7 @@ use App\Models\Form;
 use App\Models\Page;
 use App\Models\Setting;
 use App\Services\Cms\GoogleMap;
+use Illuminate\Support\Str;
 
 function contactPage(array $blockData = []): Page
 {
@@ -43,14 +44,14 @@ it('uses pasted Google Maps embed code for an exact pin', function () {
     $this->get('/'.contactPage()->slug)->assertSee('src="'.e($embed).'"', false);
 });
 
-it('hides the map when no location is known, and in the contact section when the block turns it off', function () {
+it('hides the map when the contact block turns it off or no location is known', function () {
     $this->get('/'.contactPage()->slug)->assertOk()->assertDontSee('<iframe', false);
 
     Setting::factory()->create(['key' => 'contact.map_location', 'value' => 'Dehradun']);
 
-    // The footer always carries the map, so the contact section adds the second one.
-    expect(substr_count($this->get('/'.contactPage()->slug)->getContent(), '<iframe'))->toBe(2)
-        ->and(substr_count($this->get('/'.contactPage(['show_map' => false])->slug)->getContent(), '<iframe'))->toBe(1);
+    $content = $this->get('/'.contactPage(['show_map' => false])->slug)->assertOk()->getContent();
+
+    expect(Str::before($content, '<footer'))->not->toContain('<iframe');
 });
 
 it('reduces embed code to its Google Maps source', function (string $input, ?string $expected) {
